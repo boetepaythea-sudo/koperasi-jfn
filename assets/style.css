@@ -1,37 +1,251 @@
 ```css
-body{
-    margin:0;
-    font-family:Arial;
-}
+            body {
+                margin: 0;
+                font-family: Segoe UI;
+                background: #f9fafb;
+                color: #111827;
+            }
 
-.sidebar{
-    width:220px;
-    height:100vh;
-    background:#0f172a;
-    color:white;
-    float:left;
-}
+            .sidebar {
+                position: fixed;
+                width: 260px;
+                height: 100vh;
+                padding-top: 20px;
 
-.sidebar h3{
-    text-align:center;
-    padding:20px;
-}
+                background: linear-gradient(180deg, #14532d 0%, #166534 50%, #0f3d22 100%);
 
-.sidebar button{
-    width:100%;
-    padding:12px;
-    border:none;
-    background:none;
-    color:white;
-    cursor:pointer;
-}
+                box-shadow: 2px 0 20px rgba(0, 0, 0, 0.25);
+                border-right: 1px solid rgba(255, 255, 255, 0.08);
+            }
 
-.sidebar button:hover{
-    background:#1e293b;
-}
+            .sidebar h2 {
+                text-align: center;
+                color: #22c55e;
+                margin-bottom: 30px;
+            }
 
-.content{
-    margin-left:220px;
-    padding:20px;
-}
+            .sidebar a {
+                display: block;
+                color: #cbd5e1;
+                text-decoration: none;
+                padding: 12px 20px;
+                transition: 0.3s;
+            }
+
+            .sidebar a:hover {
+                background: #166534;
+                color: white;
+            }
+
+            .content {
+                margin-top: 90px;
+                /* sebelumnya 70px */
+                height: calc(100vh - 90px);
+                overflow-y: auto;
+                padding: 20px;
+            }
+
+            .topbar {
+                position: fixed;
+                top: 0;
+                left: 260px;
+                right: 0;
+                height: 80px;
+                padding: 10px 25px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background: linear-gradient(90deg, #14532d, #166534);
+                color: white;
+                z-index: 9999;
+            }
+
+            .topbar .text-end {
+                line-height: 1.2;
+                font-size: 14px;
+
+            }
+
+            .main {
+                margin-left: 260px;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            .card-custom {
+                background: #c7c4c4;
+                border-radius: 10px;
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .stat-card {
+                background: linear-gradient(135deg, #22c5af, #16a34a);
+                color: white;
+                border-radius: 20px;
+                padding: 20px;
+                text-align: center;
+            }
+
+            .stat-card h2 {
+                color: #f1fafb;
+            }
+
+            .login-page {
+                height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background: #180101;
+            }
+
+            .login-box {
+                width: 400px;
+                background: linear-gradient(135deg, #22c5af, #16a34a);
+                padding: 40px;
+                border-radius: 20px;
+            }
+
+            .dashboard {
+                display: none;
+            }
+
+            .table {
+                color: rgba(178, 247, 180, 0.862);
+            }
+
+            .menu-page {
+                display: none;
+            }
+
+            .active-page {
+                display: block;
+            }
+
+            .menu-page.active-page {
+                display: block;
+            }
+
+            .app-logo {
+                height: 110px;
+                object-fit: contain;
+                display: block;
+                margin: 0 auto;
+            }
+
+            .sidebar-logo {
+                height: 100px;
+                object-fit: contain;
+                display: block;
+                margin: 0 auto 15px auto;
+            }
+
+            .topbar-logo {
+                height: 45px;
+                object-fit: contain;
+            }
+
+            .section-subtitle {
+                color: #22c55e;
+                font-size: 24px;
+                font-weight: 800;
+                letter-spacing: 0.5px;
+                margin-top: 15px;
+            }
+
+            .section-subtitle {
+                color: #22c55e;
+                font-size: 24px;
+                font-weight: 700;
+                margin-top: 10px;
+            }
+
+            .section-divider {
+                height: 1px;
+                background: #80807ff1;
+                opacity: 0.6;
+                margin: 5px 0 10px 0;
+                border-radius: 2px;
+            }
+
+            .form-control.auto-field,
+            .form-control.auto-field:focus,
+            .form-control.auto-field[readonly] {
+                background-color: #d6d8db !important;
+                color: #495057 !important;
+                font-weight: 600;
+                border: 1px solid #adb5bd !important;
+                cursor: not-allowed;
+                opacity: 1 !important;
+            }
+
+            .marquee-container {
+                width: 70%;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+
+            .marquee-text {
+                display: inline-block;
+                padding-left: 100%;
+                font-size: 24px;
+                font-weight: bold;
+                color: #f8fbfa;
+                animation: marquee 15s linear infinite;
+            }
+
+            .report-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 25px;
+                margin-top: 25px;
+            }
+
+            .report-card {
+                background: #32712fb9;
+                border: 1px solid #22c55e;
+                border-radius: 12px;
+                text-align: center;
+                padding: 30px;
+                cursor: pointer;
+                transition: .3s;
+            }
+
+            .report-card:hover {
+                background: #14532d;
+                transform: translateY(-5px);
+            }
+
+            .report-card i {
+                color: #22c55e;
+                margin-bottom: 15px;
+
+            }
+
+            .report-card h5 {
+                color: white;
+
+            }
+
+            @keyframes marquee {
+                from {
+                    transform: translateX(0);
+                }
+
+                to {
+                    transform: translateX(-100%);
+                }
+            }
+
+            #jam {
+                font-size: 18px;
+                color: #22c55e;
+                font-weight: bold;
+            }
+
+            #hari,
+            #tanggal {
+                font-size: 14px;
+                color: #22c55e;
+            }
 ```
