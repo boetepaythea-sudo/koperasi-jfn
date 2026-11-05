@@ -649,6 +649,14 @@
             }
          }
 
+
+         .sales-filter-bar{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}
+         .sales-filter-field{width:145px;margin:0}
+         .sales-page-size{width:105px;margin:0}
+         .sales-print-btn{min-height:43px;white-space:nowrap}
+         .sales-filter-summary{font-size:12px;margin:-5px 0 13px}
+         @media(max-width:680px){.sales-data-head{align-items:stretch;flex-direction:column}.sales-filter-bar{display:grid;grid-template-columns:1fr 1fr;gap:9px}.sales-filter-field,.sales-page-size{width:100%}.sales-print-btn{width:100%;grid-column:1 / -1;grid-row:2}.sales-page-size{grid-column:1 / -1}}
+
          .tag {
             display: inline-block;
             border-radius: 30px;
@@ -2291,7 +2299,57 @@
          .brand-notice-card small{font-size:9px;letter-spacing:2px;color:#9b8a70}
          @keyframes brandNoticeIn{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
          @media(max-width:480px){.brand-notice-card{padding:32px 22px 25px;border-radius:18px}}
-      </style>
+      
+        /* Accounting hub: tampilan grid ikon besar ala aplikasi Android */
+        .accounting-intro { margin-bottom:18px; }
+        .accounting-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:18px; }
+        .accounting-card {
+           appearance:none; width:100%; min-width:0; min-height:205px; padding:22px 15px 18px;
+           border:1px solid var(--line); border-radius:20px;
+           background:linear-gradient(155deg,#fff 0%,#fbf7ef 100%); color:var(--ink);
+           display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+           gap:12px; text-align:center; cursor:pointer;
+           box-shadow:0 8px 24px rgba(44,34,20,.06);
+           transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+        }
+        .accounting-card:hover { transform:translateY(-4px); border-color:var(--gold2); box-shadow:0 14px 30px rgba(44,34,20,.12); }
+        .accounting-card:focus-visible { outline:3px solid #b58a4a55; outline-offset:3px; }
+        .accounting-icon {
+           width:78px; height:78px; flex:0 0 78px; display:grid; place-items:center;
+           border-radius:23px; background:linear-gradient(145deg,#f7edda,#ead8b8);
+           font-size:42px; line-height:1; box-shadow:inset 0 1px 0 #fff9,0 5px 14px #8c6b3514;
+        }
+        .accounting-card strong { display:block; max-width:100%; font-size:14px; line-height:1.4; font-weight:700; }
+        .accounting-card small { color:var(--muted); font-size:11px; line-height:1.5; }
+        .accounting-open { display:none; }
+        .accounting-report-head { align-items:flex-start; }
+        .accounting-filter { display:flex; align-items:end; gap:12px; flex-wrap:wrap; padding:14px 0 18px; border-bottom:1px solid var(--line); margin-bottom:16px; }
+        .accounting-filter .field { min-width:170px; max-width:220px; }
+        .accounting-summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-bottom:16px; }
+        .accounting-summary > div { border:1px solid var(--line); border-radius:12px; padding:13px; background:#fffdf9; }
+        .accounting-summary span { display:block; color:var(--muted); font-size:11px; margin-bottom:6px; }
+        .accounting-summary strong { font-size:16px; }
+        .accounting-report-body table { width:100%; border-collapse:collapse; }
+        .accounting-report-body th,.accounting-report-body td { padding:10px 9px; border-bottom:1px solid var(--line); text-align:left; font-size:12px; }
+        .accounting-report-body th { background:#f7f2e9; color:#574a36; }
+        @media(max-width:1100px) { .accounting-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+        @media(max-width:680px) {
+           .accounting-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:11px; }
+           .accounting-card { min-height:176px; padding:16px 10px 14px; border-radius:16px; gap:10px; }
+           .accounting-icon { width:66px; height:66px; flex-basis:66px; border-radius:19px; font-size:35px; }
+           .accounting-card strong { font-size:12px; }
+           .accounting-card small { font-size:10px; }
+           .accounting-summary { grid-template-columns:1fr; }
+           .accounting-report-head { flex-direction:column; }
+           .accounting-filter .field { min-width:calc(50% - 8px); flex:1; }
+        }
+        @media(max-width:380px) {
+           .accounting-grid { gap:8px; }
+           .accounting-card { min-height:164px; padding:13px 8px; }
+           .accounting-icon { width:58px; height:58px; flex-basis:58px; font-size:31px; }
+           .accounting-card strong { font-size:11px; }
+        }
+</style>
    </head>
 
    <body>
@@ -2964,7 +3022,13 @@
                      <div class="field"><label>Tanggal Sales</label><input id="salesDate" type="date" required></div>
                    </div><div class="actions"><button class="btn btn-primary" type="submit">Save Data</button><button class="btn btn-light" type="reset">Reset</button></div></form><p id="salesMessage" class="muted" style="font-size:11px"></p>
                 </div>
-                <div class="panel"><div class="section-head"><div><h3>Sales Data</h3><p class="muted">Riwayat sales berdasarkan toko dan tanggal.</p></div><div class="field" style="max-width:130px"><label>Tampilkan</label><select id="salesPageSize"><option>5</option><option>10</option><option>25</option><option>50</option><option>100</option></select></div></div>
+                <div class="panel"><div class="section-head sales-data-head"><div><h3>Sales Data</h3><p class="muted">Riwayat sales berdasarkan bulan dan tahun yang dipilih.</p></div><div class="sales-filter-bar">
+                     <div class="field sales-filter-field"><label for="salesFilterMonth">Select Month</label><select id="salesFilterMonth"><option value="01">January</option><option value="02">February</option><option value="03">March</option><option value="04">April</option><option value="05">May</option><option value="06">June</option><option value="07">July</option><option value="08">August</option><option value="09">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select></div>
+                     <div class="field sales-filter-field"><label for="salesFilterYear">Select Year</label><select id="salesFilterYear"></select></div>
+                     <button type="button" class="btn btn-primary sales-print-btn" id="printSalesPdf">🖨 Print PDF</button>
+                     <div class="field sales-page-size"><label for="salesPageSize">Tampilkan</label><select id="salesPageSize"><option>5</option><option>10</option><option>25</option><option>50</option><option>100</option></select></div>
+                   </div></div>
+                   <div id="salesFilterSummary" class="muted sales-filter-summary"></div>
                    <div class="table-wrap"><table><thead><tr><th>Tanggal Sales</th><th>Kode Store</th><th>Nama Store</th><th>Sales Value</th><th>Aksi</th></tr></thead><tbody id="salesTable"></tbody></table></div><div id="salesPagination" class="actions" style="justify-content:space-between"></div>
                 </div></section>
              <section id="accounting" class="page admin-only">
@@ -3149,6 +3213,28 @@
                         style="margin-top:8px">Kosongkan Keranjang</button>
                      <p id="checkoutMessage" style="font-size:11px"></p>
                   </div>
+               </div>
+               <div class="panel" style="margin-top:18px">
+                  <div class="section-head" style="align-items:flex-start">
+                     <div>
+                        <h3 style="margin-bottom:5px">Cancel Transaksi</h3>
+                        <p class="muted" style="margin:0;font-size:12px">Cari transaksi menggunakan nomor transaksi/kode invoice. Transaksi yang dibatalkan tetap tersimpan di laporan.</p>
+                     </div>
+                  </div>
+                  <div class="correction-grid" style="grid-template-columns:minmax(0,1fr) auto">
+                     <div class="field"><label>Kode / Nomor Transaksi</label><input id="cancelInvoiceSearch" autocomplete="off" placeholder="Masukkan kode transaksi / invoice"></div>
+                     <div class="field" style="align-self:end"><button id="cancelSearchBtn" class="btn btn-gold" type="button">Cari Transaksi</button></div>
+                  </div>
+                  <p id="cancelSearchMessage" class="muted" style="font-size:12px"></p>
+                  <div id="cancelTransactionDetails" class="hidden" style="margin-top:12px">
+                     <div id="cancelTransactionSummary" class="correction-summary"></div>
+                     <div class="field" style="margin-top:12px"><label>Alasan Cancel Transaksi (wajib)</label><textarea id="cancelReason" rows="2" maxlength="300" placeholder="Tuliskan alasan pembatalan transaksi secara jelas"></textarea></div>
+                     <div class="field"><label>Password Admin (wajib)</label><input id="cancelAdminPassword" type="password" autocomplete="new-password" placeholder="Masukkan password akun Admin"></div>
+                     <p class="muted" style="font-size:11px">Password diverifikasi langsung ke Firebase Authentication menggunakan akun Admin. Sesi kasir yang sedang aktif tidak diganti. Nilai pembayaran dibalik dalam laporan; pengembalian uang tunai atau refund QRIS secara fisik tetap dilakukan melalui metode pembayaran terkait.</p>
+                     <p id="cancelEligibilityMessage" class="muted" style="font-size:12px"></p>
+                     <div class="actions"><button id="cancelTransactionBtn" class="btn btn-danger" type="button">Batalkan Transaksi</button></div>
+                  </div>
+                  <p id="cancelActionMessage" style="font-size:12px"></p>
                </div>
             </section>
             <section id="history" class="page">
@@ -3407,8 +3493,8 @@ Gunakan kode promo ..."></textarea>
          <div id="zoomCaption" class="zoom-caption">Klik area gelap atau tombol × untuk menutup</div>
       </div>
       <script type="module">
-         import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-         import {getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+         import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+         import {getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence, inMemoryPersistence} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
          import {getFirestore, collection, doc, setDoc, addDoc, getDocs, getDoc, updateDoc, runTransaction, query, where, orderBy, limit, serverTimestamp, deleteDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
          /* 1) GANTI konfigurasi di bawah dengan Firebase Console > Project settings > Your apps.
@@ -3526,7 +3612,7 @@ Gunakan kode promo ..."></textarea>
          $('cashierToggle')?.addEventListener('click', () => {const group=$('cashierGroup'); const expanded=group.classList.toggle('expanded'); $('cashierToggle').setAttribute('aria-expanded',String(expanded));});
 
          async function loadAll() {try {const [p, t, pr] = await Promise.all([getDocs(collection(db, 'products')), getDocs(query(collection(db, 'transactions'), orderBy('createdAt', 'desc'))), getDocs(collection(db, 'promos'))]); products = p.docs.map(d => ({id: d.id, ...d.data()})); transactions = t.docs.map(d => ({id: d.id, ...d.data()})); promos = pr.docs.map(d => ({id: d.id, ...d.data()})).filter(x => x.active !== false); if (isAdminUser()) {const [c, bd, u, rm, prod, fg, wm, wp, st, sr, coh, coe, sup, po] = await Promise.allSettled([getDocs(collection(db, 'customers')), getDocs(query(collection(db, 'promoBlasts'), orderBy('createdAt', 'desc'))), getDocs(collection(db, 'uoms')), getDocs(collection(db, 'rawMaterials')), getDocs(collection(db, 'productionOrders')), getDocs(collection(db, 'finishGood')), getDocs(collection(db, 'wasteRawMaterials')), getDocs(collection(db, 'wasteProducts')), getDocs(collection(db, 'stores')), getDocs(query(collection(db, 'salesRecords'), orderBy('salesDate', 'desc'))), getDocs(collection(db, 'costOverheadMasters')), getDocs(collection(db, 'costOverheadExpenses')), getDocs(collection(db, 'suppliers')), getDocs(collection(db, 'purchaseOrders'))]); customers = c.status === 'fulfilled' ? c.value.docs.map(d => ({id: d.id, ...d.data()})) : []; if (c.status === 'fulfilled') {try {await migrateCustomerCodes(customers);} catch (migrationError) {console.warn('Migrasi nomor pelanggan tertunda:', migrationError);} } blastDrafts = bd.status === 'fulfilled' ? bd.value.docs.map(d => ({id: d.id, ...d.data()})) : []; uoms = u.status === 'fulfilled' ? u.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(a.code || '').localeCompare(String(b.code || ''))) : []; rawMaterials = rm.status === 'fulfilled' ? rm.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(a.code || '').localeCompare(String(b.code || ''))) : []; productionRecords = prod.status === 'fulfilled' ? prod.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.productionDate || '').localeCompare(String(a.productionDate || ''))) : []; finishGoodRecords = fg.status === 'fulfilled' ? fg.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.period || '').localeCompare(String(a.period || ''))) : []; wasteMaterialRecords = wm.status === 'fulfilled' ? wm.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.wasteDate || '').localeCompare(String(a.wasteDate || ''))) : []; wasteProductRecords = wp.status === 'fulfilled' ? wp.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.wasteDate || '').localeCompare(String(a.wasteDate || ''))) : []; stores = st.status === 'fulfilled' ? st.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => String(a.code || '').localeCompare(String(b.code || ''))) : []; salesRecords = sr.status === 'fulfilled' ? sr.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => String(b.salesDate || '').localeCompare(String(a.salesDate || ''))) : []; costOverheadMasters = coh.status === 'fulfilled' ? coh.value.docs.map(d => ({id:d.id,...d.data()})).sort((a,b)=>String(a.code||'').localeCompare(String(b.code||''))) : []; costOverheadExpenses = coe.status === 'fulfilled' ? coe.value.docs.map(d => ({id:d.id,...d.data()})).sort((a,b)=>String(b.postingDate||'').localeCompare(String(a.postingDate||''))) : []; supplierRecords = sup.status === 'fulfilled' ? sup.value.docs.map(d => ({id:d.id,...d.data()})).sort((a,b)=>String(a.code||'').localeCompare(String(b.code||''))) : []; purchaseOrderRecords = po.status === 'fulfilled' ? po.value.docs.map(d => ({id:d.id,...d.data()})).sort((a,b)=>String(b.purchaseDate||'').localeCompare(String(a.purchaseDate||''))) : []; if ([c, bd, u, rm, prod, fg, wm, wp, st, sr, coh, coe, sup, po].some(x => x.status === 'rejected')) console.warn('Sebagian data Management/Master tidak dapat dimuat. Periksa Firestore Rules.', c.reason || bd.reason || u.reason || rm.reason || prod.reason || fg.reason || wm.reason || wp.reason);} renderAll();} catch (e) {console.error(e); $('connectionState').textContent = 'Gagal memuat data';} }
-         function renderAll() {renderProducts(); renderStock(); renderPromoSettings(); renderUoms(); renderRawMaterials(); renderCostOverheadMasters(); updateUomOptions(); updatePromoOptions(); if (!$('historyStart').value && !$('historyEnd').value) setHistoryToday(); else applyHistoryFilter(); renderDashboard(); updateProductOptions(); renderCart(); renderCustomers(); renderBlastDrafts(); updateMRPProductOptions(); initMRPFilters(); renderMRPProduction(); initFGFilters(); renderFinishGood(); updateWasteMaterialOptions(); updateWasteProductOptions(); renderWasteMaterialTable(); renderWasteProductTable(); renderSuppliers(); renderPurchaseOrders(); renderStockBahanBaku(); renderStores(); renderSales(); updateSalesStoreOptions(); if (!$('soStart').value) initSOStockDates(); renderSOStock();}
+         function renderAll() {renderProducts(); renderStock(); renderPromoSettings(); renderUoms(); renderRawMaterials(); renderCostOverheadMasters(); updateUomOptions(); updatePromoOptions(); if (!$('historyStart').value && !$('historyEnd').value) setHistoryToday(); else applyHistoryFilter(); renderDashboard(); updateProductOptions(); renderCart(); renderCustomers(); renderBlastDrafts(); updateMRPProductOptions(); initMRPFilters(); renderMRPProduction(); initFGFilters(); renderFinishGood(); updateWasteMaterialOptions(); updateWasteProductOptions(); renderWasteMaterialTable(); renderWasteProductTable(); renderSuppliers(); renderPurchaseOrders(); renderStockBahanBaku(); renderStores(); initSalesDateFilters(); renderSales(); updateSalesStoreOptions(); if (!$('soStart').value) initSOStockDates(); renderSOStock();}
          // MARKETING: master store dan pencatatan sales tersimpan di Firestore.
           async function allocateStoreCode() {
              const ref = doc(db, 'masterCounters', 'store'); let code = '';
@@ -3563,9 +3649,47 @@ Gunakan kode promo ..."></textarea>
              $('storesTable').querySelectorAll('[data-edit-store]').forEach(b=>b.onclick=()=>{const x=stores.find(v=>v.id===b.dataset.editStore);if(!x)return;storeEditId=x.id;$('storeCode').value=x.code||x.id;$('storeName').value=x.name||'';$('storeAddress').value=x.address||'';$('storeContact').value=x.contact||'';$('storeForm').querySelector('[type="submit"]').textContent='Update Store';$('storeMessage').textContent='Mode edit: ubah data toko, lalu klik Update Store.';$('storeForm').scrollIntoView({behavior:'smooth',block:'start'});});
              $('storesTable').querySelectorAll('[data-delete-store]').forEach(b=>b.onclick=async()=>{const x=stores.find(v=>v.id===b.dataset.deleteStore);if(!x)return;if(!confirm(`Hapus Store ${x.code||x.id} - ${x.name||''}? Riwayat Input Sales yang sudah tersimpan tidak ikut dihapus.`))return;try{await deleteDoc(doc(db,'stores',x.id));if(storeEditId===x.id)resetStoreForm();await loadAll();message('storeMessage','Data Store berhasil dihapus. Riwayat sales tetap tersimpan.','success');}catch(err){message('storeMessage','Gagal menghapus Store: '+friendlyError(err),'danger');}});
           }
+          function selectedSalesRows() {
+             const month=$('salesFilterMonth')?.value || String(new Date().getMonth()+1).padStart(2,'0');
+             const year=$('salesFilterYear')?.value || String(new Date().getFullYear());
+             const prefix=`${year}-${month}`;
+             return salesRecords.filter(x=>String(x.salesDate||'').startsWith(prefix));
+          }
+          function initSalesDateFilters() {
+             // Filter selalu mengikuti tanggal live system saat halaman dimuat.
+             const now = new Date();
+             const month = String(now.getMonth() + 1).padStart(2, '0');
+             const currentYear = now.getFullYear();
+             const monthSelect = $('salesFilterMonth');
+             const yearSelect = $('salesFilterYear');
+             if (!monthSelect || !yearSelect) return;
+             monthSelect.value = month;
+
+             // Daftar tahun tersedia dari 2026 sampai 2035.
+             const years = [];
+             for (let y = 2026; y <= 2035; y++) years.push(y);
+             if (!years.includes(currentYear)) years.push(currentYear);
+             years.sort((a, b) => b - a);
+             yearSelect.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join('');
+             yearSelect.value = String(currentYear);
+          }
+          function printSalesPdf() {
+             const rows=selectedSalesRows(), monthName=$('salesFilterMonth').selectedOptions[0]?.textContent||'', year=$('salesFilterYear').value||'';
+             const total=rows.reduce((sum,x)=>sum+(Number(x.salesValue)||0),0);
+             const money=n=>'Rp '+(Number(n)||0).toLocaleString('id-ID');
+             const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+             const body=rows.map((x,i)=>`<tr><td>${i+1}</td><td>${esc(x.salesDate||'-')}</td><td>${esc(x.storeCode||'-')}</td><td>${esc(x.storeName||'-')}</td><td class="num">${money(x.salesValue)}</td></tr>`).join('');
+             const win=window.open('','_blank','width=1000,height=750');
+             if(!win){alert('Popup diblokir browser. Izinkan popup untuk mencetak PDF.');return;}
+             win.document.write(`<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>Laporan Input Sales ${esc(monthName)} ${esc(year)}</title><style>body{font:12px Arial,sans-serif;color:#222;padding:28px}h1{font-size:20px;margin:0 0 5px}p{color:#555;margin:4px 0 18px}.meta{display:flex;justify-content:space-between;margin:14px 0}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:9px;text-align:left}th{background:#f1ece3}.num{text-align:right}.total{font-weight:bold;text-align:right;margin-top:14px}.foot{margin-top:35px;text-align:right;color:#777;font-size:10px}@media print{body{padding:0}@page{size:A4 portrait;margin:15mm}}</style></head><body><h1>ROTI ANGET SUBUH</h1><p>Sales Marketing Report</p><div class="meta"><strong>Periode: ${esc(monthName)} ${esc(year)}</strong><span>Total Data: ${rows.length}</span></div><table><thead><tr><th>No</th><th>Tanggal Sales</th><th>Kode Store</th><th>Nama Store</th><th>Sales Value</th></tr></thead><tbody>${body||'<tr><td colspan="5" style="text-align:center">Tidak ada data pada periode ini.</td></tr>'}</tbody></table><div class="total">Total Sales: ${money(total)}</div><div class="foot">Dicetak pada ${new Date().toLocaleString('id-ID')}</div><script>window.onload=()=>{window.focus();window.print();};<\/script></body></html>`);
+             win.document.close();
+          }
           function renderSales() {
              if (!$('salesTable')) return;
-             renderPagedTable(salesRecords,'salesPageSize','salesTable','salesPagination',x=>[escapeHtml(x.salesDate||''),`<b>${escapeHtml(x.storeCode||'')}</b>`,escapeHtml(x.storeName||''),`<b>${rupiah(x.salesValue)}</b>`,`<div class="actions" style="gap:5px"><button type="button" class="btn btn-light" data-edit-sales="${escapeHtml(x.id)}">Edit</button><button type="button" class="btn btn-danger" data-delete-sales="${escapeHtml(x.id)}">Delete</button></div>`],'sales',5);
+             const filteredSales=selectedSalesRows();
+             const total=filteredSales.reduce((sum,x)=>sum+(Number(x.salesValue)||0),0);
+             $('salesFilterSummary').textContent=`${filteredSales.length} data • Total Sales: ${rupiah(total)}`;
+             renderPagedTable(filteredSales,'salesPageSize','salesTable','salesPagination',x=>[escapeHtml(x.salesDate||''),`<b>${escapeHtml(x.storeCode||'')}</b>`,escapeHtml(x.storeName||''),`<b>${rupiah(x.salesValue)}</b>`,`<div class="actions" style="gap:5px"><button type="button" class="btn btn-light" data-edit-sales="${escapeHtml(x.id)}">Edit</button><button type="button" class="btn btn-danger" data-delete-sales="${escapeHtml(x.id)}">Delete</button></div>`],'sales',5);
              $('salesTable').querySelectorAll('[data-edit-sales]').forEach(b=>b.onclick=()=>{const x=salesRecords.find(v=>v.id===b.dataset.editSales);if(!x)return;salesEditId=x.id;updateSalesStoreOptions(x.storeId||'');$('salesStore').value=x.storeId||'';$('salesValue').value=Number(x.salesValue)||'';$('salesDate').value=x.salesDate||today();$('salesForm').querySelector('[type="submit"]').textContent='Update Sales';$('salesMessage').textContent='Mode edit: ubah data sales, lalu klik Update Sales.';$('salesForm').scrollIntoView({behavior:'smooth',block:'start'});});
              $('salesTable').querySelectorAll('[data-delete-sales]').forEach(b=>b.onclick=async()=>{const x=salesRecords.find(v=>v.id===b.dataset.deleteSales);if(!x)return;if(!confirm(`Hapus data sales ${x.storeCode||''} tanggal ${x.salesDate||''} senilai ${rupiah(x.salesValue)}?`))return;try{await deleteDoc(doc(db,'salesRecords',x.id));if(salesEditId===x.id)resetSalesForm();await loadAll();message('salesMessage','Data sales berhasil dihapus.','success');}catch(err){message('salesMessage','Gagal menghapus sales: '+friendlyError(err),'danger');}});
           }
@@ -3585,7 +3709,7 @@ Gunakan kode promo ..."></textarea>
              catch(err){message('salesMessage','Gagal menyimpan sales: '+friendlyError(err),'danger');}
           };
           $('salesForm').addEventListener('reset',()=>setTimeout(()=>{if(!salesEditId){$('salesDate').value=today();updateSalesStoreOptions();}},0));
-          $('storePageSize').onchange=()=>{storePage=1;renderStores();}; $('salesPageSize').onchange=()=>{salesPage=1;renderSales();}; $('salesDate').value=today();
+          $('storePageSize').onchange=()=>{storePage=1;renderStores();}; $('salesPageSize').onchange=()=>{salesPage=1;renderSales();}; $('salesFilterMonth').onchange=()=>{salesPage=1;renderSales();}; $('salesFilterYear').onchange=()=>{salesPage=1;renderSales();}; $('printSalesPdf').onclick=printSalesPdf; $('salesDate').value=today();
 
           // MASTER UOM & BAHAN BAKU: data disimpan pada koleksi Firestore terpisah.
          function nextMasterCode(rows, prefix) {let max = 0; rows.forEach(x => {const m = String(x.code || '').match(new RegExp('^' + prefix + '(\\d+)$', 'i')); if (m) max = Math.max(max, Number(m[1]) || 0);}); return prefix + String(max + 1).padStart(3, '0');}
@@ -3927,6 +4051,99 @@ Gunakan kode promo ..."></textarea>
          $('printReceiptBtn').onclick = () => printDocument('Struk ' + $('receiptContent').innerText.split('\n')[2], $('receiptContent').innerHTML);
          $('closeReceiptBtn').onclick = () => $('receiptModal').classList.remove('open');
          $('receiptModal').addEventListener('click', e => {if (e.target === $('receiptModal')) $('receiptModal').classList.remove('open');});
+         // CANCEL TRANSAKSI: transaksi tidak dihapus; stok dan nilai penjualan dibalik secara atomik.
+         let cancellationTarget = null;
+         const paidTransactionStatuses = ['PAID', 'PAID CASH', 'PAID QRIS'];
+         function findCancellationTransaction(value) {
+            const key = String(value || '').trim().toUpperCase();
+            if (!key) return null;
+            return transactions.find(t => String(t.invoice || '').trim().toUpperCase() === key || String(t.id || '').trim().toUpperCase() === key || String(t.id || '').slice(-8).toUpperCase() === key);
+         }
+         function showCancellationTransaction(t) {
+            cancellationTarget = t || null;
+            const box = $('cancelTransactionDetails');
+            if (!t) {box.classList.add('hidden'); $('cancelTransactionSummary').innerHTML = ''; return;}
+            const status = String(t.status || '').toUpperCase();
+            const canCancel = paidTransactionStatuses.includes(status) && !t.cancelledAt && !t.cancellation;
+            const itemRows = (t.items || []).map(it => `<tr><td>${escapeHtml(it.name || it.productName || 'Produk')}</td><td style="text-align:center">${Number(it.qty) || 0}</td><td style="text-align:right">${rupiah(it.subtotal ?? ((Number(it.price) || 0) * (Number(it.qty) || 0)))}</td></tr>`).join('');
+            $('cancelTransactionSummary').innerHTML = `<b>No. Transaksi:</b> ${escapeHtml(t.invoice || t.id)}<br><b>Tanggal:</b> ${escapeHtml(formatDate(t.createdAt))}<br><b>Pelanggan:</b> ${escapeHtml(t.customerName || '-')}<br><b>Metode:</b> ${escapeHtml(t.method || '-')}<br><b>Status:</b> <b>${escapeHtml(t.status || '-')}</b><div class="table-wrap" style="margin-top:10px"><table><thead><tr><th>Item</th><th>Qty</th><th>Subtotal</th></tr></thead><tbody>${itemRows || '<tr><td colspan="3">Tidak ada detail item.</td></tr>'}</tbody></table></div><div style="text-align:right;margin-top:10px"><b>Total Pembayaran: ${rupiah(t.total)}</b></div>`;
+            $('cancelReason').value = ''; $('cancelAdminPassword').value = '';
+            $('cancelTransactionBtn').disabled = !canCancel;
+            $('cancelEligibilityMessage').textContent = canCancel ? 'Transaksi berstatus lunas dan dapat dibatalkan setelah alasan serta password Admin diverifikasi.' : status === 'CANCELLED' || t.cancelledAt || t.cancellation ? 'Transaksi ini sudah dibatalkan. Pembatalan tidak dapat dilakukan dua kali.' : 'Transaksi tidak berstatus lunas sehingga tidak dapat dibatalkan melalui fitur ini.';
+            box.classList.remove('hidden');
+         }
+         $('cancelSearchBtn').onclick = () => {
+            const key = $('cancelInvoiceSearch').value.trim();
+            $('cancelActionMessage').textContent = '';
+            if (!key) {message('cancelSearchMessage', 'Masukkan kode/nomor transaksi terlebih dahulu.', 'danger'); showCancellationTransaction(null); return;}
+            const found = findCancellationTransaction(key);
+            if (!found) {message('cancelSearchMessage', 'Transaksi tidak ditemukan. Periksa kembali kode transaksi.', 'danger'); showCancellationTransaction(null); return;}
+            message('cancelSearchMessage', 'Transaksi ditemukan. Periksa detail sebelum melanjutkan.', 'success');
+            showCancellationTransaction(found);
+         };
+         $('cancelInvoiceSearch').addEventListener('keydown', e => {if (e.key === 'Enter') {$('cancelSearchBtn').click();}});
+         $('cancelTransactionBtn').onclick = async () => {
+            const target = cancellationTarget;
+            if (!target) return;
+            const reason = $('cancelReason').value.trim(), adminPassword = $('cancelAdminPassword').value;
+            if (!reason) {message('cancelActionMessage', 'Alasan pembatalan wajib diisi.', 'danger'); $('cancelReason').focus(); return;}
+            if (!adminPassword) {message('cancelActionMessage', 'Password Admin wajib diisi.', 'danger'); $('cancelAdminPassword').focus(); return;}
+            if (!confirm(`Yakin membatalkan transaksi ${target.invoice || target.id}? Stok item akan dikembalikan dan nilai penjualan dibalik dalam laporan.`)) return;
+            const btn = $('cancelTransactionBtn'); btn.disabled = true; btn.textContent = 'MEMVERIFIKASI & MEMBATALKAN…';
+            let adminApp = null, adminAuth = null;
+            try {
+               // Auth Admin terpisah dan in-memory: sesi kasir utama tetap aktif.
+               adminApp = initializeApp(firebaseConfig, 'admin-cancel-' + Date.now() + '-' + Math.floor(Math.random() * 100000));
+               adminAuth = getAuth(adminApp);
+               await setPersistence(adminAuth, inMemoryPersistence);
+               const adminCredential = await signInWithEmailAndPassword(adminAuth, ADMIN_EMAIL, adminPassword);
+               const adminUser = adminCredential.user;
+               if (String(adminUser.email || '').trim().toLowerCase() !== ADMIN_EMAIL) throw new Error('Akun yang digunakan bukan akun Admin.');
+               const adminDb = getFirestore(adminApp);
+               const txRef = doc(adminDb, 'transactions', target.id);
+               const auditRef = doc(collection(adminDb, 'transactions', target.id, 'cancellations'));
+               await runTransaction(adminDb, async tx => {
+                  const txSnap = await tx.get(txRef);
+                  if (!txSnap.exists()) throw new Error('Transaksi tidak ditemukan di database.');
+                  const live = txSnap.data(), liveStatus = String(live.status || '').toUpperCase();
+                  if (!paidTransactionStatuses.includes(liveStatus)) throw new Error(liveStatus === 'CANCELLED' || live.cancelledAt ? 'Transaksi sudah dibatalkan sebelumnya.' : 'Status transaksi sudah berubah dan tidak dapat dibatalkan.');
+                  const qtyByProduct = new Map();
+                  (Array.isArray(live.items) ? live.items : []).forEach(item => {
+                     const productId = String(item.id || item.productId || '');
+                     const qty = Number(item.qty) || 0;
+                     if (!productId || !Number.isFinite(qty) || qty <= 0) throw new Error('Detail item transaksi tidak valid; pembatalan dihentikan agar stok tidak salah.');
+                     qtyByProduct.set(productId, (qtyByProduct.get(productId) || 0) + qty);
+                  });
+                  if (!qtyByProduct.size) throw new Error('Transaksi tidak memiliki detail item untuk pengembalian stok.');
+                  const productRows = [];
+                  for (const [productId, qty] of qtyByProduct.entries()) {
+                     const productRef = doc(adminDb, 'products', productId), productSnap = await tx.get(productRef);
+                     if (!productSnap.exists()) throw new Error('Data produk tidak ditemukan sehingga stok tidak dapat dikembalikan: ' + productId);
+                     productRows.push({productId, qty, ref: productRef, snap: productSnap, oldStock: Number(productSnap.data().stock) || 0});
+                  }
+                  const stockAdjustments = productRows.map(row => ({productId: row.productId, productName: row.snap.data().name || '', qtyReturned: row.qty, oldStock: row.oldStock, newStock: row.oldStock + row.qty}));
+                  productRows.forEach(row => tx.update(row.ref, {stock: row.oldStock + row.qty, updatedAt: serverTimestamp()}));
+                  const originalTotal = Number(live.total) || 0, originalStatus = live.status || '';
+                  const cancellationData = {reason, originalStatus, amountReversed: originalTotal, paymentMethod: live.method || null, accountingStatus: 'REVENUE_REVERSED', cancelledAt: serverTimestamp(), cancelledByEmail: adminUser.email || ADMIN_EMAIL, cancelledByUid: adminUser.uid};
+                  tx.update(txRef, {status: 'CANCELLED', cancellation: cancellationData, cancelReason: reason, cancelledAt: serverTimestamp(), cancelledByEmail: adminUser.email || ADMIN_EMAIL, cancelledByUid: adminUser.uid, amountReversed: originalTotal, accountingReversalStatus: 'REVENUE_REVERSED', updatedAt: serverTimestamp()});
+                  tx.set(auditRef, {transactionId: target.id, invoice: live.invoice || target.id.slice(-8).toUpperCase(), reason, originalStatus, originalTotal, paymentMethod: live.method || null, accountingStatus: 'REVENUE_REVERSED', adminEmail: adminUser.email || ADMIN_EMAIL, adminUid: adminUser.uid, stockAdjustments, createdAt: serverTimestamp()});
+               });
+               $('cancelAdminPassword').value = '';
+               message('cancelActionMessage', 'Transaksi berhasil dibatalkan. Stok telah dikembalikan dan nilai penjualan dibalik dalam pencatatan.', 'success');
+               await loadAll();
+               const updated = transactions.find(x => x.id === target.id);
+               if (updated) showCancellationTransaction(updated);
+            } catch (err) {
+               console.error('Cancel transaksi:', err);
+               const errText = err?.code === 'auth/invalid-credential' || err?.code === 'auth/wrong-password' || err?.code === 'auth/user-not-found' ? 'Password Admin tidak sesuai atau akun Admin tidak ditemukan.' : friendlyError(err);
+               message('cancelActionMessage', 'Pembatalan gagal: ' + errText, 'danger');
+            } finally {
+               if (adminAuth?.currentUser) {try {await signOut(adminAuth);} catch (signOutError) {console.warn('Sesi verifikasi Admin tidak dapat ditutup:', signOutError);}}
+               if (adminApp) {try {await deleteApp(adminApp);} catch (deleteError) {console.warn('Aplikasi verifikasi Admin tidak dapat ditutup:', deleteError);}}
+               btn.disabled = !cancellationTarget || !paidTransactionStatuses.includes(String(cancellationTarget.status || '').toUpperCase()) || !!cancellationTarget.cancelledAt || !!cancellationTarget.cancellation;
+               btn.textContent = 'Batalkan Transaksi';
+            }
+         };
          function transactionDateKey(t) {const d = t.createdAt?.toDate ? t.createdAt.toDate() : (t.date?.toDate ? t.date.toDate() : (t.date ? new Date(t.date) : null)); if (!d || Number.isNaN(d.getTime())) return ''; return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;}
          let filteredTransactions = []; let historyFilterActive = true;
          let historyPageSize = 10, historyCurrentPage = 1, customerPageSize = 10, customerCurrentPage = 1;
@@ -3940,7 +4157,7 @@ Gunakan kode promo ..."></textarea>
             const list = filteredTransactions.slice().sort((a, b) => transactionDateKey(b).localeCompare(transactionDateKey(a)));
             const totalPages = Math.max(1, Math.ceil(list.length / historyPageSize)); historyCurrentPage = Math.min(historyCurrentPage, totalPages);
             const start = (historyCurrentPage - 1) * historyPageSize, visible = list.slice(start, start + historyPageSize);
-            $('historyTable').innerHTML = visible.length ? visible.map(t => {const items = t.items || []; const itemNames = items.map(x => `<div>${escapeHtml(x.name || x.productName || 'Produk')}</div>`).join(''); const itemQty = items.map(x => `<div style="font-variant-numeric:tabular-nums">${Number(x.qty) || 0}</div>`).join(''); const corrected = Number(t.correctionCount || 0) > 0 || !!t.correctedAt; const reason = String(t.lastCorrectionReason || '').trim(); const auditText = corrected ? `Alasan Koreksi: ${reason || 'Alasan tidak tersedia pada data koreksi lama'}${t.correctedAt ? ' • ' + formatCorrectionDate(t.correctedAt) : ''}` : 'Transaksi Normal'; return `<tr><td>${formatDate(t.createdAt)}</td><td>${escapeHtml(t.invoice || t.id.slice(-8))}</td><td><div style="display:grid;gap:5px">${itemNames || '-'}</div></td><td><div style="display:grid;gap:5px;text-align:center;font-weight:700">${itemQty || '-'}</div></td><td><span class="tag">${escapeHtml(t.method || '')}</span></td><td><small>${escapeHtml(t.status || '')}</small></td><td>${rupiah(t.total)}</td><td><button class="btn btn-light" data-receipt="${t.id}" style="padding:6px 9px">Lihat</button></td><td><button class="btn btn-gold" data-correct="${t.id}" style="padding:6px 9px">Koreksi</button></td><td>${corrected ? `<span class="tag" style="background:#fff0d8;color:#80520b">SUDAH DIKOREKSI</span><br><small>${escapeHtml(auditText)}</small>` : '<small style="color:#888">Transaksi Normal</small>'}</td></tr>`;}).join('') : '<tr><td colspan="10" class="empty">Tidak ada transaksi pada rentang tanggal yang dipilih.</td></tr>';
+            $('historyTable').innerHTML = visible.length ? visible.map(t => {const items = t.items || []; const itemNames = items.map(x => `<div>${escapeHtml(x.name || x.productName || 'Produk')}</div>`).join(''); const itemQty = items.map(x => `<div style="font-variant-numeric:tabular-nums">${Number(x.qty) || 0}</div>`).join(''); const corrected = Number(t.correctionCount || 0) > 0 || !!t.correctedAt; const cancelled = String(t.status || '').toUpperCase() === 'CANCELLED' || !!t.cancelledAt || !!t.cancellation; const reason = String(t.lastCorrectionReason || '').trim(); const cancelReason = String(t.cancelReason || t.cancellation?.reason || '').trim(); const auditText = cancelled ? `DIBATALKAN • Alasan: ${cancelReason || 'Tidak tersedia'}${t.cancelledAt ? ' • ' + formatCorrectionDate(t.cancelledAt) : ''}` : corrected ? `Alasan Koreksi: ${reason || 'Alasan tidak tersedia pada data koreksi lama'}${t.correctedAt ? ' • ' + formatCorrectionDate(t.correctedAt) : ''}` : 'Transaksi Normal'; return `<tr><td>${formatDate(t.createdAt)}</td><td>${escapeHtml(t.invoice || t.id.slice(-8))}</td><td><div style="display:grid;gap:5px">${itemNames || '-'}</div></td><td><div style="display:grid;gap:5px;text-align:center;font-weight:700">${itemQty || '-'}</div></td><td><span class="tag">${escapeHtml(t.method || '')}</span></td><td><small>${escapeHtml(t.status || '')}</small></td><td>${rupiah(t.total)}</td><td><button class="btn btn-light" data-receipt="${t.id}" style="padding:6px 9px">Lihat</button></td><td><button class="btn btn-gold" data-correct="${t.id}" style="padding:6px 9px" ${cancelled ? 'disabled title="Transaksi sudah dibatalkan"' : ''}>Koreksi</button></td><td>${cancelled ? `<span class="tag" style="background:#fde8e7;color:#9b2c25">DIBATALKAN</span><br><small>${escapeHtml(auditText)}</small>` : corrected ? `<span class="tag" style="background:#fff0d8;color:#80520b">SUDAH DIKOREKSI</span><br><small>${escapeHtml(auditText)}</small>` : '<small style="color:#888">Transaksi Normal</small>'}</td></tr>`;}).join('') : '<tr><td colspan="10" class="empty">Tidak ada transaksi pada rentang tanggal yang dipilih.</td></tr>';
             $('historyCount').textContent = list.length; $('historyRevenue').textContent = rupiah(list.filter(t => ['PAID', 'PAID CASH', 'PAID QRIS'].includes(String(t.status || '').toUpperCase())).reduce((sum, t) => sum + (Number(t.total) || 0), 0));
             $('historyPagination').innerHTML = `<span>Menampilkan ${list.length ? start + 1 : 0}–${Math.min(start + historyPageSize, list.length)} dari ${list.length} transaksi sesuai tanggal filter</span><div class="pagination-actions"><button class="btn btn-light" id="historyPrev" type="button" ${historyCurrentPage <= 1 ? 'disabled' : ''}>‹ Sebelumnya</button><span>Halaman ${historyCurrentPage} / ${totalPages}</span><button class="btn btn-light" id="historyNext" type="button" ${historyCurrentPage >= totalPages ? 'disabled' : ''}>Berikutnya ›</button></div>`;
             $('historyPrev').onclick = () => {if (historyCurrentPage > 1) {historyCurrentPage--; renderHistory();} }; $('historyNext').onclick = () => {if (historyCurrentPage < totalPages) {historyCurrentPage++; renderHistory();} };
@@ -3961,7 +4178,7 @@ Gunakan kode promo ..."></textarea>
          function correctionInvoiceValue(t) {return String(t.invoice || t.id || '').trim().toUpperCase();}
          function openCorrectionById(id) {
             if (!isAdminUser()) {alert('Menu koreksi hanya dapat digunakan Admin.'); return;}
-            const t = transactions.find(x => x.id === id); if (!t) {alert('Transaksi tidak ditemukan.'); return;}
+            const t = transactions.find(x => x.id === id); if (!t) {alert('Transaksi tidak ditemukan.'); return;} if (String(t.status || '').toUpperCase() === 'CANCELLED' || t.cancelledAt || t.cancellation) {alert('Transaksi yang sudah dibatalkan tidak dapat dikoreksi kembali.'); return;}
             correctionTransaction = t; $('correctionInvoice').value = correctionInvoiceValue(t); $('correctionEditor').classList.remove('hidden'); $('correctionReason').value = ''; $('correctionMessage').textContent = '';
             $('correctionMeta').innerHTML = `<b>No. Transaksi:</b> ${escapeHtml(correctionInvoiceValue(t))}<br><b>Tanggal:</b> ${escapeHtml(formatDate(t.createdAt))}<br><b>Pelanggan:</b> ${escapeHtml(t.customerName || '-')}<br><b>Metode / Status:</b> ${escapeHtml(t.method || '-')} / ${escapeHtml(t.status || '-')}`;
             $('correctionItems').innerHTML = ''; (t.items || []).forEach(item => addCorrectionRow(item));
@@ -4047,12 +4264,14 @@ Gunakan kode promo ..."></textarea>
          };
          $('printReportBtn').onclick = () => {
             const from = $('historyStart').value, to = $('historyEnd').value; const list = filteredTransactions;
-            const paid = list.filter(t => ['PAID', 'PAID CASH', 'PAID QRIS'].includes(t.status));
-            const rows = list.map(t => {const items = t.items || []; const corrected = Number(t.correctionCount || 0) > 0 || !!t.correctedAt; const reason = String(t.lastCorrectionReason || '').trim(); const auditText = corrected ? `Alasan Koreksi: ${reason || 'Alasan tidak tersedia pada data koreksi lama'}${t.correctedAt ? ' • ' + formatCorrectionDate(t.correctedAt) : ''}` : 'Transaksi Normal'; return `<tr><td>${escapeHtml(formatDate(t.createdAt))}</td><td>${escapeHtml(t.invoice || t.id.slice(-8))}</td><td>${items.map(x => escapeHtml(x.name || x.productName || 'Produk')).join('<br>')}</td><td style="text-align:center">${items.map(x => Number(x.qty) || 0).join('<br>')}</td><td>${escapeHtml(t.customerName || '-')}<br>${escapeHtml(t.customerPhone || '')}</td><td>${escapeHtml(t.promoName || '-')} ${t.discount ? `(${Number(t.discountPercent) || 0}% / ${rupiah(t.discount)})` : ''}</td><td>${escapeHtml(t.method || '')}</td><td>${escapeHtml(t.status || '')}</td><td>${rupiah(t.total)}</td><td>${escapeHtml(auditText)}</td></tr>`;}).join('');
+            const paid = list.filter(t => ['PAID', 'PAID CASH', 'PAID QRIS'].includes(String(t.status || '').toUpperCase()));
+            const cancelledList = list.filter(t => String(t.status || '').toUpperCase() === 'CANCELLED' || !!t.cancelledAt || !!t.cancellation);
+            const totalCancelled = cancelledList.reduce((sum, t) => sum + (Number(t.amountReversed ?? t.total) || 0), 0);
+            const rows = list.map(t => {const items = t.items || []; const corrected = Number(t.correctionCount || 0) > 0 || !!t.correctedAt; const cancelled = String(t.status || '').toUpperCase() === 'CANCELLED' || !!t.cancelledAt || !!t.cancellation; const reason = String(t.lastCorrectionReason || '').trim(); const cancelReason = String(t.cancelReason || t.cancellation?.reason || '').trim(); const auditText = cancelled ? `DIBATALKAN • Alasan: ${cancelReason || 'Tidak tersedia'}` : corrected ? `Alasan Koreksi: ${reason || 'Alasan tidak tersedia pada data koreksi lama'}${t.correctedAt ? ' • ' + formatCorrectionDate(t.correctedAt) : ''}` : 'Transaksi Normal'; return `<tr><td>${escapeHtml(formatDate(t.createdAt))}</td><td>${escapeHtml(t.invoice || t.id.slice(-8))}</td><td>${items.map(x => escapeHtml(x.name || x.productName || 'Produk')).join('<br>')}</td><td style="text-align:center">${items.map(x => Number(x.qty) || 0).join('<br>')}</td><td>${escapeHtml(t.customerName || '-')}<br>${escapeHtml(t.customerPhone || '')}</td><td>${escapeHtml(t.promoName || '-')} ${t.discount ? `(${Number(t.discountPercent) || 0}% / ${rupiah(t.discount)})` : ''}</td><td>${escapeHtml(t.method || '')}</td><td>${escapeHtml(t.status || '')}</td><td>${rupiah(t.total)}</td><td>${escapeHtml(auditText)}</td></tr>`;}).join('');
             const totalLunas = paid.reduce((s, t) => s + (Number(t.total) || 0), 0);
             const totalQris = paid.filter(t => t.method === 'QRIS').reduce((s, t) => s + (Number(t.total) || 0), 0);
             const totalCash = paid.filter(t => t.method === 'CASH').reduce((s, t) => s + (Number(t.total) || 0), 0);
-            const body = `<h1>ROTI ANGET SUBUH</h1><h2>LAPORAN TRANSAKSI PENJUALAN</h2><p class="center">Periode: ${from || 'Tanggal awal tidak dibatasi'} s/d ${to || 'Tanggal akhir tidak dibatasi'}</p><p>Jumlah transaksi: <b>${list.length}</b> | Transaksi lunas: <b>${paid.length}</b></p><table><thead><tr><th>Tanggal</th><th>No. Transaksi</th><th>Item</th><th>Qty</th><th>Pelanggan</th><th>Promo / Diskon</th><th>Metode</th><th>Status</th><th>Total</th><th>Audit / Keterangan</th></tr></thead><tbody>${rows || '<tr><td colspan="10">Tidak ada transaksi</td></tr>'}</tbody></table><div class="totals" style="text-align:left;max-width:420px;margin-left:auto;line-height:1.9"><div><b>Total penjualan lunas:</b> <span style="float:right">${rupiah(totalLunas)}</span></div><div>Pembayaran QRIS <span style="float:right">${rupiah(totalQris)}</span></div><div>Pembayaran CASH <span style="float:right">${rupiah(totalCash)}</span></div></div><p class="small">Rincian pembayaran dipisahkan berdasarkan metode untuk membantu pencocokan setoran kas. Pembayaran QRIS dan CASH dihitung sebagai transaksi lunas setelah diperiksa.</p>`;
+            const body = `<h1>ROTI ANGET SUBUH</h1><h2>LAPORAN TRANSAKSI PENJUALAN</h2><p class="center">Periode: ${from || 'Tanggal awal tidak dibatasi'} s/d ${to || 'Tanggal akhir tidak dibatasi'}</p><p>Jumlah transaksi: <b>${list.length}</b> | Transaksi lunas: <b>${paid.length}</b> | Transaksi dibatalkan: <b>${cancelledList.length}</b></p><table><thead><tr><th>Tanggal</th><th>No. Transaksi</th><th>Item</th><th>Qty</th><th>Pelanggan</th><th>Promo / Diskon</th><th>Metode</th><th>Status</th><th>Total</th><th>Audit / Keterangan</th></tr></thead><tbody>${rows || '<tr><td colspan="10">Tidak ada transaksi</td></tr>'}</tbody></table><div class="totals" style="text-align:left;max-width:420px;margin-left:auto;line-height:1.9"><div><b>Total penjualan lunas:</b> <span style="float:right">${rupiah(totalLunas)}</span></div><div><b>Total nilai transaksi dibatalkan (pembalik):</b> <span style="float:right">${rupiah(totalCancelled)}</span></div><div>Pembayaran QRIS <span style="float:right">${rupiah(totalQris)}</span></div><div>Pembayaran CASH <span style="float:right">${rupiah(totalCash)}</span></div></div><p class="small">Rincian pembayaran dipisahkan berdasarkan metode untuk membantu pencocokan setoran kas. Pembayaran QRIS dan CASH dihitung sebagai transaksi lunas setelah diperiksa.</p>`;
             printDocument('Laporan Transaksi Bakery', body);
          };
 
