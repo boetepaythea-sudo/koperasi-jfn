@@ -2280,6 +2280,17 @@
             font-size: 11px;
             font-weight: 700
          }
+         .brand-notice{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(20,25,31,.72);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);opacity:1;transition:opacity .25s ease}
+         .brand-notice.hidden{display:none}
+         .brand-notice-card{width:min(440px,100%);padding:38px 30px 30px;text-align:center;border:1px solid rgba(197,157,91,.55);border-radius:22px;background:linear-gradient(145deg,#fffdf8,#f4ecdf);box-shadow:0 24px 80px rgba(0,0,0,.3);animation:brandNoticeIn .35s ease both}
+         .brand-notice-mark{width:58px;height:58px;margin:0 auto 17px;display:grid;place-items:center;border-radius:18px;background:linear-gradient(145deg,#b58a4b,#e2c48e);color:#fff;font-weight:900;letter-spacing:1px;box-shadow:0 8px 22px rgba(153,111,48,.25)}
+         .brand-notice-kicker{font-size:11px;font-weight:800;letter-spacing:3px;color:#9a753f}
+         .brand-notice-card h2{margin:12px 0 9px;color:#28251f;font-size:clamp(22px,5vw,29px);line-height:1.2}
+         .brand-notice-card p{margin:0;color:#645b4e;font-size:15px;line-height:1.6;overflow-wrap:anywhere}
+         .brand-notice-line{height:1px;width:64px;margin:23px auto 14px;background:linear-gradient(90deg,transparent,#b58a4b,transparent)}
+         .brand-notice-card small{font-size:9px;letter-spacing:2px;color:#9b8a70}
+         @keyframes brandNoticeIn{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+         @media(max-width:480px){.brand-notice-card{padding:32px 22px 25px;border-radius:18px}}
       </style>
    </head>
 
@@ -2327,6 +2338,16 @@
             </div>
          </div>
       </section>
+      <div id="brandNotice" class="brand-notice hidden" role="status" aria-live="polite" aria-modal="true">
+         <div class="brand-notice-card">
+            <div class="brand-notice-mark">RAS</div>
+            <div class="brand-notice-kicker">ROTI ANGET SUBUH</div>
+            <h2 id="brandNoticeTitle">Selamat Datang</h2>
+            <p id="brandNoticeMessage"></p>
+            <div class="brand-notice-line"></div>
+            <small>BAKERY • POINT OF SALE</small>
+         </div>
+      </div>
       <div id="appScreen" class="app hidden">
          <aside id="sidebar" class="sidebar">
             <div class="brand">ROTI <span style="color:var(--gold2)">ANGET SUBUH</span><small>POINT OF SALE</small>
@@ -2353,8 +2374,7 @@
                         Waste</button></div>
                </div>
                <div class="nav-group admin-only" id="marketingGroup"><button type="button" class="nav-parent" id="marketingToggle" aria-expanded="false" aria-controls="marketingChildren"><span class="ico">▧</span> Marketing <span class="nav-chevron">▼</span></button><div class="nav-children" id="marketingChildren"><button class="nav-sub" data-page="addStore"><span class="sub-dot">—</span> Add Store</button><button class="nav-sub" data-page="inputSales"><span class="sub-dot">—</span> Input Sales</button></div></div>
-               <button class="admin-only" data-page="stock"><span class="ico">▤</span> Input Stock</button>
-               <button data-page="pos"><span class="ico">▣</span> Menu Kasir</button>
+               <div class="nav-group" id="cashierGroup"><button type="button" class="nav-parent" id="cashierToggle" aria-expanded="false" aria-controls="cashierChildren"><span class="ico">▣</span> Kasir <span class="nav-chevron">▼</span></button><div class="nav-children" id="cashierChildren"><button class="nav-sub" data-page="pos"><span class="sub-dot">—</span> Penjualan</button><button class="nav-sub" data-page="stock"><span class="sub-dot">—</span> Input Stock</button></div></div>
                <button class="admin-only" data-page="accounting"><span class="ico">▤</span> Accounting</button>
                <div class="nav-group admin-only" id="managementGroup"><button type="button" class="nav-parent"
                      id="managementToggle" aria-expanded="false" aria-controls="managementChildren"><span
@@ -2934,7 +2954,7 @@
                    <p id="storeMessage" class="muted" style="font-size:11px"></p>
                 </div>
                 <div class="panel"><div class="section-head"><div><h3>Store List</h3><p class="muted">Daftar toko yang sudah tersimpan.</p></div><div class="field" style="max-width:130px"><label>Tampilkan</label><select id="storePageSize"><option>5</option><option>10</option><option>25</option><option>50</option><option>100</option></select></div></div>
-                   <div class="table-wrap"><table><thead><tr><th>Kode Store</th><th>Nama Store</th><th>Alamat</th><th>Kontak / HP</th></tr></thead><tbody id="storesTable"></tbody></table></div><div id="storePagination" class="actions" style="justify-content:space-between"></div>
+                   <div class="table-wrap"><table><thead><tr><th>Kode Store</th><th>Nama Store</th><th>Alamat</th><th>Kontak / HP</th><th>Aksi</th></tr></thead><tbody id="storesTable"></tbody></table></div><div id="storePagination" class="actions" style="justify-content:space-between"></div>
                 </div></section>
              <section id="inputSales" class="page admin-only">
                 <div class="panel"><h3>Input Sales</h3><p class="muted" style="font-size:11px">Catat nilai penjualan berdasarkan store dan tanggal sales.</p>
@@ -2945,7 +2965,7 @@
                    </div><div class="actions"><button class="btn btn-primary" type="submit">Save Data</button><button class="btn btn-light" type="reset">Reset</button></div></form><p id="salesMessage" class="muted" style="font-size:11px"></p>
                 </div>
                 <div class="panel"><div class="section-head"><div><h3>Sales Data</h3><p class="muted">Riwayat sales berdasarkan toko dan tanggal.</p></div><div class="field" style="max-width:130px"><label>Tampilkan</label><select id="salesPageSize"><option>5</option><option>10</option><option>25</option><option>50</option><option>100</option></select></div></div>
-                   <div class="table-wrap"><table><thead><tr><th>Tanggal Sales</th><th>Kode Store</th><th>Nama Store</th><th>Sales Value</th></tr></thead><tbody id="salesTable"></tbody></table></div><div id="salesPagination" class="actions" style="justify-content:space-between"></div>
+                   <div class="table-wrap"><table><thead><tr><th>Tanggal Sales</th><th>Kode Store</th><th>Nama Store</th><th>Sales Value</th><th>Aksi</th></tr></thead><tbody id="salesTable"></tbody></table></div><div id="salesPagination" class="actions" style="justify-content:space-between"></div>
                 </div></section>
              <section id="accounting" class="page admin-only">
                 <div class="panel accounting-intro"><h3>Accounting Reports</h3><p class="muted">Pilih ikon laporan untuk membuka data, melihat rekap, dan mencetak laporan.</p></div>
@@ -3416,7 +3436,7 @@ Gunakan kode promo ..."></textarea>
          const today = () => {const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`};
          let app, auth, db, currentUser = null, products = [], cart = [], transactions = [], promos = [], customers = [], blastDrafts = [], uoms = [], rawMaterials = [], activeBlastRecipients = [], activeBlastDraft = null, activeBlastIndex = 0, selectedCustomer = null;
          let forecastProduct = null, forecastItems = [];
-         let productionRecords = [], finishGoodRecords = [], wasteMaterialRecords = [], wasteProductRecords = [], stores = [], salesRecords = [], costOverheadMasters = [], costOverheadExpenses = [], supplierRecords = [], purchaseOrderRecords = [], supplierEditId = '', storePage = 1, salesPage = 1, wasteForecastCache = new Map(), expandedProductionId = null;
+         let productionRecords = [], finishGoodRecords = [], wasteMaterialRecords = [], wasteProductRecords = [], stores = [], salesRecords = [], costOverheadMasters = [], costOverheadExpenses = [], supplierRecords = [], purchaseOrderRecords = [], supplierEditId = '', storeEditId = '', salesEditId = '', storePage = 1, salesPage = 1, wasteForecastCache = new Map(), expandedProductionId = null;
          const configured = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId);
          if (configured) {try {app = initializeApp(firebaseConfig); auth = getAuth(app); db = getFirestore(app); $('connectionState').textContent = 'Firebase siap (gambar disimpan di Firestore)';} catch (e) {$('loginMessage').textContent = 'Konfigurasi Firebase tidak valid: ' + e.message;} }
          else {$('loginMessage').textContent = 'Lengkapi firebaseConfig di dalam file sebelum login.';}
@@ -3451,16 +3471,51 @@ Gunakan kode promo ..."></textarea>
             document.querySelectorAll('.admin-only').forEach(el => el.classList.toggle('hidden', !admin));
             if (!admin) {
                const activePage = document.querySelector('.page.active');
-               if (activePage && ['uom', 'rawMaterials', 'products', 'promos', 'stock', 'history', 'soStock', 'customers', 'promoBlast', 'mrpProduction', 'finishGood', 'waste', 'accounting', 'masterCostOverhead', 'addSupplier', 'purchaseOrderMaterial', 'stockBahanBaku', 'costOverheadInput', 'reportProductionFG', 'reportShipment', 'reportSales', 'reportCosts', 'reportCOGS', 'reportStockFG', 'reportStockRM', 'reportProfitLoss'].includes(activePage.id)) {
+               if (activePage && ['uom', 'rawMaterials', 'products', 'promos', 'history', 'soStock', 'customers', 'promoBlast', 'mrpProduction', 'finishGood', 'waste', 'accounting', 'masterCostOverhead', 'addSupplier', 'purchaseOrderMaterial', 'stockBahanBaku', 'costOverheadInput', 'reportProductionFG', 'reportShipment', 'reportSales', 'reportCosts', 'reportCOGS', 'reportStockFG', 'reportStockRM', 'reportProfitLoss'].includes(activePage.id)) {
                   document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
                   $('dashboard').classList.add('active'); $('pageTitle').textContent = 'Dashboard';
                }
                $('inputDataGroup').classList.remove('expanded'); $('inputDataToggle').setAttribute('aria-expanded', 'false'); $('purchasingGroup').classList.remove('expanded'); $('purchasingToggle').setAttribute('aria-expanded', 'false'); $('managementGroup').classList.remove('expanded'); $('managementToggle').setAttribute('aria-expanded', 'false'); $('productionGroup').classList.remove('expanded'); $('productionToggle').setAttribute('aria-expanded', 'false');
             }
          }
-         if (auth) setPersistence(auth, browserSessionPersistence).then(() => onAuthStateChanged(auth, async user => {currentUser = user; if (user) {$('loginScreen').classList.add('hidden'); $('appScreen').classList.remove('hidden'); $('userEmail').textContent = (user.email || 'Kasir') + (String(user.email || '').trim().toLowerCase() === ADMIN_EMAIL ? ' • ADMIN' : ' • KASIR'); applyRoleAccess(); await loadAll();} else {$('loginPassword').value = ''; document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden')); $('appScreen').classList.add('hidden'); $('loginScreen').classList.remove('hidden');} })).catch(err => {console.error('Gagal mengatur sesi login:', err); message('loginMessage', 'Pengaturan sesi login gagal: ' + friendlyError(err), 'danger');});
-         $('logoutBtn').onclick = async () => {$('loginPassword').value = ''; try {await signOut(auth);} catch (err) {console.error('Logout gagal:', err); message('loginMessage', 'Logout gagal: ' + friendlyError(err), 'danger');} };
-         document.querySelectorAll('.nav button[data-page]').forEach(b => b.addEventListener('click', () => {if (!isAdminUser() && ['uom', 'rawMaterials', 'products', 'promos', 'stock', 'history', 'soStock', 'customers', 'promoBlast', 'mrpProduction', 'finishGood', 'waste', 'accounting', 'masterCostOverhead', 'addSupplier', 'purchaseOrderMaterial', 'stockBahanBaku', 'costOverheadInput', 'reportProductionFG', 'reportShipment', 'reportSales', 'reportCosts', 'reportCOGS', 'reportStockFG', 'reportStockRM', 'reportProfitLoss'].includes(b.dataset.page)) return; document.querySelectorAll('.nav button[data-page]').forEach(x => x.classList.remove('active')); b.classList.add('active'); document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); $(b.dataset.page).classList.add('active'); const titles = {dashboard: 'Dashboard', uom: 'Master UOM/Unit', rawMaterials: 'Master Bahan Baku', products: 'Master Produk', promos: 'Seting Promo', stock: 'Input Stock', pos: 'Menu Kasir', history: 'Riwayat Transaksi', soStock: 'SO Stock', customers: 'Data Konsumen', promoBlast: 'Blast Promo', mrpProduction: 'MRP Produksi', finishGood: 'Input Data Finish Good', waste: 'Input Data Waste', addStore: 'Add Store', inputSales: 'Input Sales', accounting: 'Accounting', masterCostOverhead: 'Master Data Cost Overhead', addSupplier: 'Add Supplier', purchaseOrderMaterial: 'Purchase Order Material', stockBahanBaku: 'Stock Bahan Baku'}; $('pageTitle').textContent = titles[b.dataset.page] || b.textContent.trim(); $('sidebar').classList.remove('open');}));
+         function showBrandNotice(title, messageText, duration = 2300) {
+            return new Promise(resolve => {
+               const overlay = $('brandNotice');
+               $('brandNoticeTitle').textContent = title;
+               $('brandNoticeMessage').textContent = messageText;
+               overlay.classList.remove('hidden');
+               window.setTimeout(() => { overlay.classList.add('hidden'); resolve(); }, duration);
+            });
+         }
+         if (auth) setPersistence(auth, browserSessionPersistence).then(() => onAuthStateChanged(auth, async user => {
+            currentUser = user;
+            if (user) {
+               $('loginScreen').classList.add('hidden'); $('appScreen').classList.remove('hidden');
+               const email = String(user.email || '').trim();
+               const displayName = String(user.displayName || '').trim() || (email ? email.split('@')[0] : 'Pengguna');
+               $('userEmail').textContent = (email || displayName) + (email.toLowerCase() === ADMIN_EMAIL ? ' • ADMIN' : ' • KASIR');
+               applyRoleAccess();
+               await loadAll();
+               await showBrandNotice('Selamat Datang!', `Selamat datang di Aplikasi ROTI ANGET SUBUH, ${displayName}.`, 2300);
+            } else {
+               $('brandNotice').classList.add('hidden');
+               $('loginPassword').value = '';
+               document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
+               $('appScreen').classList.add('hidden'); $('loginScreen').classList.remove('hidden');
+            }
+         })).catch(err => {console.error('Gagal mengatur sesi login:', err); message('loginMessage', 'Pengaturan sesi login gagal: ' + friendlyError(err), 'danger');});
+         $('logoutBtn').onclick = async () => {
+            $('logoutBtn').disabled = true;
+            $('loginPassword').value = '';
+            try {
+               await showBrandNotice('Terima Kasih!', 'Terima kasih telah menggunakan Aplikasi ROTI ANGET SUBUH.', 2000);
+               await signOut(auth);
+            } catch (err) {
+               console.error('Logout gagal:', err);
+               message('loginMessage', 'Logout gagal: ' + friendlyError(err), 'danger');
+            } finally { $('logoutBtn').disabled = false; }
+         };
+         document.querySelectorAll('.nav button[data-page]').forEach(b => b.addEventListener('click', () => {if (!isAdminUser() && ['uom', 'rawMaterials', 'products', 'promos', 'history', 'soStock', 'customers', 'promoBlast', 'mrpProduction', 'finishGood', 'waste', 'accounting', 'masterCostOverhead', 'addSupplier', 'purchaseOrderMaterial', 'stockBahanBaku', 'costOverheadInput', 'reportProductionFG', 'reportShipment', 'reportSales', 'reportCosts', 'reportCOGS', 'reportStockFG', 'reportStockRM', 'reportProfitLoss'].includes(b.dataset.page)) return; document.querySelectorAll('.nav button[data-page]').forEach(x => x.classList.remove('active')); b.classList.add('active'); const parentGroup=b.closest('.nav-group'); if(parentGroup){parentGroup.classList.add('expanded'); const toggle=parentGroup.querySelector('.nav-parent'); if(toggle) toggle.setAttribute('aria-expanded','true');} document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); $(b.dataset.page).classList.add('active'); const titles = {dashboard: 'Dashboard', uom: 'Master UOM/Unit', rawMaterials: 'Master Bahan Baku', products: 'Master Produk', promos: 'Seting Promo', stock: 'Input Stock', pos: 'Penjualan', history: 'Riwayat Transaksi', soStock: 'SO Stock', customers: 'Data Konsumen', promoBlast: 'Blast Promo', mrpProduction: 'MRP Produksi', finishGood: 'Input Data Finish Good', waste: 'Input Data Waste', addStore: 'Add Store', inputSales: 'Input Sales', accounting: 'Accounting', masterCostOverhead: 'Master Data Cost Overhead', addSupplier: 'Add Supplier', purchaseOrderMaterial: 'Purchase Order Material', stockBahanBaku: 'Stock Bahan Baku'}; $('pageTitle').textContent = titles[b.dataset.page] || b.textContent.trim(); $('sidebar').classList.remove('open');}));
          $('menuToggle').onclick = () => {$('sidebar').classList.toggle('open');};
          document.addEventListener('click', e => {if (window.matchMedia('(max-width:680px)').matches && $('sidebar').classList.contains('open') && !$('sidebar').contains(e.target) && !$('menuToggle').contains(e.target)) $('sidebar').classList.remove('open');});
          document.addEventListener('keydown', e => {if (e.key === 'Escape') $('sidebar').classList.remove('open');});
@@ -3468,6 +3523,7 @@ Gunakan kode promo ..."></textarea>
          $('managementToggle').addEventListener('click', () => {const group = $('managementGroup'); const expanded = group.classList.toggle('expanded'); $('managementToggle').setAttribute('aria-expanded', String(expanded));});
          $('productionToggle').addEventListener('click', () => {const group = $('productionGroup'); const expanded = group.classList.toggle('expanded'); $('productionToggle').setAttribute('aria-expanded', String(expanded));});
           $('marketingToggle').addEventListener('click', () => {const group = $('marketingGroup'); const expanded = group.classList.toggle('expanded'); $('marketingToggle').setAttribute('aria-expanded', String(expanded));});
+         $('cashierToggle')?.addEventListener('click', () => {const group=$('cashierGroup'); const expanded=group.classList.toggle('expanded'); $('cashierToggle').setAttribute('aria-expanded',String(expanded));});
 
          async function loadAll() {try {const [p, t, pr] = await Promise.all([getDocs(collection(db, 'products')), getDocs(query(collection(db, 'transactions'), orderBy('createdAt', 'desc'))), getDocs(collection(db, 'promos'))]); products = p.docs.map(d => ({id: d.id, ...d.data()})); transactions = t.docs.map(d => ({id: d.id, ...d.data()})); promos = pr.docs.map(d => ({id: d.id, ...d.data()})).filter(x => x.active !== false); if (isAdminUser()) {const [c, bd, u, rm, prod, fg, wm, wp, st, sr, coh, coe, sup, po] = await Promise.allSettled([getDocs(collection(db, 'customers')), getDocs(query(collection(db, 'promoBlasts'), orderBy('createdAt', 'desc'))), getDocs(collection(db, 'uoms')), getDocs(collection(db, 'rawMaterials')), getDocs(collection(db, 'productionOrders')), getDocs(collection(db, 'finishGood')), getDocs(collection(db, 'wasteRawMaterials')), getDocs(collection(db, 'wasteProducts')), getDocs(collection(db, 'stores')), getDocs(query(collection(db, 'salesRecords'), orderBy('salesDate', 'desc'))), getDocs(collection(db, 'costOverheadMasters')), getDocs(collection(db, 'costOverheadExpenses')), getDocs(collection(db, 'suppliers')), getDocs(collection(db, 'purchaseOrders'))]); customers = c.status === 'fulfilled' ? c.value.docs.map(d => ({id: d.id, ...d.data()})) : []; if (c.status === 'fulfilled') {try {await migrateCustomerCodes(customers);} catch (migrationError) {console.warn('Migrasi nomor pelanggan tertunda:', migrationError);} } blastDrafts = bd.status === 'fulfilled' ? bd.value.docs.map(d => ({id: d.id, ...d.data()})) : []; uoms = u.status === 'fulfilled' ? u.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(a.code || '').localeCompare(String(b.code || ''))) : []; rawMaterials = rm.status === 'fulfilled' ? rm.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(a.code || '').localeCompare(String(b.code || ''))) : []; productionRecords = prod.status === 'fulfilled' ? prod.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.productionDate || '').localeCompare(String(a.productionDate || ''))) : []; finishGoodRecords = fg.status === 'fulfilled' ? fg.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.period || '').localeCompare(String(a.period || ''))) : []; wasteMaterialRecords = wm.status === 'fulfilled' ? wm.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.wasteDate || '').localeCompare(String(a.wasteDate || ''))) : []; wasteProductRecords = wp.status === 'fulfilled' ? wp.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.wasteDate || '').localeCompare(String(a.wasteDate || ''))) : []; stores = st.status === 'fulfilled' ? st.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => String(a.code || '').localeCompare(String(b.code || ''))) : []; salesRecords = sr.status === 'fulfilled' ? sr.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => String(b.salesDate || '').localeCompare(String(a.salesDate || ''))) : []; costOverheadMasters = coh.status === 'fulfilled' ? coh.value.docs.map(d => ({id:d.id,...d.data()})).sort((a,b)=>String(a.code||'').localeCompare(String(b.code||''))) : []; costOverheadExpenses = coe.status === 'fulfilled' ? coe.value.docs.map(d => ({id:d.id,...d.data()})).sort((a,b)=>String(b.postingDate||'').localeCompare(String(a.postingDate||''))) : []; supplierRecords = sup.status === 'fulfilled' ? sup.value.docs.map(d => ({id:d.id,...d.data()})).sort((a,b)=>String(a.code||'').localeCompare(String(b.code||''))) : []; purchaseOrderRecords = po.status === 'fulfilled' ? po.value.docs.map(d => ({id:d.id,...d.data()})).sort((a,b)=>String(b.purchaseDate||'').localeCompare(String(a.purchaseDate||''))) : []; if ([c, bd, u, rm, prod, fg, wm, wp, st, sr, coh, coe, sup, po].some(x => x.status === 'rejected')) console.warn('Sebagian data Management/Master tidak dapat dimuat. Periksa Firestore Rules.', c.reason || bd.reason || u.reason || rm.reason || prod.reason || fg.reason || wm.reason || wp.reason);} renderAll();} catch (e) {console.error(e); $('connectionState').textContent = 'Gagal memuat data';} }
          function renderAll() {renderProducts(); renderStock(); renderPromoSettings(); renderUoms(); renderRawMaterials(); renderCostOverheadMasters(); updateUomOptions(); updatePromoOptions(); if (!$('historyStart').value && !$('historyEnd').value) setHistoryToday(); else applyHistoryFilter(); renderDashboard(); updateProductOptions(); renderCart(); renderCustomers(); renderBlastDrafts(); updateMRPProductOptions(); initMRPFilters(); renderMRPProduction(); initFGFilters(); renderFinishGood(); updateWasteMaterialOptions(); updateWasteProductOptions(); renderWasteMaterialTable(); renderWasteProductTable(); renderSuppliers(); renderPurchaseOrders(); renderStockBahanBaku(); renderStores(); renderSales(); updateSalesStoreOptions(); if (!$('soStart').value) initSOStockDates(); renderSOStock();}
@@ -3482,37 +3538,53 @@ Gunakan kode promo ..."></textarea>
                 code = 'STR' + String(next).padStart(3,'0');
              }); return code;
           }
-          function refreshStoreCode() {if ($('storeCode')) $('storeCode').value = nextMasterCode(stores, 'STR');}
-          function updateSalesStoreOptions() {
-             const sel = $('salesStore'); if (!sel) return; const previous = sel.value;
+          function refreshStoreCode() {if ($('storeCode') && !storeEditId) $('storeCode').value = nextMasterCode(stores, 'STR');}
+          function updateSalesStoreOptions(selected = '') {
+             const sel = $('salesStore'); if (!sel) return; const previous = selected || sel.value;
              sel.innerHTML = '<option value="">Pilih Store...</option>' + stores.map(x => `<option value="${escapeHtml(x.id)}">${escapeHtml(x.code || '')} - ${escapeHtml(x.name || '')}</option>`).join('');
              if (stores.some(x => x.id === previous)) sel.value = previous;
           }
-          function renderPagedTable(rows, pageSizeId, targetId, paginationId, columns, type) {
+          function renderPagedTable(rows, pageSizeId, targetId, paginationId, columns, type, emptyColspan=5) {
              const size = Math.max(1, Number($(pageSizeId)?.value || 5)), totalPages = Math.max(1, Math.ceil(rows.length / size));
              let current = type === 'store' ? storePage : salesPage; current = Math.min(current,totalPages);
              if (type === 'store') storePage = current; else salesPage = current;
              const start = (current-1)*size, slice = rows.slice(start,start+size);
-             $(targetId).innerHTML = slice.length ? slice.map(row => '<tr>'+columns(row).map(v=>`<td>${v}</td>`).join('')+'</tr>').join('') : '<tr><td colspan="4" class="empty">Belum ada data.</td></tr>';
+             $(targetId).innerHTML = slice.length ? slice.map(row => '<tr>'+columns(row).map(v=>`<td>${v}</td>`).join('')+'</tr>').join('') : `<tr><td colspan="${emptyColspan}" class="empty">Belum ada data.</td></tr>`;
              $(paginationId).innerHTML = `<span class="muted" style="font-size:11px">Menampilkan ${rows.length ? start+1 : 0}-${Math.min(start+size,rows.length)} dari ${rows.length} data</span><div class="actions"><button type="button" class="btn btn-light" data-prev ${current<=1?'disabled':''}>Previous</button><span class="muted" style="font-size:11px">Halaman ${current}/${totalPages}</span><button type="button" class="btn btn-light" data-next ${current>=totalPages?'disabled':''}>Next</button></div>`;
              $(paginationId).querySelector('[data-prev]').onclick = () => {if(type==='store') storePage--; else salesPage--; type==='store'?renderStores():renderSales();};
              $(paginationId).querySelector('[data-next]').onclick = () => {if(type==='store') storePage++; else salesPage++; type==='store'?renderStores():renderSales();};
           }
-          function renderStores() {if (!$('storesTable')) return; renderPagedTable(stores,'storePageSize','storesTable','storePagination',x=>[`<b>${escapeHtml(x.code||x.id)}</b>`,escapeHtml(x.name||''),escapeHtml(x.address||''),escapeHtml(x.contact||'')],'store'); refreshStoreCode();}
-          function renderSales() {if (!$('salesTable')) return; renderPagedTable(salesRecords,'salesPageSize','salesTable','salesPagination',x=>[escapeHtml(x.salesDate||''),`<b>${escapeHtml(x.storeCode||'')}</b>`,escapeHtml(x.storeName||''),`<b>${rupiah(x.salesValue)}</b>`],'sales');}
+          function resetStoreForm(){storeEditId='';$('storeForm').reset();$('storeCode').value=nextMasterCode(stores,'STR');$('storeForm').querySelector('[type="submit"]').textContent='Save Data';}
+          function resetSalesForm(){salesEditId='';$('salesForm').reset();$('salesDate').value=today();$('salesForm').querySelector('[type="submit"]').textContent='Save Data';updateSalesStoreOptions();}
+          function renderStores() {
+             if (!$('storesTable')) return;
+             renderPagedTable(stores,'storePageSize','storesTable','storePagination',x=>[`<b>${escapeHtml(x.code||x.id)}</b>`,escapeHtml(x.name||''),escapeHtml(x.address||''),escapeHtml(x.contact||''),`<div class="actions" style="gap:5px"><button type="button" class="btn btn-light" data-edit-store="${escapeHtml(x.id)}">Edit</button><button type="button" class="btn btn-danger" data-delete-store="${escapeHtml(x.id)}">Delete</button></div>`],'store',5);
+             refreshStoreCode();
+             $('storesTable').querySelectorAll('[data-edit-store]').forEach(b=>b.onclick=()=>{const x=stores.find(v=>v.id===b.dataset.editStore);if(!x)return;storeEditId=x.id;$('storeCode').value=x.code||x.id;$('storeName').value=x.name||'';$('storeAddress').value=x.address||'';$('storeContact').value=x.contact||'';$('storeForm').querySelector('[type="submit"]').textContent='Update Store';$('storeMessage').textContent='Mode edit: ubah data toko, lalu klik Update Store.';$('storeForm').scrollIntoView({behavior:'smooth',block:'start'});});
+             $('storesTable').querySelectorAll('[data-delete-store]').forEach(b=>b.onclick=async()=>{const x=stores.find(v=>v.id===b.dataset.deleteStore);if(!x)return;if(!confirm(`Hapus Store ${x.code||x.id} - ${x.name||''}? Riwayat Input Sales yang sudah tersimpan tidak ikut dihapus.`))return;try{await deleteDoc(doc(db,'stores',x.id));if(storeEditId===x.id)resetStoreForm();await loadAll();message('storeMessage','Data Store berhasil dihapus. Riwayat sales tetap tersimpan.','success');}catch(err){message('storeMessage','Gagal menghapus Store: '+friendlyError(err),'danger');}});
+          }
+          function renderSales() {
+             if (!$('salesTable')) return;
+             renderPagedTable(salesRecords,'salesPageSize','salesTable','salesPagination',x=>[escapeHtml(x.salesDate||''),`<b>${escapeHtml(x.storeCode||'')}</b>`,escapeHtml(x.storeName||''),`<b>${rupiah(x.salesValue)}</b>`,`<div class="actions" style="gap:5px"><button type="button" class="btn btn-light" data-edit-sales="${escapeHtml(x.id)}">Edit</button><button type="button" class="btn btn-danger" data-delete-sales="${escapeHtml(x.id)}">Delete</button></div>`],'sales',5);
+             $('salesTable').querySelectorAll('[data-edit-sales]').forEach(b=>b.onclick=()=>{const x=salesRecords.find(v=>v.id===b.dataset.editSales);if(!x)return;salesEditId=x.id;updateSalesStoreOptions(x.storeId||'');$('salesStore').value=x.storeId||'';$('salesValue').value=Number(x.salesValue)||'';$('salesDate').value=x.salesDate||today();$('salesForm').querySelector('[type="submit"]').textContent='Update Sales';$('salesMessage').textContent='Mode edit: ubah data sales, lalu klik Update Sales.';$('salesForm').scrollIntoView({behavior:'smooth',block:'start'});});
+             $('salesTable').querySelectorAll('[data-delete-sales]').forEach(b=>b.onclick=async()=>{const x=salesRecords.find(v=>v.id===b.dataset.deleteSales);if(!x)return;if(!confirm(`Hapus data sales ${x.storeCode||''} tanggal ${x.salesDate||''} senilai ${rupiah(x.salesValue)}?`))return;try{await deleteDoc(doc(db,'salesRecords',x.id));if(salesEditId===x.id)resetSalesForm();await loadAll();message('salesMessage','Data sales berhasil dihapus.','success');}catch(err){message('salesMessage','Gagal menghapus sales: '+friendlyError(err),'danger');}});
+          }
           $('storeForm').onsubmit = async e => {
              e.preventDefault(); const name=$('storeName').value.trim(), address=$('storeAddress').value.trim(), contact=$('storeContact').value.trim();
              if(!name||!address||!contact) return;
-             try {const code=await allocateStoreCode(); await setDoc(doc(db,'stores',code),{code,name,address,contact,createdAt:serverTimestamp(),createdBy:currentUser.uid}); $('storeForm').reset(); await loadAll(); message('storeMessage',`Store ${code} berhasil disimpan.`,'success');}
+             const editing=Boolean(storeEditId);
+             try {if(editing){await updateDoc(doc(db,'stores',storeEditId),{name,address,contact,updatedAt:serverTimestamp(),updatedBy:currentUser.uid});}else{const code=await allocateStoreCode();await setDoc(doc(db,'stores',code),{code,name,address,contact,createdAt:serverTimestamp(),createdBy:currentUser.uid});}resetStoreForm();await loadAll();message('storeMessage',editing?'Data Store berhasil diperbarui.':'Store berhasil disimpan.','success');}
              catch(err){message('storeMessage','Gagal menyimpan Store: '+friendlyError(err),'danger');}
           };
-          $('resetStore').onclick = () => setTimeout(refreshStoreCode,0);
+          $('resetStore').onclick = () => setTimeout(resetStoreForm,0);
           $('salesForm').onsubmit = async e => {
              e.preventDefault(); const store=stores.find(x=>x.id===$('salesStore').value), salesValue=Number($('salesValue').value), salesDate=$('salesDate').value;
              if(!store||!(salesValue>0)||!salesDate){message('salesMessage','Pilih Store, isi Sales Value lebih dari 0, dan tentukan tanggal sales.','danger');return;}
-             try {await addDoc(collection(db,'salesRecords'),{storeId:store.id,storeCode:store.code,storeName:store.name,salesValue,salesDate,createdAt:serverTimestamp(),createdBy:currentUser.uid}); $('salesForm').reset(); $('salesDate').value=today(); await loadAll(); message('salesMessage','Data sales berhasil disimpan.','success');}
+             const editing=Boolean(salesEditId);
+             try {const payload={storeId:store.id,storeCode:store.code,storeName:store.name,salesValue,salesDate,updatedAt:serverTimestamp(),updatedBy:currentUser.uid};if(editing)await updateDoc(doc(db,'salesRecords',salesEditId),payload);else await addDoc(collection(db,'salesRecords'),{...payload,createdAt:serverTimestamp(),createdBy:currentUser.uid});resetSalesForm();await loadAll();message('salesMessage',editing?'Data sales berhasil diperbarui.':'Data sales berhasil disimpan.','success');}
              catch(err){message('salesMessage','Gagal menyimpan sales: '+friendlyError(err),'danger');}
           };
+          $('salesForm').addEventListener('reset',()=>setTimeout(()=>{if(!salesEditId){$('salesDate').value=today();updateSalesStoreOptions();}},0));
           $('storePageSize').onchange=()=>{storePage=1;renderStores();}; $('salesPageSize').onchange=()=>{salesPage=1;renderSales();}; $('salesDate').value=today();
 
           // MASTER UOM & BAHAN BAKU: data disimpan pada koleksi Firestore terpisah.
