@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
    <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
          rel="stylesheet">
       <link rel="stylesheet" href="style.css">
    </head>
+
    <body>
       <section id="loginScreen" class="login-wrap">
          <div class="login-art">
@@ -707,7 +709,7 @@
                   <button type="button" class="accounting-card" data-report-page="reportCosts"><span class="accounting-icon">💸</span><strong>Laporan Biaya</strong><small>Rekap komponen biaya produksi dan nilai waste yang tercatat.</small><span class="accounting-open">Buka Laporan →</span></button>
                   <button type="button" class="accounting-card" data-report-page="reportCOGS"><span class="accounting-icon">🧮</span><strong>Laporan COGS Produksi</strong><small>Rekap HPP, variable cost, dan HPP total dari produksi.</small><span class="accounting-open">Buka Laporan →</span></button>
                   <button type="button" class="accounting-card" data-report-page="reportStockFG"><span class="accounting-icon">📦</span><strong>Laporan Stock FG</strong><small>Posisi Finish Good: produksi, pengiriman, dan sisa stock.</small><span class="accounting-open">Buka Laporan →</span></button>
-                  <button type="button" class="accounting-card" data-report-page="reportStockRM"><span class="accounting-icon">🧺</span><strong>Laporan Stock Bahan Baku</strong><small>Master bahan baku beserta satuan, berat, dan nilai rata-rata.</small><span class="accounting-open">Buka Laporan →</span></button>
+                  <button type="button" class="accounting-card" data-report-page="reportStockRM"><span class="accounting-icon">🧺</span><strong>Laporan Stock Bahan Baku</strong><small>Master bahan baku, pembelian, pemakaian, saldo stock, dan nilai stock.</small><span class="accounting-open">Buka Laporan →</span></button>
                   <button type="button" class="accounting-card" data-report-page="reportProfitLoss"><span class="accounting-icon">📊</span><strong>Laporan Laba/Rugi</strong><small>Ringkasan penjualan dan biaya yang tersedia dari pencatatan aplikasi.</small><span class="accounting-open">Buka Laporan →</span></button>
                 </div>
              </section>
@@ -748,7 +750,7 @@
                 </div>
              </section>
              <section id="reportStockRM" class="page admin-only accounting-report-page">
-                <div class="panel"><div class="section-head accounting-report-head"><div><p class="eyebrow">ACCOUNTING</p><h3>Laporan Stock Bahan Baku</h3><p class="muted">Master bahan baku beserta satuan, berat, dan nilai rata-rata.</p></div><div class="actions"><button type="button" class="btn btn-light" data-accounting-home>← Accounting</button><button type="button" class="btn btn-primary" data-print-report>🖨 Print Laporan</button></div></div>
+                <div class="panel"><div class="section-head accounting-report-head"><div><p class="eyebrow">ACCOUNTING</p><h3>Laporan Stock Bahan Baku</h3><p class="muted">Master bahan baku, pembelian, pemakaian, saldo stock, dan nilai stock.</p></div><div class="actions"><button type="button" class="btn btn-light" data-accounting-home>← Accounting</button><button type="button" class="btn btn-primary" data-print-report>🖨 Print Laporan</button></div></div>
                    <div class="accounting-filter"><div class="field"><label>Dari Tanggal</label><input type="date" data-report-start></div><div class="field"><label>Sampai Tanggal</label><input type="date" data-report-end></div><button type="button" class="btn btn-light" data-refresh-report>Tampilkan</button></div>
                    <div class="accounting-report-body" data-report-body></div>
                 </div>
@@ -1186,4 +1188,5 @@ Gunakan kode promo ..."></textarea>
       </div>
       <script type="module" src="script.js"></script>
    </body>
+
 </html>
