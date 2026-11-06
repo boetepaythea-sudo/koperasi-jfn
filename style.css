@@ -256,9 +256,14 @@
             flex-direction: column
          }
 
-         .sidebar .brand {
-            padding: 0 12px 30px
+         .sidebar-brand {
+            display:flex;flex-direction:column;align-items:center;text-align:center;
+            padding:0 10px 26px;margin-bottom:4px;border-bottom:1px solid rgba(226,196,142,.16)
          }
+         .sidebar-logo {width:88px;height:88px;object-fit:contain;display:block;margin:0 auto 9px}
+         .sidebar-brand-name {font-family:'Playfair Display',serif;font-size:15px;line-height:1.25;
+            letter-spacing:1.15px;color:#f3e8d7;font-weight:700}
+         .sidebar-brand small {display:block;margin-top:5px;font:9px 'DM Sans';letter-spacing:2px;color:var(--gold2)}
 
          .nav-label {
             font-size: 9px;
@@ -2279,7 +2284,7 @@
          .brand-notice{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(20,25,31,.72);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);opacity:1;transition:opacity .25s ease}
          .brand-notice.hidden{display:none}
          .brand-notice-card{width:min(440px,100%);padding:38px 30px 30px;text-align:center;border:1px solid rgba(197,157,91,.55);border-radius:22px;background:linear-gradient(145deg,#fffdf8,#f4ecdf);box-shadow:0 24px 80px rgba(0,0,0,.3);animation:brandNoticeIn .35s ease both}
-         .brand-notice-mark{width:58px;height:58px;margin:0 auto 17px;display:grid;place-items:center;border-radius:18px;background:linear-gradient(145deg,#b58a4b,#e2c48e);color:#fff;font-weight:900;letter-spacing:1px;box-shadow:0 8px 22px rgba(153,111,48,.25)}
+         .brand-notice-logo{width:94px;height:94px;object-fit:contain;display:block;margin:0 auto 16px}
          .brand-notice-kicker{font-size:11px;font-weight:800;letter-spacing:3px;color:#9a753f}
          .brand-notice-card h2{margin:12px 0 9px;color:#28251f;font-size:clamp(22px,5vw,29px);line-height:1.2}
          .brand-notice-card p{margin:0;color:#645b4e;font-size:15px;line-height:1.6;overflow-wrap:anywhere}
@@ -2337,3 +2342,28 @@
            .accounting-icon { width:58px; height:58px; flex-basis:58px; font-size:31px; }
            .accounting-card strong { font-size:11px; }
         }
+
+        /* Universal submenu launcher: konsisten dengan tampilan grid Accounting */
+        .module-hub-intro{margin-bottom:18px}
+        .module-hub-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+        .module-hub-card{appearance:none;width:100%;min-width:0;min-height:205px;padding:22px 15px 18px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(155deg,#fff 0%,#fbf7ef 100%);color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:12px;text-align:center;cursor:pointer;box-shadow:0 8px 24px rgba(44,34,20,.06);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+        .module-hub-card:hover{transform:translateY(-4px);border-color:var(--gold2);box-shadow:0 14px 30px rgba(44,34,20,.12)}
+        .module-hub-card:focus-visible{outline:3px solid #b58a4b55;outline-offset:3px}
+        .module-hub-icon{width:78px;height:78px;flex:0 0 78px;display:grid;place-items:center;border-radius:23px;background:linear-gradient(145deg,#f7edda,#ead8b8);font-size:40px;line-height:1;box-shadow:inset 0 1px 0 #fff9,0 5px 14px #8c6b3514}
+        .module-hub-card strong{display:block;max-width:100%;font-size:14px;line-height:1.4;font-weight:700}
+        .module-hub-card small{color:var(--muted);font-size:11px;line-height:1.5}
+        @media(max-width:1100px){.module-hub-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+        @media(max-width:680px){.module-hub-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.module-hub-card{min-height:176px;padding:16px 10px 14px;border-radius:16px;gap:10px}.module-hub-icon{width:66px;height:66px;flex-basis:66px;border-radius:19px;font-size:35px}.module-hub-card strong{font-size:12px}.module-hub-card small{font-size:10px}}
+        @media(max-width:380px){.module-hub-grid{gap:8px}.module-hub-card{min-height:164px;padding:13px 8px}.module-hub-icon{width:58px;height:58px;flex-basis:58px;font-size:31px}.module-hub-card strong{font-size:11px}}
+
+         /* Konsistensi menu utama: samakan tipografi dengan Dashboard dan Accounting. */
+         .nav .nav-parent {
+            font-family: inherit !important;
+            font-size: 16px !important;
+            font-weight: 500 !important;
+            line-height: 1.35 !important;
+            letter-spacing: 0 !important;
+         }
+         .nav .nav-parent .nav-chevron {
+            display: none !important;
+         }
