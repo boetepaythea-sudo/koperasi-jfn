@@ -1,3 +1,4 @@
+
 import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
          import {getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence, inMemoryPersistence} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
          import {getFirestore, collection, doc, setDoc, addDoc, getDocs, getDoc, updateDoc, runTransaction, query, where, orderBy, limit, serverTimestamp, deleteDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -542,108 +543,28 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
          $('wasteMaterialStart').addEventListener('change',renderWasteMaterialTable); $('wasteMaterialEnd').addEventListener('change',renderWasteMaterialTable); $('wasteProductStart').addEventListener('change',renderWasteProductTable); $('wasteProductEnd').addEventListener('change',renderWasteProductTable);
          $('wasteMaterialDate').value=today(); $('wasteProductDate').value=today(); $('wasteMaterialStart').value=today(); $('wasteMaterialEnd').value=today(); $('wasteProductStart').value=today(); $('wasteProductEnd').value=today();
 
-         // Cetak struk INFORCE P58C: Android via Cleanter ESC/POS bridge, Windows via driver/browser print dialog.
+         // Cetak struk memakai jalur dialog cetak yang sama dengan laporan.
+         // Format kertas thermal dikunci pada 58 mm untuk semua perangkat.
          const RECEIPT_PAPER_STORAGE_KEY = 'rotiAngetReceiptPaperWidth';
-         const CLEANter_BRIDGE_BASE = 'http://localhost:9100';
          let activeReceiptForPrint = null;
-         function getReceiptPaperWidth() {
-            const saved = $('receiptPaperSize')?.value || localStorage.getItem(RECEIPT_PAPER_STORAGE_KEY) || '58';
-            return saved === '80' ? 80 : 58;
-         }
-         function isAndroidDevice() { return /Android/i.test(navigator.userAgent || ''); }
-         try {
-            const savedPaperWidth = localStorage.getItem(RECEIPT_PAPER_STORAGE_KEY);
-            if (savedPaperWidth === '58' || savedPaperWidth === '80') $('receiptPaperSize').value = savedPaperWidth;
-         } catch (storageError) { console.warn('Pengaturan ukuran kertas tidak dapat dibaca:', storageError); }
+         function getReceiptPaperWidth() { return 58; }
+         $('receiptPaperSize').value = '58';
          $('receiptPaperSize').addEventListener('change', () => {
-            try { localStorage.setItem(RECEIPT_PAPER_STORAGE_KEY, $('receiptPaperSize').value); } catch (storageError) {}
-            $('printerSettingMessage').textContent = `Ukuran kertas ${getReceiptPaperWidth()} mm disimpan pada perangkat ini.`;
-         });
-         function receiptEscPosBlocks(t) {
-            const blocks = [
-               {type:'text',text:'ROTI ANGET SUBUH',align:'center',bold:true,size:'large'},
-               {type:'text',text:'Jl. Raya Kuta, No. 58D, Tuban',align:'center'},
-               {type:'divider'},
-               {type:'text',text:'STRUK PEMBAYARAN',align:'center',bold:true},
-               {type:'text',text:`${formatDate(t.date || t.createdAt)}  |  No: ${t.invoice || '-'}`},
-               {type:'divider'}
-            ];
-            if (t.customerName) blocks.push({type:'text',text:`Pelanggan: ${t.customerName}`});
-            if (t.customerCode) blocks.push({type:'text',text:`No. Pelanggan: ${t.customerCode}`});
-            (t.items || []).forEach(item => {
-               const qty = Number(item.qty) || 0;
-               const price = Number(item.price) || 0;
-               const lineTotal = Number(item.subtotal ?? (price * qty)) || 0;
-               blocks.push({type:'text',text:String(item.name || item.productName || 'Produk')});
-               blocks.push({type:'row',left:`${qty} x ${rupiah(price)}`,right:rupiah(lineTotal)});
-            });
-            blocks.push({type:'divider'});
-            if (t.subtotal != null) blocks.push({type:'row',left:'Subtotal',right:rupiah(t.subtotal)});
-            if (Number(t.discount) > 0) blocks.push({type:'row',left:`Promo ${t.promoName || ''}`.trim(),right:`- ${rupiah(t.discount)}`} );
-            blocks.push({type:'row',left:'TOTAL BAYAR',right:rupiah(t.total),bold:true});
-            blocks.push({type:'row',left:'Metode',right:String(t.method || '-')});
-            blocks.push({type:'row',left:'Status',right:String(t.status || '-')});
-            if (t.method === 'CASH') {
-               blocks.push({type:'row',left:'Uang diterima',right:rupiah(t.cashReceived)});
-               blocks.push({type:'row',left:'Kembalian',right:rupiah(t.change)});
-            } else if (t.method === 'QRIS') {
-               blocks.push({type:'row',left:'Nominal QRIS',right:rupiah(t.qrisPaidAmount ?? t.total)});
-            }
-            if (t.paymentAdjustment?.status === 'PENDING_ADMIN') {
-               blocks.push({type:'divider'});
-               blocks.push({type:'text',text:`SELISIH PEMBAYARAN: ${rupiah(t.paymentAdjustment.amount)}`,bold:true});
-            }
-            if (t.correctionCount) blocks.push({type:'text',text:`Transaksi dikoreksi ${Number(t.correctionCount)} kali`});
-            blocks.push({type:'divider'});
-            blocks.push({type:'text',text:'Terima kasih atas kunjungan Anda.',align:'center'});
-            blocks.push({type:'feed',lines:3});
-            return blocks;
-         }
-         async function sendReceiptToAndroidBridge(t) {
+            $('receiptPaperSize').value = '58';
             const msg = $('printerSettingMessage');
-            try {
-               msg.textContent = 'Memeriksa koneksi Cleanter dan printer Bluetooth...';
-               const health = await fetch(`${CLEANter_BRIDGE_BASE}/health`, {method:'GET',cache:'no-store',signal:AbortSignal.timeout(2500)});
-               if (!health.ok) throw new Error(`Bridge merespons HTTP ${health.status}.`);
-               const healthData = await health.json().catch(()=>({}));
-               if (healthData?.printer && healthData.printer.connected === false) throw new Error('Cleanter aktif, tetapi printer belum tersambung. Pilih INFORCE P58C di Cleanter lalu aktifkan koneksi.');
-               msg.textContent = 'Mengirim struk ke INFORCE P58C...';
-               const response = await fetch(`${CLEANter_BRIDGE_BASE}/print`, {
-                  method:'POST', headers:{'Content-Type':'application/json'},
-                  body:JSON.stringify({paperWidth:getReceiptPaperWidth(),cut:true,content:receiptEscPosBlocks(t)}),
-                  signal:AbortSignal.timeout(12000)
-               });
-               const result = await response.json().catch(()=>({}));
-               if (!response.ok) throw new Error(result.message || result.error || `Gagal mengirim pekerjaan cetak (HTTP ${response.status}).`);
-               msg.textContent = 'Perintah cetak berhasil dikirim ke Cleanter. Periksa kertas pada printer INFORCE P58C.';
-               return true;
-            } catch (err) {
-               console.error('Android Bluetooth print error:',err);
-               const reason = err?.name === 'TimeoutError' ? 'Waktu koneksi habis.' : (err?.message || 'Tidak dapat menghubungi layanan printer.');
-               msg.textContent = `Cetak langsung belum berhasil: ${reason} Buka Cleanter, pilih INFORCE P58C, lalu Start. Transaksi tetap tersimpan; gunakan Reprint setelah koneksi siap.`;
-               alert(`Printer Android belum siap. ${reason}\n\nPastikan Cleanter sudah dibuka, printer INFORCE P58C sudah dipilih, dan server Cleanter aktif. Transaksi Anda tetap tersimpan.`);
-               return false;
-            }
-         }
-         async function printReceiptThermal() {
-            const t = activeReceiptForPrint;
-            if (!t) { alert('Data struk tidak tersedia. Buka ulang struk transaksi lalu coba cetak.'); return; }
-
-            // Semua tombol cetak struk (kasir, riwayat, dan test print) memakai
-            // satu jalur yang sama. Android mengirim ESC/POS melalui Cleanter;
-            // perangkat lain memakai dialog cetak browser seperti cetak laporan.
-            if (isAndroidDevice()) {
-               await sendReceiptToAndroidBridge(t);
+            if (msg) msg.textContent = 'Ukuran kertas struk tetap 58 mm.';
+         });
+         function printReceiptThermal() {
+            if (!activeReceiptForPrint) {
+               alert('Data struk tidak tersedia. Buka ulang struk transaksi lalu coba cetak.');
                return;
             }
-
             const content = $('receiptContent').innerHTML;
-            printDocument('Struk Pembayaran', content, {
-               receipt:true,
-               paperWidth:58
-            });
+            // printDocument membuka jendela cetak dan memanggil window.print(),
+            // sama seperti alur cetak laporan transaksi.
+            printDocument('Struk Pembayaran', content, {receipt:true, paperWidth:58});
             const msg = $('printerSettingMessage');
-            if (msg) msg.textContent = 'Dialog cetak struk dibuka. Pilih printer thermal Bluetooth 58 mm / INFORCE P58C, ukuran kertas 58 mm, dan nonaktifkan header/footer browser.';
+            if (msg) msg.textContent = 'Dialog cetak dibuka. Pilih printer Bluetooth dari daftar printer Android dan gunakan kertas 58 mm.';
          }
 
          function makePrinterTestTransaction() {
@@ -1143,3 +1064,4 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
             if(hubId)addModuleBackButton(target,hubId);
             $('sidebar').classList.remove('open');
          }));
+
