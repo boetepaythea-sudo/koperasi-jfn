@@ -10,7 +10,7 @@
          href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
          rel="stylesheet">
       <style>
-         :root {
+:root {
             --bg: #f5f1e9;
             --paper: #fffdf9;
             --ink: #29251f;
@@ -268,9 +268,14 @@
             flex-direction: column
          }
 
-         .sidebar .brand {
-            padding: 0 12px 30px
+         .sidebar-brand {
+            display:flex;flex-direction:column;align-items:center;text-align:center;
+            padding:0 10px 26px;margin-bottom:4px;border-bottom:1px solid rgba(226,196,142,.16)
          }
+         .sidebar-logo {width:88px;height:88px;object-fit:contain;display:block;margin:0 auto 9px}
+         .sidebar-brand-name {font-family:'Playfair Display',serif;font-size:15px;line-height:1.25;
+            letter-spacing:1.15px;color:#f3e8d7;font-weight:700}
+         .sidebar-brand small {display:block;margin-top:5px;font:9px 'DM Sans';letter-spacing:2px;color:var(--gold2)}
 
          .nav-label {
             font-size: 9px;
@@ -2291,7 +2296,7 @@
          .brand-notice{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(20,25,31,.72);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);opacity:1;transition:opacity .25s ease}
          .brand-notice.hidden{display:none}
          .brand-notice-card{width:min(440px,100%);padding:38px 30px 30px;text-align:center;border:1px solid rgba(197,157,91,.55);border-radius:22px;background:linear-gradient(145deg,#fffdf8,#f4ecdf);box-shadow:0 24px 80px rgba(0,0,0,.3);animation:brandNoticeIn .35s ease both}
-         .brand-notice-mark{width:58px;height:58px;margin:0 auto 17px;display:grid;place-items:center;border-radius:18px;background:linear-gradient(145deg,#b58a4b,#e2c48e);color:#fff;font-weight:900;letter-spacing:1px;box-shadow:0 8px 22px rgba(153,111,48,.25)}
+         .brand-notice-logo{width:94px;height:94px;object-fit:contain;display:block;margin:0 auto 16px}
          .brand-notice-kicker{font-size:11px;font-weight:800;letter-spacing:3px;color:#9a753f}
          .brand-notice-card h2{margin:12px 0 9px;color:#28251f;font-size:clamp(22px,5vw,29px);line-height:1.2}
          .brand-notice-card p{margin:0;color:#645b4e;font-size:15px;line-height:1.6;overflow-wrap:anywhere}
@@ -2374,6 +2379,7 @@
          .nav .nav-parent .nav-chevron {
             display: none !important;
          }
+
 </style>
    </head>
 
@@ -2423,7 +2429,7 @@
       </section>
       <div id="brandNotice" class="brand-notice hidden" role="status" aria-live="polite" aria-modal="true">
          <div class="brand-notice-card">
-            <div class="brand-notice-mark">RAS</div>
+            <img class="brand-notice-logo" src="logo.png" alt="Logo ROTI ANGET SUBUH">
             <div class="brand-notice-kicker">ROTI ANGET SUBUH</div>
             <h2 id="brandNoticeTitle">Selamat Datang</h2>
             <p id="brandNoticeMessage"></p>
@@ -2433,7 +2439,10 @@
       </div>
       <div id="appScreen" class="app hidden">
          <aside id="sidebar" class="sidebar">
-            <div class="brand">ROTI <span style="color:var(--gold2)">ANGET SUBUH</span><small>POINT OF SALE</small>
+            <div class="sidebar-brand">
+               <img class="sidebar-logo" src="logo.png" alt="Logo ROTI ANGET SUBUH">
+               <div class="sidebar-brand-name">ROTI ANGET SUBUH</div>
+               <small>POINT OF SALE</small>
             </div>
             <div class="nav-label">MAIN MENU</div>
             <nav class="nav">
@@ -2457,7 +2466,7 @@
                         Waste</button></div>
                </div>
                <div class="nav-group admin-only" id="marketingGroup"><button type="button" class="nav-parent" id="marketingToggle" aria-expanded="false" aria-controls="marketingChildren"><span class="ico">▧</span> Marketing <span class="nav-chevron">▼</span></button><div class="nav-children" id="marketingChildren"><button class="nav-sub" data-page="addStore"><span class="sub-dot">—</span> Add Store</button><button class="nav-sub" data-page="inputSales"><span class="sub-dot">—</span> Input Sales</button></div></div>
-               <div class="nav-group" id="cashierGroup"><button type="button" class="nav-parent" id="cashierToggle" aria-expanded="false" aria-controls="cashierChildren"><span class="ico">▣</span> Kasir <span class="nav-chevron">▼</span></button><div class="nav-children" id="cashierChildren"><button class="nav-sub" data-page="pos"><span class="sub-dot">—</span> Penjualan</button><button class="nav-sub" data-page="stock"><span class="sub-dot">—</span> Input Stock</button></div></div>
+               <div class="nav-group" id="cashierGroup"><button type="button" class="nav-parent" id="cashierToggle" aria-expanded="false" aria-controls="cashierChildren"><span class="ico">▣</span> Kasir <span class="nav-chevron">▼</span></button><div class="nav-children" id="cashierChildren"><button class="nav-sub" data-page="pos"><span class="sub-dot">—</span> Penjualan</button><button class="nav-sub" data-page="stock"><span class="sub-dot">—</span> Input Stock</button><button class="nav-sub" data-page="printerSettings"><span class="sub-dot">—</span> Setting Printer</button></div></div>
                <button class="admin-only" data-page="accounting"><span class="ico">▤</span> Accounting</button>
                <div class="nav-group admin-only" id="managementGroup"><button type="button" class="nav-parent"
                      id="managementToggle" aria-expanded="false" aria-controls="managementChildren"><span
@@ -2488,7 +2497,7 @@
 <section id="hubPurchasing" class="page admin-only"><div class="panel module-hub-intro"><h3>Purchasing</h3><p class="muted">Akses pembelian dan pemantauan persediaan bahan baku.</p></div><div class="module-hub-grid"><button type="button" class="module-hub-card" data-hub-target="addSupplier"><span class="module-hub-icon">🤝</span><strong>Add Supplier</strong><small>Kelola data pemasok bahan baku.</small></button><button type="button" class="module-hub-card" data-hub-target="purchaseOrderMaterial"><span class="module-hub-icon">🧾</span><strong>Purchase Order Material</strong><small>Buat dan kelola pesanan pembelian.</small></button><button type="button" class="module-hub-card" data-hub-target="stockBahanBaku"><span class="module-hub-icon">📦</span><strong>Stock Bahan Baku</strong><small>Lihat saldo persediaan bahan baku.</small></button></div></section>
 <section id="hubProduction" class="page admin-only"><div class="panel module-hub-intro"><h3>Produksi</h3><p class="muted">Akses perencanaan, hasil produksi, dan pencatatan waste.</p></div><div class="module-hub-grid"><button type="button" class="module-hub-card" data-hub-target="mrpProduction"><span class="module-hub-icon">🗓️</span><strong>MRP Produksi</strong><small>Perencanaan kebutuhan bahan baku produksi.</small></button><button type="button" class="module-hub-card" data-hub-target="finishGood"><span class="module-hub-icon">🏭</span><strong>Input Data Finish Good</strong><small>Catat hasil produksi dan pengiriman.</small></button><button type="button" class="module-hub-card" data-hub-target="waste"><span class="module-hub-icon">♻️</span><strong>Input Data Waste</strong><small>Catat waste bahan baku dan produk.</small></button></div></section>
 <section id="hubMarketing" class="page admin-only"><div class="panel module-hub-intro"><h3>Marketing</h3><p class="muted">Kelola store dan pencatatan nilai penjualan.</p></div><div class="module-hub-grid"><button type="button" class="module-hub-card" data-hub-target="addStore"><span class="module-hub-icon">🏬</span><strong>Add Store</strong><small>Tambah dan kelola data store.</small></button><button type="button" class="module-hub-card" data-hub-target="inputSales"><span class="module-hub-icon">📈</span><strong>Input Sales</strong><small>Catat penjualan berdasarkan store.</small></button></div></section>
-<section id="hubCashier" class="page "><div class="panel module-hub-intro"><h3>Kasir</h3><p class="muted">Akses transaksi penjualan dan input stock.</p></div><div class="module-hub-grid"><button type="button" class="module-hub-card" data-hub-target="pos"><span class="module-hub-icon">🛒</span><strong>Penjualan</strong><small>Buka halaman transaksi kasir.</small></button><button type="button" class="module-hub-card" data-hub-target="stock"><span class="module-hub-icon">📦</span><strong>Input Stock</strong><small>Catat penambahan stock produk.</small></button></div></section>
+<section id="hubCashier" class="page "><div class="panel module-hub-intro"><h3>Kasir</h3><p class="muted">Akses transaksi penjualan, input stock, dan pengaturan printer.</p></div><div class="module-hub-grid"><button type="button" class="module-hub-card" data-hub-target="pos"><span class="module-hub-icon">🛒</span><strong>Penjualan</strong><small>Buka halaman transaksi kasir.</small></button><button type="button" class="module-hub-card" data-hub-target="stock"><span class="module-hub-icon">📦</span><strong>Input Stock</strong><small>Catat penambahan stock produk.</small></button><button type="button" class="module-hub-card" data-hub-target="printerSettings"><span class="module-hub-icon">🖨️</span><strong>Setting Printer</strong><small>Atur ukuran kertas, pairing, dan tes cetak.</small></button></div></section>
 <section id="hubManagement" class="page admin-only"><div class="panel module-hub-intro"><h3>Management</h3><p class="muted">Kelola transaksi, konsumen, promo, dan stock opname.</p></div><div class="module-hub-grid"><button type="button" class="module-hub-card" data-hub-target="promos"><span class="module-hub-icon">🎟️</span><strong>Seting Promo</strong><small>Atur promo yang digunakan di kasir.</small></button><button type="button" class="module-hub-card" data-hub-target="history"><span class="module-hub-icon">🧾</span><strong>Riwayat Transaksi</strong><small>Lihat dan kelola riwayat transaksi.</small></button><button type="button" class="module-hub-card" data-hub-target="soStock"><span class="module-hub-icon">📋</span><strong>SO Stock</strong><small>Lakukan stock opname.</small></button><button type="button" class="module-hub-card" data-hub-target="customers"><span class="module-hub-icon">👥</span><strong>Data Konsumen</strong><small>Kelola data konsumen.</small></button><button type="button" class="module-hub-card" data-hub-target="promoBlast"><span class="module-hub-icon">📣</span><strong>Blast Promo</strong><small>Kelola pengiriman informasi promo.</small></button></div></section>
 <section id="dashboard" class="page active">
                <div class="dashboard-address"><span class="pin">⌖</span>
@@ -3154,7 +3163,31 @@
                   </div>
                </div>
             </section>
+            <section id="printerSettings" class="page">
+               <div class="panel" style="margin-bottom:16px">
+                  <div class="section-head" style="align-items:center;flex-wrap:wrap"><div><p class="eyebrow">KASIR / PERANGKAT</p><h3 style="margin-bottom:4px">Setting Printer INFORCE P58C</h3><p class="muted" style="margin:0;font-size:12px">Mode Android Bluetooth langsung dan Windows melalui dialog cetak / driver.</p></div><span class="status-pill">Pengaturan perangkat ini</span></div>
+                  <div class="form-grid" style="margin-top:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+                     <div class="field"><label for="receiptPaperSize">Ukuran Kertas</label><select id="receiptPaperSize"><option value="58">Thermal 58 mm (INFORCE P58C)</option><option value="80">Thermal 80 mm</option></select><small class="muted">P58C menggunakan kertas thermal 58 mm.</small></div>
+                     <div class="field"><label>Metode Cetak Otomatis</label><div class="form-control" style="padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface,#fff)">Android: Bluetooth ESC/POS Bridge<br>Windows: Driver / Print Dialog</div><small class="muted">Metode dipilih otomatis berdasarkan perangkat yang membuka aplikasi.</small></div>
+                  </div>
+                  <div class="actions" style="margin-top:12px;flex-wrap:wrap"><button id="testPrinterBtn" class="btn btn-gold" type="button">🖨 Test Print</button><button id="showPrinterGuideBtn" class="btn btn-light" type="button">Lihat Panduan Setup</button></div>
+                  <p id="printerSettingMessage" class="muted" style="font-size:12px;margin:12px 0 0">Android memerlukan Cleanter aktif dan printer sudah dipilih. Windows menggunakan driver printer dan dialog cetak.</p>
+               </div>
+               <div class="panel" style="margin-bottom:16px"><h3>1. Android — Cetak Bluetooth Langsung</h3><p class="muted" style="font-size:12px">Aplikasi ini disiapkan untuk mengirim struk ESC/POS ke layanan Cleanter pada perangkat Android yang sama. Browser tidak dapat mengakses Bluetooth Classic SPP secara langsung tanpa aplikasi penghubung.</p>
+                  <ol class="muted" style="font-size:12px;line-height:1.8;padding-left:20px"><li>Pasangkan INFORCE P58C dari Pengaturan Android → Bluetooth. PIN sesuai manual printer (sering 0000 atau 1234).</li><li>Instal <a href="https://play.google.com/store/apps/details?id=id.cleancode.cleanter" target="_blank" rel="noopener">Cleanter — Thermal Printer BT</a>.</li><li>Buka Cleanter, pilih printer INFORCE P58C sebagai printer default, lalu tekan Start / aktifkan server.</li><li>Pastikan aplikasi kasir dan Cleanter berjalan pada HP Android yang sama.</li><li>Kembali ke aplikasi POS, lakukan transaksi lalu tekan Cetak Struk. Aplikasi akan mengirim data langsung ke printer tanpa dialog browser.</li></ol>
+                  <p class="muted" style="font-size:11px">Koneksi bridge lokal: <b>http://localhost:9100</b>. Status bridge dan printer diperiksa saat proses cetak. Cleanter versi 1.1.0 atau lebih baru diperlukan untuk aplikasi POS yang dibuka melalui HTTPS.</p>
+               </div>
+               <div class="panel" style="margin-bottom:16px"><h3>2. Windows — Cetak melalui Driver</h3><p class="muted" style="font-size:12px">Pada Windows, tombol Cetak Struk membuka dialog cetak browser. Pilih printer INFORCE yang sudah terpasang. Untuk P58C, prioritaskan koneksi USB dan instal driver yang sesuai dengan varian printer. Bluetooth Classic tidak dapat dikendalikan langsung oleh Chrome hanya dengan pairing.</p>
+                  <ol class="muted" style="font-size:12px;line-height:1.8;padding-left:20px"><li>Sambungkan printer ke Windows menggunakan kabel USB (atau ikuti petunjuk driver resmi untuk varian unit Anda).</li><li>Unduh driver dari <a href="https://inforceindonesia.com/driver/" target="_blank" rel="noopener">halaman Driver resmi INFORCE</a>. Pastikan paket driver memang untuk P58C / P58C-NB sebelum instalasi.</li><li>Buka Windows Settings → Bluetooth & devices → Printers & scanners. Pastikan printer terdaftar.</li><li>Tekan Test Print, pilih INFORCE P58C, ukuran kertas 58 mm, dan matikan header/footer browser jika tersedia.</li><li>Saat mencetak struk transaksi, pilih printer yang sama pada dialog cetak.</li></ol>
+                  <p class="muted" style="font-size:11px">Jika printer hanya dipasangkan melalui Bluetooth dan tidak muncul sebagai printer Windows, gunakan koneksi USB atau driver/port COM resmi yang disediakan untuk varian tersebut.</p>
+               </div>
+               <div class="panel"><h3>3. Cara Kerja Otomatis</h3><div class="table-wrap"><table><thead><tr><th>Perangkat</th><th>Jalur cetak</th><th>Hasil</th></tr></thead><tbody><tr><td>Android Chrome</td><td>Cleanter → Bluetooth Classic / ESC/POS</td><td>Cetak langsung tanpa dialog browser</td></tr><tr><td>Windows Chrome / Edge</td><td>Windows driver → dialog cetak</td><td>Pilih INFORCE P58C atau printer lain</td></tr></tbody></table></div><p class="muted" style="font-size:11px;margin-top:10px">Aplikasi tidak mengubah data transaksi saat mencetak. Jika bridge Android tidak aktif, aplikasi menampilkan petunjuk koneksi; transaksi tetap tersimpan dan dapat dicetak ulang.</p></div>
+            </section>
             <section id="pos" class="page">
+               <div class="panel" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+                  <div><h3 style="margin-bottom:4px">Struk Penjualan</h3><p class="muted" style="margin:0;font-size:12px">Printer diatur melalui Kasir → Setting Printer.</p></div>
+                  <button id="reprintLastTransactionBtn" class="btn btn-gold" type="button">↻ Reprint Transaksi Terakhir</button>
+               </div>
                <div class="pos-grid">
                   <div class="panel">
                      <h3>Pilih Produk</h3>
@@ -3524,7 +3557,7 @@ Gunakan kode promo ..."></textarea>
          <div id="zoomCaption" class="zoom-caption">Klik area gelap atau tombol × untuk menutup</div>
       </div>
       <script type="module">
-         import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
          import {getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence, inMemoryPersistence} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
          import {getFirestore, collection, doc, setDoc, addDoc, getDocs, getDoc, updateDoc, runTransaction, query, where, orderBy, limit, serverTimestamp, deleteDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -3632,7 +3665,7 @@ Gunakan kode promo ..."></textarea>
                message('loginMessage', 'Logout gagal: ' + friendlyError(err), 'danger');
             } finally { $('logoutBtn').disabled = false; }
          };
-         document.querySelectorAll('.nav button[data-page]').forEach(b => b.addEventListener('click', () => {if (!isAdminUser() && ['uom', 'rawMaterials', 'products', 'promos', 'history', 'soStock', 'customers', 'promoBlast', 'mrpProduction', 'finishGood', 'waste', 'accounting', 'masterCostOverhead', 'addSupplier', 'purchaseOrderMaterial', 'stockBahanBaku', 'costOverheadInput', 'reportProductionFG', 'reportShipment', 'reportSales', 'reportCosts', 'reportCOGS', 'reportStockFG', 'reportStockRM', 'reportProfitLoss'].includes(b.dataset.page)) return; document.querySelectorAll('.nav button[data-page]').forEach(x => x.classList.remove('active')); b.classList.add('active'); const parentGroup=b.closest('.nav-group'); if(parentGroup){parentGroup.classList.add('expanded'); const toggle=parentGroup.querySelector('.nav-parent'); if(toggle) toggle.setAttribute('aria-expanded','true');} document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); $(b.dataset.page).classList.add('active'); const titles = {dashboard: 'Dashboard', uom: 'Master UOM/Unit', rawMaterials: 'Master Bahan Baku', products: 'Master Produk', promos: 'Seting Promo', stock: 'Input Stock', pos: 'Penjualan', history: 'Riwayat Transaksi', soStock: 'SO Stock', customers: 'Data Konsumen', promoBlast: 'Blast Promo', mrpProduction: 'MRP Produksi', finishGood: 'Input Data Finish Good', waste: 'Input Data Waste', addStore: 'Add Store', inputSales: 'Input Sales', accounting: 'Accounting', masterCostOverhead: 'Master Data Cost Overhead', addSupplier: 'Add Supplier', purchaseOrderMaterial: 'Purchase Order Material', stockBahanBaku: 'Stock Bahan Baku'}; $('pageTitle').textContent = titles[b.dataset.page] || b.textContent.trim(); $('sidebar').classList.remove('open');}));
+         document.querySelectorAll('.nav button[data-page]').forEach(b => b.addEventListener('click', () => {if (!isAdminUser() && ['uom', 'rawMaterials', 'products', 'promos', 'history', 'soStock', 'customers', 'promoBlast', 'mrpProduction', 'finishGood', 'waste', 'accounting', 'masterCostOverhead', 'addSupplier', 'purchaseOrderMaterial', 'stockBahanBaku', 'costOverheadInput', 'reportProductionFG', 'reportShipment', 'reportSales', 'reportCosts', 'reportCOGS', 'reportStockFG', 'reportStockRM', 'reportProfitLoss'].includes(b.dataset.page)) return; document.querySelectorAll('.nav button[data-page]').forEach(x => x.classList.remove('active')); b.classList.add('active'); const parentGroup=b.closest('.nav-group'); if(parentGroup){parentGroup.classList.add('expanded'); const toggle=parentGroup.querySelector('.nav-parent'); if(toggle) toggle.setAttribute('aria-expanded','true');} document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); $(b.dataset.page).classList.add('active'); const titles = {dashboard: 'Dashboard', uom: 'Master UOM/Unit', rawMaterials: 'Master Bahan Baku', products: 'Master Produk', promos: 'Seting Promo', stock: 'Input Stock', pos: 'Penjualan', printerSettings: 'Setting Printer', history: 'Riwayat Transaksi', soStock: 'SO Stock', customers: 'Data Konsumen', promoBlast: 'Blast Promo', mrpProduction: 'MRP Produksi', finishGood: 'Input Data Finish Good', waste: 'Input Data Waste', addStore: 'Add Store', inputSales: 'Input Sales', accounting: 'Accounting', masterCostOverhead: 'Master Data Cost Overhead', addSupplier: 'Add Supplier', purchaseOrderMaterial: 'Purchase Order Material', stockBahanBaku: 'Stock Bahan Baku'}; $('pageTitle').textContent = titles[b.dataset.page] || b.textContent.trim(); $('sidebar').classList.remove('open');}));
          $('menuToggle').onclick = () => {$('sidebar').classList.toggle('open');};
          document.addEventListener('click', e => {if (window.matchMedia('(max-width:680px)').matches && $('sidebar').classList.contains('open') && !$('sidebar').contains(e.target) && !$('menuToggle').contains(e.target)) $('sidebar').classList.remove('open');});
          document.addEventListener('keydown', e => {if (e.key === 'Escape') $('sidebar').classList.remove('open');});
@@ -4030,33 +4063,22 @@ Gunakan kode promo ..."></textarea>
             finally {checkoutButton.disabled = false; checkoutButton.textContent = 'PROSES TRANSAKSI';}
          };
          function showReceipt(t) {
+            activeReceiptForPrint = t;
             const rows = (t.items || []).map(x => `<tr><td>${escapeHtml(x.name)}<br><small>${x.qty} × ${rupiah(x.price)}</small></td><td style="text-align:right">${rupiah(x.subtotal ?? x.price * x.qty)}</td></tr>`).join('');
-            $('receiptContent').innerHTML = `<h2>ROTI ANGET SUBUH</h2><div class="receipt-center" style="margin:4px 0 12px;font-size:10px">Jl. Raya Kuta, No. 58D, Tuban</div><div class="receipt-center">STRUK PEMBAYARAN<br>${formatDate(t.date || t.createdAt)}<br>No: ${escapeHtml(t.invoice || '')}</div>${t.customerName ? `<div style="font-size:11px;margin:8px 0">Pelanggan: <b>${escapeHtml(t.customerName)}</b>${t.customerCode ? `<br>No. Pelanggan: <b>${escapeHtml(t.customerCode)}</b>` : ''}</div>` : ''}<hr><table><tbody>${rows}</tbody></table><div class="receipt-total">${t.subtotal != null ? `<div class="total-line"><span>Subtotal</span><strong>${rupiah(t.subtotal)}</strong></div>` : ''}${t.discount ? `<div class="total-line"><span>Promo ${escapeHtml(t.promoName || '')}</span><strong>- ${rupiah(t.discount)} (${Number(t.discountPercent) || 0}%)</strong></div>` : ''}<div class="total-line"><span>Total bayar</span><strong>${rupiah(t.total)}</strong></div><div class="total-line"><span>Metode</span><strong>${escapeHtml(t.method)}</strong></div><div class="total-line"><span>Status</span><strong>${escapeHtml(t.status)}</strong></div>${t.method === 'CASH' ? `<div class="total-line"><span>Uang diterima</span><strong>${rupiah(t.cashReceived)}</strong></div><div class="total-line"><span>Kembalian</span><strong>${rupiah(t.change)}</strong></div>` : t.method === 'QRIS' ? `<div class="total-line"><span>Nominal dibayar via QRIS</span><strong>${rupiah(t.qrisPaidAmount ?? t.total)}</strong></div>` : ''}</div>${t.paymentAdjustment && t.paymentAdjustment.status === 'PENDING_ADMIN' ? `<div style="margin-top:12px;padding:9px;background:#fff3df;border:1px solid #e5c58e;border-radius:7px;font-size:10px"><b>SELISIH PEMBAYARAN — TINDAK LANJUT ADMIN</b><br>${t.paymentAdjustment.direction === 'REFUND_DUE' ? 'Kelebihan pembayaran' : 'Kekurangan pembayaran'}: ${rupiah(t.paymentAdjustment.amount)}</div>` : ''}${t.correctionCount ? `<div style="font-size:9px;color:#766b5c;margin-top:8px">Transaksi telah dikoreksi ${Number(t.correctionCount)} kali.</div>` : ''}<div class="receipt-center" style="margin-top:18px">Terima kasih atas kunjungan Anda.</div>`;
+            $('receiptContent').innerHTML = `<div class="receipt-center" style="margin:0 auto 6px"><img src="logo.png" alt="Logo ROTI ANGET SUBUH" style="width:76px;height:76px;object-fit:contain;display:block;margin:0 auto 5px"></div><h2>ROTI ANGET SUBUH</h2><div class="receipt-center" style="margin:4px 0 12px;font-size:10px">Jl. Raya Kuta, No. 58D, Tuban</div><div class="receipt-center">STRUK PEMBAYARAN<br>${formatDate(t.date || t.createdAt)}<br>No: ${escapeHtml(t.invoice || '')}</div>${t.customerName ? `<div style="font-size:11px;margin:8px 0">Pelanggan: <b>${escapeHtml(t.customerName)}</b>${t.customerCode ? `<br>No. Pelanggan: <b>${escapeHtml(t.customerCode)}</b>` : ''}</div>` : ''}<hr><table><tbody>${rows}</tbody></table><div class="receipt-total">${t.subtotal != null ? `<div class="total-line"><span>Subtotal</span><strong>${rupiah(t.subtotal)}</strong></div>` : ''}${t.discount ? `<div class="total-line"><span>Promo ${escapeHtml(t.promoName || '')}</span><strong>- ${rupiah(t.discount)} (${Number(t.discountPercent) || 0}%)</strong></div>` : ''}<div class="total-line"><span>Total bayar</span><strong>${rupiah(t.total)}</strong></div><div class="total-line"><span>Metode</span><strong>${escapeHtml(t.method)}</strong></div><div class="total-line"><span>Status</span><strong>${escapeHtml(t.status)}</strong></div>${t.method === 'CASH' ? `<div class="total-line"><span>Uang diterima</span><strong>${rupiah(t.cashReceived)}</strong></div><div class="total-line"><span>Kembalian</span><strong>${rupiah(t.change)}</strong></div>` : t.method === 'QRIS' ? `<div class="total-line"><span>Nominal dibayar via QRIS</span><strong>${rupiah(t.qrisPaidAmount ?? t.total)}</strong></div>` : ''}</div>${t.paymentAdjustment && t.paymentAdjustment.status === 'PENDING_ADMIN' ? `<div style="margin-top:12px;padding:9px;background:#fff3df;border:1px solid #e5c58e;border-radius:7px;font-size:10px"><b>SELISIH PEMBAYARAN — TINDAK LANJUT ADMIN</b><br>${t.paymentAdjustment.direction === 'REFUND_DUE' ? 'Kelebihan pembayaran' : 'Kekurangan pembayaran'}: ${rupiah(t.paymentAdjustment.amount)}</div>` : ''}${t.correctionCount ? `<div style="font-size:9px;color:#766b5c;margin-top:8px">Transaksi telah dikoreksi ${Number(t.correctionCount)} kali.</div>` : ''}<div class="receipt-center" style="margin-top:18px">Terima kasih atas kunjungan Anda.</div>`;
             $('receiptModal').classList.add('open');
          }
-         function printDocument(title, body) {const w = window.open('', '_blank', 'width=850,height=700'); if (!w) {alert('Izinkan pop-up browser untuk mencetak.'); return;} w.document.write(`<!doctype html><html lang="id"><head><meta charset="utf-8"><title>${escapeHtml(title)}</title><style>body{font:12px Arial,sans-serif;color:#222;margin:28px}h1,h2{text-align:center}p.center{text-align:center;color:#555}table{width:100%;border-collapse:collapse;margin-top:18px}th,td{padding:9px;border-bottom:1px solid #ddd;text-align:left}th:last-child,td:last-child{text-align:right}.totals{margin:18px 0;text-align:right;font-size:14px;font-weight:bold}.small{font-size:10px;color:#666}@media print{button{display:none}}
-        /* Accounting report hub */
-        .accounting-intro { margin-bottom: 16px; }
-        .accounting-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; }
-        .accounting-card { appearance:none; border:1px solid var(--line); background:linear-gradient(145deg,#fff 0%,#fbf7ef 100%); border-radius:18px; min-height:190px; padding:20px 16px; display:flex; flex-direction:column; align-items:flex-start; text-align:left; gap:9px; cursor:pointer; color:var(--ink); box-shadow:0 8px 24px rgba(44,34,20,.06); transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease; }
-        .accounting-card:hover { transform:translateY(-3px); border-color:var(--gold2); box-shadow:0 14px 28px rgba(44,34,20,.11); }
-        .accounting-icon { width:54px;height:54px;display:grid;place-items:center;border-radius:15px;background:#f2e8d6;font-size:27px; }
-        .accounting-card strong { font-size:14px; line-height:1.35; }
-        .accounting-card small { color:var(--muted);font-size:11px;line-height:1.5; }
-        .accounting-open { color:var(--gold-dark,var(--gold2));font-size:11px;font-weight:700;margin-top:auto; }
-        .accounting-report-head { align-items:flex-start; }
-        .accounting-filter { display:flex;align-items:end;gap:12px;flex-wrap:wrap;padding:14px 0 18px;border-bottom:1px solid var(--line);margin-bottom:16px; }
-        .accounting-filter .field { min-width:170px;max-width:220px; }
-        .accounting-summary { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px; }
-        .accounting-summary > div { border:1px solid var(--line);border-radius:12px;padding:13px;background:#fffdf9; }
-        .accounting-summary span { display:block;color:var(--muted);font-size:11px;margin-bottom:6px; }
-        .accounting-summary strong { font-size:16px; }
-        .accounting-report-body table { width:100%;border-collapse:collapse; }
-        .accounting-report-body th,.accounting-report-body td { padding:10px 9px;border-bottom:1px solid var(--line);text-align:left;font-size:12px; }
-        .accounting-report-body th { background:#f7f2e9;color:#574a36; }
-        @media(max-width:950px){.accounting-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
-        @media(max-width:560px){.accounting-grid{grid-template-columns:1fr 1fr;gap:9px}.accounting-card{min-height:165px;padding:13px 11px}.accounting-icon{width:44px;height:44px;font-size:22px}.accounting-card strong{font-size:12px}.accounting-card small{font-size:10px}.accounting-summary{grid-template-columns:1fr}.accounting-report-head{flex-direction:column}.accounting-filter .field{min-width:calc(50% - 8px);flex:1}}
-</style></head><body>${body}<script>window.onload=()=>{window.print();};<\/script></body></html>`); w.document.close();}
+         function printDocument(title, body, options = {}) {
+            const w = window.open('', '_blank', options.receipt ? 'width=420,height=700' : 'width=850,height=700');
+            if (!w) { alert('Izinkan pop-up browser untuk mencetak.'); return; }
+            const paperWidth = Number(options.paperWidth) || 58;
+            const printBody = options.receipt ? body.replaceAll('src=\"logo.png\"', `src=\"${new URL('logo.png', location.href).href}\"`) : body;
+            const styles = options.receipt
+               ? `@page{size:${paperWidth}mm auto;margin:2mm}*{box-sizing:border-box}html,body{width:${paperWidth-4}mm;margin:0;padding:0;background:#fff;color:#111;font-family:Arial,sans-serif}body{font-size:10px;line-height:1.35}h2{font-size:14px;text-align:center;margin:0 0 4px}.receipt-center{text-align:center}hr{border:0;border-top:1px dashed #555;margin:7px 0}table{width:100%;border-collapse:collapse;font-size:10px;margin-top:5px}td{padding:3px 0;vertical-align:top}td:last-child{text-align:right;white-space:nowrap}.receipt-total{margin-top:5px}.total-line{display:flex;justify-content:space-between;gap:6px;margin:3px 0}.total-line strong{text-align:right}@media print{html,body{width:${paperWidth-4}mm!important;margin:0!important;padding:0!important}}`
+               : `body{font:12px Arial,sans-serif;color:#222;margin:28px}h1,h2{text-align:center}p.center{text-align:center;color:#555}table{width:100%;border-collapse:collapse;margin-top:18px}th,td{padding:9px;border-bottom:1px solid #ddd;text-align:left}th:last-child,td:last-child{text-align:right}.totals{margin:18px 0;text-align:right;font-size:14px;font-weight:bold}.small{font-size:10px;color:#666}@media print{button{display:none}}`;
+            w.document.write(`<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)}</title><style>${styles}</style></head><body>${printBody}<script>window.onload=()=>{const imgs=[...document.images];Promise.all(imgs.map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.onload=img.onerror=resolve;}))).then(()=>{window.focus();window.print();});};<\/script></body></html>`);
+            w.document.close();
+         }
          // INPUT DATA WASTE: dua pencatatan terpisah, memakai snapshot harga saat disimpan.
          function wasteMoney(n) {return new Intl.NumberFormat('id-ID', {style:'currency', currency:'IDR', minimumFractionDigits:2, maximumFractionDigits:2}).format(Number(n)||0);}
          function updateWasteMaterialOptions() {const sel=$('wasteMaterialSelect'), keep=sel.value; sel.innerHTML='<option value="">Pilih bahan baku</option>'+rawMaterials.map(m=>`<option value="${m.id}">${escapeHtml(m.code||'')} — ${escapeHtml(m.name||'')}</option>`).join(''); if(rawMaterials.some(m=>m.id===keep))sel.value=keep; updateWasteMaterialPreview();}
@@ -4079,7 +4101,130 @@ Gunakan kode promo ..."></textarea>
          $('wasteMaterialStart').addEventListener('change',renderWasteMaterialTable); $('wasteMaterialEnd').addEventListener('change',renderWasteMaterialTable); $('wasteProductStart').addEventListener('change',renderWasteProductTable); $('wasteProductEnd').addEventListener('change',renderWasteProductTable);
          $('wasteMaterialDate').value=today(); $('wasteProductDate').value=today(); $('wasteMaterialStart').value=today(); $('wasteMaterialEnd').value=today(); $('wasteProductStart').value=today(); $('wasteProductEnd').value=today();
 
-         $('printReceiptBtn').onclick = () => printDocument('Struk ' + $('receiptContent').innerText.split('\n')[2], $('receiptContent').innerHTML);
+         // Cetak struk INFORCE P58C: Android via Cleanter ESC/POS bridge, Windows via driver/browser print dialog.
+         const RECEIPT_PAPER_STORAGE_KEY = 'rotiAngetReceiptPaperWidth';
+         const CLEANter_BRIDGE_BASE = 'http://localhost:9100';
+         let activeReceiptForPrint = null;
+         function getReceiptPaperWidth() {
+            const saved = $('receiptPaperSize')?.value || localStorage.getItem(RECEIPT_PAPER_STORAGE_KEY) || '58';
+            return saved === '80' ? 80 : 58;
+         }
+         function isAndroidDevice() { return /Android/i.test(navigator.userAgent || ''); }
+         try {
+            const savedPaperWidth = localStorage.getItem(RECEIPT_PAPER_STORAGE_KEY);
+            if (savedPaperWidth === '58' || savedPaperWidth === '80') $('receiptPaperSize').value = savedPaperWidth;
+         } catch (storageError) { console.warn('Pengaturan ukuran kertas tidak dapat dibaca:', storageError); }
+         $('receiptPaperSize').addEventListener('change', () => {
+            try { localStorage.setItem(RECEIPT_PAPER_STORAGE_KEY, $('receiptPaperSize').value); } catch (storageError) {}
+            $('printerSettingMessage').textContent = `Ukuran kertas ${getReceiptPaperWidth()} mm disimpan pada perangkat ini.`;
+         });
+         function receiptEscPosBlocks(t) {
+            const blocks = [
+               {type:'text',text:'ROTI ANGET SUBUH',align:'center',bold:true,size:'large'},
+               {type:'text',text:'Jl. Raya Kuta, No. 58D, Tuban',align:'center'},
+               {type:'divider'},
+               {type:'text',text:'STRUK PEMBAYARAN',align:'center',bold:true},
+               {type:'text',text:`${formatDate(t.date || t.createdAt)}  |  No: ${t.invoice || '-'}`},
+               {type:'divider'}
+            ];
+            if (t.customerName) blocks.push({type:'text',text:`Pelanggan: ${t.customerName}`});
+            if (t.customerCode) blocks.push({type:'text',text:`No. Pelanggan: ${t.customerCode}`});
+            (t.items || []).forEach(item => {
+               const qty = Number(item.qty) || 0;
+               const price = Number(item.price) || 0;
+               const lineTotal = Number(item.subtotal ?? (price * qty)) || 0;
+               blocks.push({type:'text',text:String(item.name || item.productName || 'Produk')});
+               blocks.push({type:'row',left:`${qty} x ${rupiah(price)}`,right:rupiah(lineTotal)});
+            });
+            blocks.push({type:'divider'});
+            if (t.subtotal != null) blocks.push({type:'row',left:'Subtotal',right:rupiah(t.subtotal)});
+            if (Number(t.discount) > 0) blocks.push({type:'row',left:`Promo ${t.promoName || ''}`.trim(),right:`- ${rupiah(t.discount)}`} );
+            blocks.push({type:'row',left:'TOTAL BAYAR',right:rupiah(t.total),bold:true});
+            blocks.push({type:'row',left:'Metode',right:String(t.method || '-')});
+            blocks.push({type:'row',left:'Status',right:String(t.status || '-')});
+            if (t.method === 'CASH') {
+               blocks.push({type:'row',left:'Uang diterima',right:rupiah(t.cashReceived)});
+               blocks.push({type:'row',left:'Kembalian',right:rupiah(t.change)});
+            } else if (t.method === 'QRIS') {
+               blocks.push({type:'row',left:'Nominal QRIS',right:rupiah(t.qrisPaidAmount ?? t.total)});
+            }
+            if (t.paymentAdjustment?.status === 'PENDING_ADMIN') {
+               blocks.push({type:'divider'});
+               blocks.push({type:'text',text:`SELISIH PEMBAYARAN: ${rupiah(t.paymentAdjustment.amount)}`,bold:true});
+            }
+            if (t.correctionCount) blocks.push({type:'text',text:`Transaksi dikoreksi ${Number(t.correctionCount)} kali`});
+            blocks.push({type:'divider'});
+            blocks.push({type:'text',text:'Terima kasih atas kunjungan Anda.',align:'center'});
+            blocks.push({type:'feed',lines:3});
+            return blocks;
+         }
+         async function sendReceiptToAndroidBridge(t) {
+            const msg = $('printerSettingMessage');
+            try {
+               msg.textContent = 'Memeriksa koneksi Cleanter dan printer Bluetooth...';
+               const health = await fetch(`${CLEANter_BRIDGE_BASE}/health`, {method:'GET',cache:'no-store',signal:AbortSignal.timeout(2500)});
+               if (!health.ok) throw new Error(`Bridge merespons HTTP ${health.status}.`);
+               const healthData = await health.json().catch(()=>({}));
+               if (healthData?.printer && healthData.printer.connected === false) throw new Error('Cleanter aktif, tetapi printer belum tersambung. Pilih INFORCE P58C di Cleanter lalu aktifkan koneksi.');
+               msg.textContent = 'Mengirim struk ke INFORCE P58C...';
+               const response = await fetch(`${CLEANter_BRIDGE_BASE}/print`, {
+                  method:'POST', headers:{'Content-Type':'application/json'},
+                  body:JSON.stringify({paperWidth:getReceiptPaperWidth(),cut:true,content:receiptEscPosBlocks(t)}),
+                  signal:AbortSignal.timeout(12000)
+               });
+               const result = await response.json().catch(()=>({}));
+               if (!response.ok) throw new Error(result.message || result.error || `Gagal mengirim pekerjaan cetak (HTTP ${response.status}).`);
+               msg.textContent = 'Perintah cetak berhasil dikirim ke Cleanter. Periksa kertas pada printer INFORCE P58C.';
+               return true;
+            } catch (err) {
+               console.error('Android Bluetooth print error:',err);
+               const reason = err?.name === 'TimeoutError' ? 'Waktu koneksi habis.' : (err?.message || 'Tidak dapat menghubungi layanan printer.');
+               msg.textContent = `Cetak langsung belum berhasil: ${reason} Buka Cleanter, pilih INFORCE P58C, lalu Start. Transaksi tetap tersimpan; gunakan Reprint setelah koneksi siap.`;
+               alert(`Printer Android belum siap. ${reason}\n\nPastikan Cleanter sudah dibuka, printer INFORCE P58C sudah dipilih, dan server Cleanter aktif. Transaksi Anda tetap tersimpan.`);
+               return false;
+            }
+         }
+         function printReceiptThermal() {
+            const t = activeReceiptForPrint;
+            if (!t) { alert('Data struk tidak tersedia. Buka ulang struk transaksi lalu coba cetak.'); return; }
+            const content = $('receiptContent').innerHTML;
+            printDocument('Struk Pembayaran', content, {receipt:true, paperWidth:getReceiptPaperWidth()});
+            const msg = $('printerSettingMessage');
+            if (msg) msg.textContent = 'Dialog cetak struk dibuka seperti proses cetak laporan. Pilih printer INFORCE P58C dan ukuran kertas yang sesuai.';
+         }
+
+         function makePrinterTestTransaction() {
+            return {invoice:'TEST-P58C',date:new Date(),items:[{name:'TEST PRINT RAS001',qty:2,price:5000,subtotal:10000}],subtotal:10000,discount:0,total:10000,method:'CASH',status:'TEST PRINT',cashReceived:10000,change:0};
+         }
+         function latestTransactionTimestamp(t) {
+            const value = t?.createdAt || t?.date;
+            if (value?.toMillis) return value.toMillis();
+            if (value?.toDate) return value.toDate().getTime();
+            if (value instanceof Date) return value.getTime();
+            const parsed = value ? new Date(value).getTime() : 0;
+            return Number.isFinite(parsed) ? parsed : 0;
+         }
+         function reprintLastTransaction() {
+            const latest = transactions.slice().sort((a, b) => latestTransactionTimestamp(b) - latestTransactionTimestamp(a))[0];
+            if (!latest) { alert('Belum ada transaksi penjualan yang dapat dicetak ulang.'); return; }
+            const receiptDate = latest.createdAt?.toDate ? latest.createdAt.toDate() : (latest.date?.toDate ? latest.date.toDate() : (latest.date ? new Date(latest.date) : new Date()));
+            showReceipt({...latest, date: receiptDate});
+         }
+         $('reprintLastTransactionBtn').addEventListener('click', reprintLastTransaction);
+         $('testPrinterBtn')?.addEventListener('click', () => {
+            const oldReceipt = activeReceiptForPrint;
+            const oldContent = $('receiptContent').innerHTML;
+            showReceipt(makePrinterTestTransaction());
+            printReceiptThermal();
+            $('receiptContent').innerHTML = oldContent;
+            activeReceiptForPrint = oldReceipt;
+            $('receiptModal').classList.remove('open');
+         });
+         $('showPrinterGuideBtn')?.addEventListener('click', () => {
+            const target = document.querySelector('#printerSettings .panel:nth-of-type(2)');
+            target?.scrollIntoView({behavior:'smooth',block:'start'});
+         });
+         $('printReceiptBtn').onclick = printReceiptThermal;
          $('closeReceiptBtn').onclick = () => $('receiptModal').classList.remove('open');
          $('receiptModal').addEventListener('click', e => {if (e.target === $('receiptModal')) $('receiptModal').classList.remove('open');});
          // CANCEL TRANSAKSI: transaksi tidak dihapus; stok dan nilai penjualan dibalik secara atomik.
@@ -4545,6 +4690,7 @@ Gunakan kode promo ..."></textarea>
             if(hubId)addModuleBackButton(target,hubId);
             $('sidebar').classList.remove('open');
          }));
+
 </script>
    </body>
 
