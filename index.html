@@ -3156,21 +3156,23 @@
             </section>
             <section id="printerSettings" class="page">
                <div class="panel" style="margin-bottom:16px">
-                  <div class="section-head" style="align-items:center;flex-wrap:wrap"><div><p class="eyebrow">KASIR / PERANGKAT</p><h3 style="margin-bottom:4px">Setting Printer</h3><p class="muted" style="margin:0;font-size:12px">Pengaturan printer struk untuk PC, laptop, tablet Android, dan HP Android.</p></div><span class="status-pill">Pengaturan perangkat ini</span></div>
+                  <div class="section-head" style="align-items:center;flex-wrap:wrap"><div><p class="eyebrow">KASIR / PERANGKAT</p><h3 style="margin-bottom:4px">Setting Printer INFORCE P58C</h3><p class="muted" style="margin:0;font-size:12px">Mode Android Bluetooth langsung dan Windows melalui dialog cetak / driver.</p></div><span class="status-pill">Pengaturan perangkat ini</span></div>
                   <div class="form-grid" style="margin-top:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
-                     <div class="field"><label for="receiptPaperSize">Ukuran Kertas</label><select id="receiptPaperSize"><option value="58">Thermal 58 mm</option><option value="80">Thermal 80 mm</option></select><small class="muted">Pilih sesuai lebar kertas printer portable Anda.</small></div>
-                     <div class="field"><label>Metode Koneksi</label><div class="form-control" style="padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface,#fff)">Bluetooth melalui layanan/driver perangkat atau dialog cetak sistem</div><small class="muted">Printer dipilih dari dialog cetak setelah dipasangkan dan driver/layanan cetaknya tersedia.</small></div>
+                     <div class="field"><label for="receiptPaperSize">Ukuran Kertas</label><select id="receiptPaperSize"><option value="58">Thermal 58 mm (INFORCE P58C)</option><option value="80">Thermal 80 mm</option></select><small class="muted">P58C menggunakan kertas thermal 58 mm.</small></div>
+                     <div class="field"><label>Metode Cetak Otomatis</label><div class="form-control" style="padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface,#fff)">Android: Bluetooth ESC/POS Bridge<br>Windows: Driver / Print Dialog</div><small class="muted">Metode dipilih otomatis berdasarkan perangkat yang membuka aplikasi.</small></div>
                   </div>
-                  <div class="actions" style="margin-top:12px;flex-wrap:wrap"><button id="testPrinterBtn" class="btn btn-gold" type="button">🖨 Test Print</button><button id="showPrinterGuideBtn" class="btn btn-light" type="button">Lihat Panduan Pairing</button></div>
-                  <p id="printerSettingMessage" class="muted" style="font-size:12px;margin:12px 0 0">Belum ada pemeriksaan printer. Jalankan Test Print untuk membuka dialog cetak perangkat.</p>
+                  <div class="actions" style="margin-top:12px;flex-wrap:wrap"><button id="testPrinterBtn" class="btn btn-gold" type="button">🖨 Test Print</button><button id="showPrinterGuideBtn" class="btn btn-light" type="button">Lihat Panduan Setup</button></div>
+                  <p id="printerSettingMessage" class="muted" style="font-size:12px;margin:12px 0 0">Android memerlukan Cleanter aktif dan printer sudah dipilih. Windows menggunakan driver printer dan dialog cetak.</p>
                </div>
-               <div class="panel" style="margin-bottom:16px"><h3>1. Sambungkan / Pairing Printer</h3><p class="muted" style="font-size:12px">Aplikasi web tidak dapat menjamin koneksi langsung ke semua printer Bluetooth portable. Sebagian besar printer kasir memakai Bluetooth Classic (SPP) dan protokol ESC/POS; browser Chrome tidak menyediakan akses universal ke perangkat tersebut. Pairing dilakukan melalui sistem operasi atau aplikasi/driver pendamping printer.</p>
-                  <div class="form-grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:12px">
-                     <div style="border:1px solid var(--line);border-radius:12px;padding:14px"><strong>Android HP / Tablet</strong><ol class="muted" style="font-size:12px;line-height:1.7;padding-left:18px"><li>Nyalakan printer dan aktifkan Bluetooth.</li><li>Buka Pengaturan Android → Bluetooth / Perangkat tersambung.</li><li>Pilih nama printer, lalu Pair/Sandingkan. Masukkan PIN dari buku printer bila diminta.</li><li>Pasang aplikasi atau layanan cetak yang mendukung model printer (misalnya driver/print service dari produsen).</li><li>Kembali ke aplikasi ini, tekan Test Print, lalu pilih printer pada dialog/layanan cetak yang tersedia.</li></ol></div>
-                     <div style="border:1px solid var(--line);border-radius:12px;padding:14px"><strong>Windows PC / Laptop</strong><ol class="muted" style="font-size:12px;line-height:1.7;padding-left:18px"><li>Buka Settings → Bluetooth & devices → Add device.</li><li>Pilih Bluetooth dan sandingkan printer.</li><li>Instal driver printer yang sesuai dengan merek/model bila diperlukan.</li><li>Pastikan printer muncul di daftar Printers & scanners.</li><li>Tekan Test Print di aplikasi ini, lalu pilih printer tersebut.</li></ol></div>
-                  </div>
+               <div class="panel" style="margin-bottom:16px"><h3>1. Android — Cetak Bluetooth Langsung</h3><p class="muted" style="font-size:12px">Aplikasi ini disiapkan untuk mengirim struk ESC/POS ke layanan Cleanter pada perangkat Android yang sama. Browser tidak dapat mengakses Bluetooth Classic SPP secara langsung tanpa aplikasi penghubung.</p>
+                  <ol class="muted" style="font-size:12px;line-height:1.8;padding-left:20px"><li>Pasangkan INFORCE P58C dari Pengaturan Android → Bluetooth. PIN sesuai manual printer (sering 0000 atau 1234).</li><li>Instal <a href="https://play.google.com/store/apps/details?id=id.cleancode.cleanter" target="_blank" rel="noopener">Cleanter — Thermal Printer BT</a>.</li><li>Buka Cleanter, pilih printer INFORCE P58C sebagai printer default, lalu tekan Start / aktifkan server.</li><li>Pastikan aplikasi kasir dan Cleanter berjalan pada HP Android yang sama.</li><li>Kembali ke aplikasi POS, lakukan transaksi lalu tekan Cetak Struk. Aplikasi akan mengirim data langsung ke printer tanpa dialog browser.</li></ol>
+                  <p class="muted" style="font-size:11px">Koneksi bridge lokal: <b>http://localhost:9100</b>. Status bridge dan printer diperiksa saat proses cetak. Cleanter versi 1.1.0 atau lebih baru diperlukan untuk aplikasi POS yang dibuka melalui HTTPS.</p>
                </div>
-               <div class="panel"><h3>2. Kompatibilitas Printer Portable</h3><p class="muted" style="font-size:12px">Pengaturan ukuran kertas 58/80 mm dan format struk thermal disiapkan untuk printer kasir umum. Dukungan cetak aktual bergantung pada driver/print service, sistem operasi, protokol, dan model printer.</p><div class="table-wrap"><table><thead><tr><th>Jenis koneksi</th><th>Dukungan aplikasi</th><th>Catatan</th></tr></thead><tbody><tr><td>Bluetooth Classic (SPP) ESC/POS</td><td>Melalui aplikasi/driver pendamping</td><td>Umum pada printer portable; browser tidak dapat mengaksesnya secara universal.</td></tr><tr><td>Bluetooth BLE / GATT</td><td>Terbatas dan bergantung perangkat</td><td>Web Bluetooth hanya mendukung perangkat BLE dengan layanan yang cocok, bukan semua printer.</td></tr><tr><td>USB / Wi-Fi / LAN</td><td>Melalui driver atau layanan cetak sistem</td><td>Printer harus sudah terpasang di perangkat.</td></tr></tbody></table></div><p class="muted" style="font-size:11px;margin-top:10px">Catatan: setting printer tersimpan secara lokal pada perangkat/browser yang digunakan. Jika aplikasi dibuka di perangkat lain, ukuran kertas dan preferensi perlu diatur kembali.</p></div>
+               <div class="panel" style="margin-bottom:16px"><h3>2. Windows — Cetak melalui Driver</h3><p class="muted" style="font-size:12px">Pada Windows, tombol Cetak Struk membuka dialog cetak browser. Pilih printer INFORCE yang sudah terpasang. Untuk P58C, prioritaskan koneksi USB dan instal driver yang sesuai dengan varian printer. Bluetooth Classic tidak dapat dikendalikan langsung oleh Chrome hanya dengan pairing.</p>
+                  <ol class="muted" style="font-size:12px;line-height:1.8;padding-left:20px"><li>Sambungkan printer ke Windows menggunakan kabel USB (atau ikuti petunjuk driver resmi untuk varian unit Anda).</li><li>Unduh driver dari <a href="https://inforceindonesia.com/driver/" target="_blank" rel="noopener">halaman Driver resmi INFORCE</a>. Pastikan paket driver memang untuk P58C / P58C-NB sebelum instalasi.</li><li>Buka Windows Settings → Bluetooth & devices → Printers & scanners. Pastikan printer terdaftar.</li><li>Tekan Test Print, pilih INFORCE P58C, ukuran kertas 58 mm, dan matikan header/footer browser jika tersedia.</li><li>Saat mencetak struk transaksi, pilih printer yang sama pada dialog cetak.</li></ol>
+                  <p class="muted" style="font-size:11px">Jika printer hanya dipasangkan melalui Bluetooth dan tidak muncul sebagai printer Windows, gunakan koneksi USB atau driver/port COM resmi yang disediakan untuk varian tersebut.</p>
+               </div>
+               <div class="panel"><h3>3. Cara Kerja Otomatis</h3><div class="table-wrap"><table><thead><tr><th>Perangkat</th><th>Jalur cetak</th><th>Hasil</th></tr></thead><tbody><tr><td>Android Chrome</td><td>Cleanter → Bluetooth Classic / ESC/POS</td><td>Cetak langsung tanpa dialog browser</td></tr><tr><td>Windows Chrome / Edge</td><td>Windows driver → dialog cetak</td><td>Pilih INFORCE P58C atau printer lain</td></tr></tbody></table></div><p class="muted" style="font-size:11px;margin-top:10px">Aplikasi tidak mengubah data transaksi saat mencetak. Jika bridge Android tidak aktif, aplikasi menampilkan petunjuk koneksi; transaksi tetap tersimpan dan dapat dicetak ulang.</p></div>
             </section>
             <section id="pos" class="page">
                <div class="panel" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
@@ -4052,6 +4054,7 @@ Gunakan kode promo ..."></textarea>
             finally {checkoutButton.disabled = false; checkoutButton.textContent = 'PROSES TRANSAKSI';}
          };
          function showReceipt(t) {
+            activeReceiptForPrint = t;
             const rows = (t.items || []).map(x => `<tr><td>${escapeHtml(x.name)}<br><small>${x.qty} × ${rupiah(x.price)}</small></td><td style="text-align:right">${rupiah(x.subtotal ?? x.price * x.qty)}</td></tr>`).join('');
             $('receiptContent').innerHTML = `<h2>ROTI ANGET SUBUH</h2><div class="receipt-center" style="margin:4px 0 12px;font-size:10px">Jl. Raya Kuta, No. 58D, Tuban</div><div class="receipt-center">STRUK PEMBAYARAN<br>${formatDate(t.date || t.createdAt)}<br>No: ${escapeHtml(t.invoice || '')}</div>${t.customerName ? `<div style="font-size:11px;margin:8px 0">Pelanggan: <b>${escapeHtml(t.customerName)}</b>${t.customerCode ? `<br>No. Pelanggan: <b>${escapeHtml(t.customerCode)}</b>` : ''}</div>` : ''}<hr><table><tbody>${rows}</tbody></table><div class="receipt-total">${t.subtotal != null ? `<div class="total-line"><span>Subtotal</span><strong>${rupiah(t.subtotal)}</strong></div>` : ''}${t.discount ? `<div class="total-line"><span>Promo ${escapeHtml(t.promoName || '')}</span><strong>- ${rupiah(t.discount)} (${Number(t.discountPercent) || 0}%)</strong></div>` : ''}<div class="total-line"><span>Total bayar</span><strong>${rupiah(t.total)}</strong></div><div class="total-line"><span>Metode</span><strong>${escapeHtml(t.method)}</strong></div><div class="total-line"><span>Status</span><strong>${escapeHtml(t.status)}</strong></div>${t.method === 'CASH' ? `<div class="total-line"><span>Uang diterima</span><strong>${rupiah(t.cashReceived)}</strong></div><div class="total-line"><span>Kembalian</span><strong>${rupiah(t.change)}</strong></div>` : t.method === 'QRIS' ? `<div class="total-line"><span>Nominal dibayar via QRIS</span><strong>${rupiah(t.qrisPaidAmount ?? t.total)}</strong></div>` : ''}</div>${t.paymentAdjustment && t.paymentAdjustment.status === 'PENDING_ADMIN' ? `<div style="margin-top:12px;padding:9px;background:#fff3df;border:1px solid #e5c58e;border-radius:7px;font-size:10px"><b>SELISIH PEMBAYARAN — TINDAK LANJUT ADMIN</b><br>${t.paymentAdjustment.direction === 'REFUND_DUE' ? 'Kelebihan pembayaran' : 'Kekurangan pembayaran'}: ${rupiah(t.paymentAdjustment.amount)}</div>` : ''}${t.correctionCount ? `<div style="font-size:9px;color:#766b5c;margin-top:8px">Transaksi telah dikoreksi ${Number(t.correctionCount)} kali.</div>` : ''}<div class="receipt-center" style="margin-top:18px">Terima kasih atas kunjungan Anda.</div>`;
             $('receiptModal').classList.add('open');
@@ -4101,42 +4104,107 @@ Gunakan kode promo ..."></textarea>
          $('wasteMaterialStart').addEventListener('change',renderWasteMaterialTable); $('wasteMaterialEnd').addEventListener('change',renderWasteMaterialTable); $('wasteProductStart').addEventListener('change',renderWasteProductTable); $('wasteProductEnd').addEventListener('change',renderWasteProductTable);
          $('wasteMaterialDate').value=today(); $('wasteProductDate').value=today(); $('wasteMaterialStart').value=today(); $('wasteMaterialEnd').value=today(); $('wasteProductStart').value=today(); $('wasteProductEnd').value=today();
 
-         // Cetak struk thermal melalui dialog cetak sistem/browser agar printer Android dapat dipilih.
+         // Cetak struk INFORCE P58C: Android via Cleanter ESC/POS bridge, Windows via driver/browser print dialog.
          const RECEIPT_PAPER_STORAGE_KEY = 'rotiAngetReceiptPaperWidth';
+         const CLEANter_BRIDGE_BASE = 'http://localhost:9100';
+         let activeReceiptForPrint = null;
          function getReceiptPaperWidth() {
             const saved = $('receiptPaperSize')?.value || localStorage.getItem(RECEIPT_PAPER_STORAGE_KEY) || '58';
             return saved === '80' ? 80 : 58;
          }
+         function isAndroidDevice() { return /Android/i.test(navigator.userAgent || ''); }
          try {
             const savedPaperWidth = localStorage.getItem(RECEIPT_PAPER_STORAGE_KEY);
             if (savedPaperWidth === '58' || savedPaperWidth === '80') $('receiptPaperSize').value = savedPaperWidth;
          } catch (storageError) { console.warn('Pengaturan ukuran kertas tidak dapat dibaca:', storageError); }
          $('receiptPaperSize').addEventListener('change', () => {
             try { localStorage.setItem(RECEIPT_PAPER_STORAGE_KEY, $('receiptPaperSize').value); } catch (storageError) {}
-            $('printerSettingMessage').textContent = `Ukuran struk ${getReceiptPaperWidth()} mm disimpan pada perangkat ini. Pilih printer Bluetooth pada dialog cetak Android jika tersedia.`;
+            $('printerSettingMessage').textContent = `Ukuran kertas ${getReceiptPaperWidth()} mm disimpan pada perangkat ini.`;
          });
-         function printReceiptThermal() {
+         function receiptEscPosBlocks(t) {
+            const blocks = [
+               {type:'text',text:'ROTI ANGET SUBUH',align:'center',bold:true,size:'large'},
+               {type:'text',text:'Jl. Raya Kuta, No. 58D, Tuban',align:'center'},
+               {type:'divider'},
+               {type:'text',text:'STRUK PEMBAYARAN',align:'center',bold:true},
+               {type:'text',text:`${formatDate(t.date || t.createdAt)}  |  No: ${t.invoice || '-'}`},
+               {type:'divider'}
+            ];
+            if (t.customerName) blocks.push({type:'text',text:`Pelanggan: ${t.customerName}`});
+            if (t.customerCode) blocks.push({type:'text',text:`No. Pelanggan: ${t.customerCode}`});
+            (t.items || []).forEach(item => {
+               const qty = Number(item.qty) || 0;
+               const price = Number(item.price) || 0;
+               const lineTotal = Number(item.subtotal ?? (price * qty)) || 0;
+               blocks.push({type:'text',text:String(item.name || item.productName || 'Produk')});
+               blocks.push({type:'row',left:`${qty} x ${rupiah(price)}`,right:rupiah(lineTotal)});
+            });
+            blocks.push({type:'divider'});
+            if (t.subtotal != null) blocks.push({type:'row',left:'Subtotal',right:rupiah(t.subtotal)});
+            if (Number(t.discount) > 0) blocks.push({type:'row',left:`Promo ${t.promoName || ''}`.trim(),right:`- ${rupiah(t.discount)}`} );
+            blocks.push({type:'row',left:'TOTAL BAYAR',right:rupiah(t.total),bold:true});
+            blocks.push({type:'row',left:'Metode',right:String(t.method || '-')});
+            blocks.push({type:'row',left:'Status',right:String(t.status || '-')});
+            if (t.method === 'CASH') {
+               blocks.push({type:'row',left:'Uang diterima',right:rupiah(t.cashReceived)});
+               blocks.push({type:'row',left:'Kembalian',right:rupiah(t.change)});
+            } else if (t.method === 'QRIS') {
+               blocks.push({type:'row',left:'Nominal QRIS',right:rupiah(t.qrisPaidAmount ?? t.total)});
+            }
+            if (t.paymentAdjustment?.status === 'PENDING_ADMIN') {
+               blocks.push({type:'divider'});
+               blocks.push({type:'text',text:`SELISIH PEMBAYARAN: ${rupiah(t.paymentAdjustment.amount)}`,bold:true});
+            }
+            if (t.correctionCount) blocks.push({type:'text',text:`Transaksi dikoreksi ${Number(t.correctionCount)} kali`});
+            blocks.push({type:'divider'});
+            blocks.push({type:'text',text:'Terima kasih atas kunjungan Anda.',align:'center'});
+            blocks.push({type:'feed',lines:3});
+            return blocks;
+         }
+         async function sendReceiptToAndroidBridge(t) {
+            const msg = $('printerSettingMessage');
+            try {
+               msg.textContent = 'Memeriksa koneksi Cleanter dan printer Bluetooth...';
+               const health = await fetch(`${CLEANter_BRIDGE_BASE}/health`, {method:'GET',cache:'no-store',signal:AbortSignal.timeout(2500)});
+               if (!health.ok) throw new Error(`Bridge merespons HTTP ${health.status}.`);
+               const healthData = await health.json().catch(()=>({}));
+               if (healthData?.printer && healthData.printer.connected === false) throw new Error('Cleanter aktif, tetapi printer belum tersambung. Pilih INFORCE P58C di Cleanter lalu aktifkan koneksi.');
+               msg.textContent = 'Mengirim struk ke INFORCE P58C...';
+               const response = await fetch(`${CLEANter_BRIDGE_BASE}/print`, {
+                  method:'POST', headers:{'Content-Type':'application/json'},
+                  body:JSON.stringify({paperWidth:getReceiptPaperWidth(),cut:true,content:receiptEscPosBlocks(t)}),
+                  signal:AbortSignal.timeout(12000)
+               });
+               const result = await response.json().catch(()=>({}));
+               if (!response.ok) throw new Error(result.message || result.error || `Gagal mengirim pekerjaan cetak (HTTP ${response.status}).`);
+               msg.textContent = 'Perintah cetak berhasil dikirim ke Cleanter. Periksa kertas pada printer INFORCE P58C.';
+               return true;
+            } catch (err) {
+               console.error('Android Bluetooth print error:',err);
+               const reason = err?.name === 'TimeoutError' ? 'Waktu koneksi habis.' : (err?.message || 'Tidak dapat menghubungi layanan printer.');
+               msg.textContent = `Cetak langsung belum berhasil: ${reason} Buka Cleanter, pilih INFORCE P58C, lalu Start. Transaksi tetap tersimpan; gunakan Reprint setelah koneksi siap.`;
+               alert(`Printer Android belum siap. ${reason}\n\nPastikan Cleanter sudah dibuka, printer INFORCE P58C sudah dipilih, dan server Cleanter aktif. Transaksi Anda tetap tersimpan.`);
+               return false;
+            }
+         }
+         function printReceiptInWindows(t) {
             const paperWidth = getReceiptPaperWidth();
             const content = $('receiptContent').innerHTML;
             const w = window.open('', '_blank', 'width=420,height=700');
             if (!w) { alert('Izinkan pop-up browser untuk mencetak struk.'); return; }
-            w.document.write(`<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Struk Pembayaran</title><style>
-               @page{size:${paperWidth}mm auto;margin:2mm}
-               *{box-sizing:border-box}
-               html,body{width:${paperWidth - 4}mm;margin:0;padding:0;background:#fff;color:#111;font-family:Arial,sans-serif}
-               body{font-size:10px;line-height:1.35}
-               h2{font-size:14px;text-align:center;margin:0 0 4px}
-               .receipt-center{text-align:center}
-               hr{border:0;border-top:1px dashed #555;margin:7px 0}
-               table{width:100%;border-collapse:collapse;font-size:10px}
-               td{padding:3px 0;vertical-align:top}
-               td:last-child{text-align:right;white-space:nowrap}
-               .receipt-total{margin-top:5px}
-               .total-line{display:flex;justify-content:space-between;gap:6px;margin:3px 0}
-               .total-line strong{text-align:right}
-               @media print{html,body{width:${paperWidth - 4}mm!important;margin:0!important;padding:0!important}}
-            </style></head><body>${content}<script>window.onload=()=>{window.focus();window.print();};<\\/script></body></html>`);
+            w.document.write(`<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Struk Pembayaran</title><style>@page{size:${paperWidth}mm auto;margin:2mm}*{box-sizing:border-box}html,body{width:${paperWidth-4}mm;margin:0;padding:0;background:#fff;color:#111;font-family:Arial,sans-serif}body{font-size:10px;line-height:1.35}h2{font-size:14px;text-align:center;margin:0 0 4px}.receipt-center{text-align:center}hr{border:0;border-top:1px dashed #555;margin:7px 0}table{width:100%;border-collapse:collapse;font-size:10px}td{padding:3px 0;vertical-align:top}td:last-child{text-align:right;white-space:nowrap}.receipt-total{margin-top:5px}.total-line{display:flex;justify-content:space-between;gap:6px;margin:3px 0}.total-line strong{text-align:right}@media print{html,body{width:${paperWidth-4}mm!important;margin:0!important;padding:0!important}}</style></head><body>${content}<script>window.onload=()=>{window.focus();window.print();};<\/script></body></html>`);
             w.document.close();
+            const msg = $('printerSettingMessage');
+            if (msg) msg.textContent = 'Dialog cetak Windows dibuka. Pilih INFORCE P58C, ukuran kertas 58 mm, lalu cetak.';
+         }
+         function printReceiptThermal() {
+            const t = activeReceiptForPrint;
+            if (!t) { alert('Data struk tidak tersedia. Buka ulang struk transaksi lalu coba cetak.'); return; }
+            if (isAndroidDevice()) { sendReceiptToAndroidBridge(t); return; }
+            printReceiptInWindows(t);
+         }
+         function makePrinterTestTransaction() {
+            return {invoice:'TEST-P58C',date:new Date(),items:[{name:'TEST PRINT RAS001',qty:2,price:5000,subtotal:10000}],subtotal:10000,discount:0,total:10000,method:'CASH',status:'TEST PRINT',cashReceived:10000,change:0};
          }
          function latestTransactionTimestamp(t) {
             const value = t?.createdAt || t?.date;
@@ -4153,13 +4221,20 @@ Gunakan kode promo ..."></textarea>
             showReceipt({...latest, date: receiptDate});
          }
          $('reprintLastTransactionBtn').addEventListener('click', reprintLastTransaction);
-         $('testPrinterBtn')?.addEventListener('click', () => {
-            const width = $('receiptPaperSize')?.value === '80' ? 80 : 58;
-            const w = window.open('', '_blank', 'width=420,height=650');
-            if (!w) { alert('Browser memblokir jendela cetak. Izinkan pop-up untuk aplikasi ini, lalu coba lagi.'); return; }
-            const testHtml = `<!doctype html><html><head><meta charset="utf-8"><title>Test Printer</title><style>@page{size:${width}mm auto;margin:3mm}*{box-sizing:border-box}body{font-family:monospace;width:${width-6}mm;margin:0 auto;color:#000;font-size:12px}h2,p{text-align:center;margin:5px 0}hr{border:0;border-top:1px dashed #000;margin:8px 0}.center{text-align:center}.small{font-size:10px}</style></head><body><h2>ROTI ANGET SUBUH</h2><p>TEST PRINT PRINTER</p><hr><p>Jika tulisan ini tercetak dengan jelas,</p><p>pengaturan printer berhasil.</p><hr><p>Ukuran kertas: ${width} mm</p><p class="small">Tes cetak • ${new Date().toLocaleString('id-ID')}</p><p class="center">Terima kasih</p><script>window.onload=()=>{window.focus();window.print();};window.onafterprint=()=>{window.close();};<\/script></body></html>`;
-            w.document.open(); w.document.write(testHtml); w.document.close();
-            $('printerSettingMessage').textContent = 'Dialog cetak dibuka. Pilih printer Bluetooth/thermal yang sudah dipasangkan atau printer yang terpasang pada sistem.';
+         $('testPrinterBtn')?.addEventListener('click', async () => {
+            const testTransaction = makePrinterTestTransaction();
+            if (isAndroidDevice()) {
+               await sendReceiptToAndroidBridge(testTransaction);
+            } else {
+               const oldReceipt = activeReceiptForPrint;
+               activeReceiptForPrint = testTransaction;
+               const receiptHtml = $('receiptContent').innerHTML;
+               showReceipt(testTransaction);
+               printReceiptInWindows(testTransaction);
+               $('receiptContent').innerHTML = receiptHtml;
+               activeReceiptForPrint = oldReceipt;
+               $('receiptModal').classList.remove('open');
+            }
          });
          $('showPrinterGuideBtn')?.addEventListener('click', () => {
             const target = document.querySelector('#printerSettings .panel:nth-of-type(2)');
