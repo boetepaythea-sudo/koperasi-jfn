@@ -106,7 +106,7 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
                message('loginMessage', 'Logout gagal: ' + friendlyError(err), 'danger');
             } finally { $('logoutBtn').disabled = false; }
          };
-         document.querySelectorAll('.nav button[data-page]').forEach(b => b.addEventListener('click', () => {if (!isAdminUser() && ['uom', 'rawMaterials', 'products', 'promos', 'history', 'soStock', 'customers', 'promoBlast', 'mrpProduction', 'finishGood', 'waste', 'accounting', 'masterCostOverhead', 'addSupplier', 'purchaseOrderMaterial', 'stockBahanBaku', 'costOverheadInput', 'reportProductionFG', 'reportShipment', 'reportSales', 'reportCosts', 'reportCOGS', 'reportStockFG', 'reportStockRM', 'reportProfitLoss'].includes(b.dataset.page)) return; document.querySelectorAll('.nav button[data-page]').forEach(x => x.classList.remove('active')); b.classList.add('active'); const parentGroup=b.closest('.nav-group'); if(parentGroup){parentGroup.classList.add('expanded'); const toggle=parentGroup.querySelector('.nav-parent'); if(toggle) toggle.setAttribute('aria-expanded','true');} document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); $(b.dataset.page).classList.add('active'); const titles = {dashboard: 'Dashboard', uom: 'Master UOM/Unit', rawMaterials: 'Master Bahan Baku', products: 'Master Produk', promos: 'Seting Promo', stock: 'Input Stock', pos: 'Penjualan', history: 'Riwayat Transaksi', soStock: 'SO Stock', customers: 'Data Konsumen', promoBlast: 'Blast Promo', mrpProduction: 'MRP Produksi', finishGood: 'Input Data Finish Good', waste: 'Input Data Waste', addStore: 'Add Store', inputSales: 'Input Sales', accounting: 'Accounting', masterCostOverhead: 'Master Data Cost Overhead', addSupplier: 'Add Supplier', purchaseOrderMaterial: 'Purchase Order Material', stockBahanBaku: 'Stock Bahan Baku'}; $('pageTitle').textContent = titles[b.dataset.page] || b.textContent.trim(); $('sidebar').classList.remove('open');}));
+         document.querySelectorAll('.nav button[data-page]').forEach(b => b.addEventListener('click', () => {if (!isAdminUser() && ['uom', 'rawMaterials', 'products', 'promos', 'history', 'soStock', 'customers', 'promoBlast', 'mrpProduction', 'finishGood', 'waste', 'accounting', 'masterCostOverhead', 'addSupplier', 'purchaseOrderMaterial', 'stockBahanBaku', 'costOverheadInput', 'reportProductionFG', 'reportShipment', 'reportSales', 'reportCosts', 'reportCOGS', 'reportStockFG', 'reportStockRM', 'reportProfitLoss'].includes(b.dataset.page)) return; document.querySelectorAll('.nav button[data-page]').forEach(x => x.classList.remove('active')); b.classList.add('active'); const parentGroup=b.closest('.nav-group'); if(parentGroup){parentGroup.classList.add('expanded'); const toggle=parentGroup.querySelector('.nav-parent'); if(toggle) toggle.setAttribute('aria-expanded','true');} document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); $(b.dataset.page).classList.add('active'); const titles = {dashboard: 'Dashboard', uom: 'Master UOM/Unit', rawMaterials: 'Master Bahan Baku', products: 'Master Produk', promos: 'Seting Promo', stock: 'Input Stock', pos: 'Penjualan', printerSettings: 'Setting Printer', history: 'Riwayat Transaksi', soStock: 'SO Stock', customers: 'Data Konsumen', promoBlast: 'Blast Promo', mrpProduction: 'MRP Produksi', finishGood: 'Input Data Finish Good', waste: 'Input Data Waste', addStore: 'Add Store', inputSales: 'Input Sales', accounting: 'Accounting', masterCostOverhead: 'Master Data Cost Overhead', addSupplier: 'Add Supplier', purchaseOrderMaterial: 'Purchase Order Material', stockBahanBaku: 'Stock Bahan Baku'}; $('pageTitle').textContent = titles[b.dataset.page] || b.textContent.trim(); $('sidebar').classList.remove('open');}));
          $('menuToggle').onclick = () => {$('sidebar').classList.toggle('open');};
          document.addEventListener('click', e => {if (window.matchMedia('(max-width:680px)').matches && $('sidebar').classList.contains('open') && !$('sidebar').contains(e.target) && !$('menuToggle').contains(e.target)) $('sidebar').classList.remove('open');});
          document.addEventListener('keydown', e => {if (e.key === 'Escape') $('sidebar').classList.remove('open');});
@@ -504,33 +504,22 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
             finally {checkoutButton.disabled = false; checkoutButton.textContent = 'PROSES TRANSAKSI';}
          };
          function showReceipt(t) {
+            activeReceiptForPrint = t;
             const rows = (t.items || []).map(x => `<tr><td>${escapeHtml(x.name)}<br><small>${x.qty} × ${rupiah(x.price)}</small></td><td style="text-align:right">${rupiah(x.subtotal ?? x.price * x.qty)}</td></tr>`).join('');
-            $('receiptContent').innerHTML = `<h2>ROTI ANGET SUBUH</h2><div class="receipt-center" style="margin:4px 0 12px;font-size:10px">Jl. Raya Kuta, No. 58D, Tuban</div><div class="receipt-center">STRUK PEMBAYARAN<br>${formatDate(t.date || t.createdAt)}<br>No: ${escapeHtml(t.invoice || '')}</div>${t.customerName ? `<div style="font-size:11px;margin:8px 0">Pelanggan: <b>${escapeHtml(t.customerName)}</b>${t.customerCode ? `<br>No. Pelanggan: <b>${escapeHtml(t.customerCode)}</b>` : ''}</div>` : ''}<hr><table><tbody>${rows}</tbody></table><div class="receipt-total">${t.subtotal != null ? `<div class="total-line"><span>Subtotal</span><strong>${rupiah(t.subtotal)}</strong></div>` : ''}${t.discount ? `<div class="total-line"><span>Promo ${escapeHtml(t.promoName || '')}</span><strong>- ${rupiah(t.discount)} (${Number(t.discountPercent) || 0}%)</strong></div>` : ''}<div class="total-line"><span>Total bayar</span><strong>${rupiah(t.total)}</strong></div><div class="total-line"><span>Metode</span><strong>${escapeHtml(t.method)}</strong></div><div class="total-line"><span>Status</span><strong>${escapeHtml(t.status)}</strong></div>${t.method === 'CASH' ? `<div class="total-line"><span>Uang diterima</span><strong>${rupiah(t.cashReceived)}</strong></div><div class="total-line"><span>Kembalian</span><strong>${rupiah(t.change)}</strong></div>` : t.method === 'QRIS' ? `<div class="total-line"><span>Nominal dibayar via QRIS</span><strong>${rupiah(t.qrisPaidAmount ?? t.total)}</strong></div>` : ''}</div>${t.paymentAdjustment && t.paymentAdjustment.status === 'PENDING_ADMIN' ? `<div style="margin-top:12px;padding:9px;background:#fff3df;border:1px solid #e5c58e;border-radius:7px;font-size:10px"><b>SELISIH PEMBAYARAN — TINDAK LANJUT ADMIN</b><br>${t.paymentAdjustment.direction === 'REFUND_DUE' ? 'Kelebihan pembayaran' : 'Kekurangan pembayaran'}: ${rupiah(t.paymentAdjustment.amount)}</div>` : ''}${t.correctionCount ? `<div style="font-size:9px;color:#766b5c;margin-top:8px">Transaksi telah dikoreksi ${Number(t.correctionCount)} kali.</div>` : ''}<div class="receipt-center" style="margin-top:18px">Terima kasih atas kunjungan Anda.</div>`;
+            $('receiptContent').innerHTML = `<div class="receipt-center" style="margin:0 auto 6px"><img src="logo.png" alt="Logo ROTI ANGET SUBUH" style="width:76px;height:76px;object-fit:contain;display:block;margin:0 auto 5px"></div><h2>ROTI ANGET SUBUH</h2><div class="receipt-center" style="margin:4px 0 12px;font-size:10px">Jl. Raya Kuta, No. 58D, Tuban</div><div class="receipt-center">STRUK PEMBAYARAN<br>${formatDate(t.date || t.createdAt)}<br>No: ${escapeHtml(t.invoice || '')}</div>${t.customerName ? `<div style="font-size:11px;margin:8px 0">Pelanggan: <b>${escapeHtml(t.customerName)}</b>${t.customerCode ? `<br>No. Pelanggan: <b>${escapeHtml(t.customerCode)}</b>` : ''}</div>` : ''}<hr><table><tbody>${rows}</tbody></table><div class="receipt-total">${t.subtotal != null ? `<div class="total-line"><span>Subtotal</span><strong>${rupiah(t.subtotal)}</strong></div>` : ''}${t.discount ? `<div class="total-line"><span>Promo ${escapeHtml(t.promoName || '')}</span><strong>- ${rupiah(t.discount)} (${Number(t.discountPercent) || 0}%)</strong></div>` : ''}<div class="total-line"><span>Total bayar</span><strong>${rupiah(t.total)}</strong></div><div class="total-line"><span>Metode</span><strong>${escapeHtml(t.method)}</strong></div><div class="total-line"><span>Status</span><strong>${escapeHtml(t.status)}</strong></div>${t.method === 'CASH' ? `<div class="total-line"><span>Uang diterima</span><strong>${rupiah(t.cashReceived)}</strong></div><div class="total-line"><span>Kembalian</span><strong>${rupiah(t.change)}</strong></div>` : t.method === 'QRIS' ? `<div class="total-line"><span>Nominal dibayar via QRIS</span><strong>${rupiah(t.qrisPaidAmount ?? t.total)}</strong></div>` : ''}</div>${t.paymentAdjustment && t.paymentAdjustment.status === 'PENDING_ADMIN' ? `<div style="margin-top:12px;padding:9px;background:#fff3df;border:1px solid #e5c58e;border-radius:7px;font-size:10px"><b>SELISIH PEMBAYARAN — TINDAK LANJUT ADMIN</b><br>${t.paymentAdjustment.direction === 'REFUND_DUE' ? 'Kelebihan pembayaran' : 'Kekurangan pembayaran'}: ${rupiah(t.paymentAdjustment.amount)}</div>` : ''}${t.correctionCount ? `<div style="font-size:9px;color:#766b5c;margin-top:8px">Transaksi telah dikoreksi ${Number(t.correctionCount)} kali.</div>` : ''}<div class="receipt-center" style="margin-top:18px">Terima kasih atas kunjungan Anda.</div>`;
             $('receiptModal').classList.add('open');
          }
-         function printDocument(title, body) {const w = window.open('', '_blank', 'width=850,height=700'); if (!w) {alert('Izinkan pop-up browser untuk mencetak.'); return;} w.document.write(`<!doctype html><html lang="id"><head><meta charset="utf-8"><title>${escapeHtml(title)}</title><style>body{font:12px Arial,sans-serif;color:#222;margin:28px}h1,h2{text-align:center}p.center{text-align:center;color:#555}table{width:100%;border-collapse:collapse;margin-top:18px}th,td{padding:9px;border-bottom:1px solid #ddd;text-align:left}th:last-child,td:last-child{text-align:right}.totals{margin:18px 0;text-align:right;font-size:14px;font-weight:bold}.small{font-size:10px;color:#666}@media print{button{display:none}}
-        /* Accounting report hub */
-        .accounting-intro { margin-bottom: 16px; }
-        .accounting-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; }
-        .accounting-card { appearance:none; border:1px solid var(--line); background:linear-gradient(145deg,#fff 0%,#fbf7ef 100%); border-radius:18px; min-height:190px; padding:20px 16px; display:flex; flex-direction:column; align-items:flex-start; text-align:left; gap:9px; cursor:pointer; color:var(--ink); box-shadow:0 8px 24px rgba(44,34,20,.06); transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease; }
-        .accounting-card:hover { transform:translateY(-3px); border-color:var(--gold2); box-shadow:0 14px 28px rgba(44,34,20,.11); }
-        .accounting-icon { width:54px;height:54px;display:grid;place-items:center;border-radius:15px;background:#f2e8d6;font-size:27px; }
-        .accounting-card strong { font-size:14px; line-height:1.35; }
-        .accounting-card small { color:var(--muted);font-size:11px;line-height:1.5; }
-        .accounting-open { color:var(--gold-dark,var(--gold2));font-size:11px;font-weight:700;margin-top:auto; }
-        .accounting-report-head { align-items:flex-start; }
-        .accounting-filter { display:flex;align-items:end;gap:12px;flex-wrap:wrap;padding:14px 0 18px;border-bottom:1px solid var(--line);margin-bottom:16px; }
-        .accounting-filter .field { min-width:170px;max-width:220px; }
-        .accounting-summary { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px; }
-        .accounting-summary > div { border:1px solid var(--line);border-radius:12px;padding:13px;background:#fffdf9; }
-        .accounting-summary span { display:block;color:var(--muted);font-size:11px;margin-bottom:6px; }
-        .accounting-summary strong { font-size:16px; }
-        .accounting-report-body table { width:100%;border-collapse:collapse; }
-        .accounting-report-body th,.accounting-report-body td { padding:10px 9px;border-bottom:1px solid var(--line);text-align:left;font-size:12px; }
-        .accounting-report-body th { background:#f7f2e9;color:#574a36; }
-        @media(max-width:950px){.accounting-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
-        @media(max-width:560px){.accounting-grid{grid-template-columns:1fr 1fr;gap:9px}.accounting-card{min-height:165px;padding:13px 11px}.accounting-icon{width:44px;height:44px;font-size:22px}.accounting-card strong{font-size:12px}.accounting-card small{font-size:10px}.accounting-summary{grid-template-columns:1fr}.accounting-report-head{flex-direction:column}.accounting-filter .field{min-width:calc(50% - 8px);flex:1}}
-</style></head><body>${body}<script>window.onload=()=>{window.print();};<\/script></body></html>`); w.document.close();}
+         function printDocument(title, body, options = {}) {
+            const w = window.open('', '_blank', options.receipt ? 'width=420,height=700' : 'width=850,height=700');
+            if (!w) { alert('Izinkan pop-up browser untuk mencetak.'); return; }
+            const paperWidth = Number(options.paperWidth) || 58;
+            const printBody = options.receipt ? body.replaceAll('src=\"logo.png\"', `src=\"${new URL('logo.png', location.href).href}\"`) : body;
+            const styles = options.receipt
+               ? `@page{size:${paperWidth}mm auto;margin:0}*{box-sizing:border-box}html,body{width:${paperWidth}mm;margin:0;padding:0;background:#fff;color:#111;font-family:Arial,sans-serif}body{width:${paperWidth}mm;padding:2mm;font-size:10px;line-height:1.3;overflow-wrap:anywhere}h2{font-size:14px;text-align:center;margin:0 0 4px}.receipt-center{text-align:center}hr{border:0;border-top:1px dashed #555;margin:7px 0}table{width:100%;border-collapse:collapse;font-size:10px;margin-top:5px}td{padding:3px 0;vertical-align:top}td:last-child{text-align:right;white-space:nowrap}.receipt-total{margin-top:5px}.total-line{display:flex;justify-content:space-between;gap:6px;margin:3px 0}.total-line strong{text-align:right}@media print{@page{size:${paperWidth}mm auto;margin:0}html,body{width:${paperWidth}mm!important;margin:0!important;padding:0!important}body{padding:2mm!important}}`
+               : `body{font:12px Arial,sans-serif;color:#222;margin:28px}h1,h2{text-align:center}p.center{text-align:center;color:#555}table{width:100%;border-collapse:collapse;margin-top:18px}th,td{padding:9px;border-bottom:1px solid #ddd;text-align:left}th:last-child,td:last-child{text-align:right}.totals{margin:18px 0;text-align:right;font-size:14px;font-weight:bold}.small{font-size:10px;color:#666}@media print{button{display:none}}`;
+            w.document.write(`<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)}</title><style>${styles}</style></head><body>${printBody}<script>window.onload=()=>{const imgs=[...document.images];Promise.all(imgs.map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.onload=img.onerror=resolve;}))).then(()=>{window.focus();window.print();});};<\/script></body></html>`);
+            w.document.close();
+         }
          // INPUT DATA WASTE: dua pencatatan terpisah, memakai snapshot harga saat disimpan.
          function wasteMoney(n) {return new Intl.NumberFormat('id-ID', {style:'currency', currency:'IDR', minimumFractionDigits:2, maximumFractionDigits:2}).format(Number(n)||0);}
          function updateWasteMaterialOptions() {const sel=$('wasteMaterialSelect'), keep=sel.value; sel.innerHTML='<option value="">Pilih bahan baku</option>'+rawMaterials.map(m=>`<option value="${m.id}">${escapeHtml(m.code||'')} — ${escapeHtml(m.name||'')}</option>`).join(''); if(rawMaterials.some(m=>m.id===keep))sel.value=keep; updateWasteMaterialPreview();}
@@ -553,7 +542,142 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
          $('wasteMaterialStart').addEventListener('change',renderWasteMaterialTable); $('wasteMaterialEnd').addEventListener('change',renderWasteMaterialTable); $('wasteProductStart').addEventListener('change',renderWasteProductTable); $('wasteProductEnd').addEventListener('change',renderWasteProductTable);
          $('wasteMaterialDate').value=today(); $('wasteProductDate').value=today(); $('wasteMaterialStart').value=today(); $('wasteMaterialEnd').value=today(); $('wasteProductStart').value=today(); $('wasteProductEnd').value=today();
 
-         $('printReceiptBtn').onclick = () => printDocument('Struk ' + $('receiptContent').innerText.split('\n')[2], $('receiptContent').innerHTML);
+         // Cetak struk INFORCE P58C: Android via Cleanter ESC/POS bridge, Windows via driver/browser print dialog.
+         const RECEIPT_PAPER_STORAGE_KEY = 'rotiAngetReceiptPaperWidth';
+         const CLEANter_BRIDGE_BASE = 'http://localhost:9100';
+         let activeReceiptForPrint = null;
+         function getReceiptPaperWidth() {
+            const saved = $('receiptPaperSize')?.value || localStorage.getItem(RECEIPT_PAPER_STORAGE_KEY) || '58';
+            return saved === '80' ? 80 : 58;
+         }
+         function isAndroidDevice() { return /Android/i.test(navigator.userAgent || ''); }
+         try {
+            const savedPaperWidth = localStorage.getItem(RECEIPT_PAPER_STORAGE_KEY);
+            if (savedPaperWidth === '58' || savedPaperWidth === '80') $('receiptPaperSize').value = savedPaperWidth;
+         } catch (storageError) { console.warn('Pengaturan ukuran kertas tidak dapat dibaca:', storageError); }
+         $('receiptPaperSize').addEventListener('change', () => {
+            try { localStorage.setItem(RECEIPT_PAPER_STORAGE_KEY, $('receiptPaperSize').value); } catch (storageError) {}
+            $('printerSettingMessage').textContent = `Ukuran kertas ${getReceiptPaperWidth()} mm disimpan pada perangkat ini.`;
+         });
+         function receiptEscPosBlocks(t) {
+            const blocks = [
+               {type:'text',text:'ROTI ANGET SUBUH',align:'center',bold:true,size:'large'},
+               {type:'text',text:'Jl. Raya Kuta, No. 58D, Tuban',align:'center'},
+               {type:'divider'},
+               {type:'text',text:'STRUK PEMBAYARAN',align:'center',bold:true},
+               {type:'text',text:`${formatDate(t.date || t.createdAt)}  |  No: ${t.invoice || '-'}`},
+               {type:'divider'}
+            ];
+            if (t.customerName) blocks.push({type:'text',text:`Pelanggan: ${t.customerName}`});
+            if (t.customerCode) blocks.push({type:'text',text:`No. Pelanggan: ${t.customerCode}`});
+            (t.items || []).forEach(item => {
+               const qty = Number(item.qty) || 0;
+               const price = Number(item.price) || 0;
+               const lineTotal = Number(item.subtotal ?? (price * qty)) || 0;
+               blocks.push({type:'text',text:String(item.name || item.productName || 'Produk')});
+               blocks.push({type:'row',left:`${qty} x ${rupiah(price)}`,right:rupiah(lineTotal)});
+            });
+            blocks.push({type:'divider'});
+            if (t.subtotal != null) blocks.push({type:'row',left:'Subtotal',right:rupiah(t.subtotal)});
+            if (Number(t.discount) > 0) blocks.push({type:'row',left:`Promo ${t.promoName || ''}`.trim(),right:`- ${rupiah(t.discount)}`} );
+            blocks.push({type:'row',left:'TOTAL BAYAR',right:rupiah(t.total),bold:true});
+            blocks.push({type:'row',left:'Metode',right:String(t.method || '-')});
+            blocks.push({type:'row',left:'Status',right:String(t.status || '-')});
+            if (t.method === 'CASH') {
+               blocks.push({type:'row',left:'Uang diterima',right:rupiah(t.cashReceived)});
+               blocks.push({type:'row',left:'Kembalian',right:rupiah(t.change)});
+            } else if (t.method === 'QRIS') {
+               blocks.push({type:'row',left:'Nominal QRIS',right:rupiah(t.qrisPaidAmount ?? t.total)});
+            }
+            if (t.paymentAdjustment?.status === 'PENDING_ADMIN') {
+               blocks.push({type:'divider'});
+               blocks.push({type:'text',text:`SELISIH PEMBAYARAN: ${rupiah(t.paymentAdjustment.amount)}`,bold:true});
+            }
+            if (t.correctionCount) blocks.push({type:'text',text:`Transaksi dikoreksi ${Number(t.correctionCount)} kali`});
+            blocks.push({type:'divider'});
+            blocks.push({type:'text',text:'Terima kasih atas kunjungan Anda.',align:'center'});
+            blocks.push({type:'feed',lines:3});
+            return blocks;
+         }
+         async function sendReceiptToAndroidBridge(t) {
+            const msg = $('printerSettingMessage');
+            try {
+               msg.textContent = 'Memeriksa koneksi Cleanter dan printer Bluetooth...';
+               const health = await fetch(`${CLEANter_BRIDGE_BASE}/health`, {method:'GET',cache:'no-store',signal:AbortSignal.timeout(2500)});
+               if (!health.ok) throw new Error(`Bridge merespons HTTP ${health.status}.`);
+               const healthData = await health.json().catch(()=>({}));
+               if (healthData?.printer && healthData.printer.connected === false) throw new Error('Cleanter aktif, tetapi printer belum tersambung. Pilih INFORCE P58C di Cleanter lalu aktifkan koneksi.');
+               msg.textContent = 'Mengirim struk ke INFORCE P58C...';
+               const response = await fetch(`${CLEANter_BRIDGE_BASE}/print`, {
+                  method:'POST', headers:{'Content-Type':'application/json'},
+                  body:JSON.stringify({paperWidth:getReceiptPaperWidth(),cut:true,content:receiptEscPosBlocks(t)}),
+                  signal:AbortSignal.timeout(12000)
+               });
+               const result = await response.json().catch(()=>({}));
+               if (!response.ok) throw new Error(result.message || result.error || `Gagal mengirim pekerjaan cetak (HTTP ${response.status}).`);
+               msg.textContent = 'Perintah cetak berhasil dikirim ke Cleanter. Periksa kertas pada printer INFORCE P58C.';
+               return true;
+            } catch (err) {
+               console.error('Android Bluetooth print error:',err);
+               const reason = err?.name === 'TimeoutError' ? 'Waktu koneksi habis.' : (err?.message || 'Tidak dapat menghubungi layanan printer.');
+               msg.textContent = `Cetak langsung belum berhasil: ${reason} Buka Cleanter, pilih INFORCE P58C, lalu Start. Transaksi tetap tersimpan; gunakan Reprint setelah koneksi siap.`;
+               alert(`Printer Android belum siap. ${reason}\n\nPastikan Cleanter sudah dibuka, printer INFORCE P58C sudah dipilih, dan server Cleanter aktif. Transaksi Anda tetap tersimpan.`);
+               return false;
+            }
+         }
+         async function printReceiptThermal() {
+            const t = activeReceiptForPrint;
+            if (!t) { alert('Data struk tidak tersedia. Buka ulang struk transaksi lalu coba cetak.'); return; }
+
+            // Semua tombol cetak struk (kasir, riwayat, dan test print) memakai
+            // satu jalur yang sama. Android mengirim ESC/POS melalui Cleanter;
+            // perangkat lain memakai dialog cetak browser seperti cetak laporan.
+            if (isAndroidDevice()) {
+               await sendReceiptToAndroidBridge(t);
+               return;
+            }
+
+            const content = $('receiptContent').innerHTML;
+            printDocument('Struk Pembayaran', content, {
+               receipt:true,
+               paperWidth:58
+            });
+            const msg = $('printerSettingMessage');
+            if (msg) msg.textContent = 'Dialog cetak struk dibuka. Pilih printer thermal Bluetooth 58 mm / INFORCE P58C, ukuran kertas 58 mm, dan nonaktifkan header/footer browser.';
+         }
+
+         function makePrinterTestTransaction() {
+            return {invoice:'TEST-P58C',date:new Date(),items:[{name:'TEST PRINT RAS001',qty:2,price:5000,subtotal:10000}],subtotal:10000,discount:0,total:10000,method:'CASH',status:'TEST PRINT',cashReceived:10000,change:0};
+         }
+         function latestTransactionTimestamp(t) {
+            const value = t?.createdAt || t?.date;
+            if (value?.toMillis) return value.toMillis();
+            if (value?.toDate) return value.toDate().getTime();
+            if (value instanceof Date) return value.getTime();
+            const parsed = value ? new Date(value).getTime() : 0;
+            return Number.isFinite(parsed) ? parsed : 0;
+         }
+         function reprintLastTransaction() {
+            const latest = transactions.slice().sort((a, b) => latestTransactionTimestamp(b) - latestTransactionTimestamp(a))[0];
+            if (!latest) { alert('Belum ada transaksi penjualan yang dapat dicetak ulang.'); return; }
+            const receiptDate = latest.createdAt?.toDate ? latest.createdAt.toDate() : (latest.date?.toDate ? latest.date.toDate() : (latest.date ? new Date(latest.date) : new Date()));
+            showReceipt({...latest, date: receiptDate});
+         }
+         $('reprintLastTransactionBtn').addEventListener('click', reprintLastTransaction);
+         $('testPrinterBtn')?.addEventListener('click', () => {
+            const oldReceipt = activeReceiptForPrint;
+            const oldContent = $('receiptContent').innerHTML;
+            showReceipt(makePrinterTestTransaction());
+            printReceiptThermal();
+            $('receiptContent').innerHTML = oldContent;
+            activeReceiptForPrint = oldReceipt;
+            $('receiptModal').classList.remove('open');
+         });
+         $('showPrinterGuideBtn')?.addEventListener('click', () => {
+            const target = document.querySelector('#printerSettings .panel:nth-of-type(2)');
+            target?.scrollIntoView({behavior:'smooth',block:'start'});
+         });
+         $('printReceiptBtn').onclick = printReceiptThermal;
          $('closeReceiptBtn').onclick = () => $('receiptModal').classList.remove('open');
          $('receiptModal').addEventListener('click', e => {if (e.target === $('receiptModal')) $('receiptModal').classList.remove('open');});
          // CANCEL TRANSAKSI: transaksi tidak dihapus; stok dan nilai penjualan dibalik secara atomik.
@@ -666,7 +790,7 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
             $('historyCount').textContent = list.length; $('historyRevenue').textContent = rupiah(list.filter(t => ['PAID', 'PAID CASH', 'PAID QRIS'].includes(String(t.status || '').toUpperCase())).reduce((sum, t) => sum + (Number(t.total) || 0), 0));
             $('historyPagination').innerHTML = `<span>Menampilkan ${list.length ? start + 1 : 0}–${Math.min(start + historyPageSize, list.length)} dari ${list.length} transaksi sesuai tanggal filter</span><div class="pagination-actions"><button class="btn btn-light" id="historyPrev" type="button" ${historyCurrentPage <= 1 ? 'disabled' : ''}>‹ Sebelumnya</button><span>Halaman ${historyCurrentPage} / ${totalPages}</span><button class="btn btn-light" id="historyNext" type="button" ${historyCurrentPage >= totalPages ? 'disabled' : ''}>Berikutnya ›</button></div>`;
             $('historyPrev').onclick = () => {if (historyCurrentPage > 1) {historyCurrentPage--; renderHistory();} }; $('historyNext').onclick = () => {if (historyCurrentPage < totalPages) {historyCurrentPage++; renderHistory();} };
-            document.querySelectorAll('[data-receipt]').forEach(b => b.onclick = () => {const t = transactions.find(x => x.id === b.dataset.receipt); if (t) showReceipt({...t, date: t.createdAt?.toDate ? t.createdAt.toDate() : new Date()});});
+            document.querySelectorAll('[data-receipt]').forEach(b => b.onclick = () => {const t = transactions.find(x => x.id === b.dataset.receipt); if (t) showReceipt({...t, date: t.createdAt?.toDate ? t.createdAt.toDate() : (t.date?.toDate ? t.date.toDate() : (t.date ? new Date(t.date) : new Date()))});});
             document.querySelectorAll('[data-correct]').forEach(b => b.onclick = () => openCorrectionById(b.dataset.correct));
          }
 
@@ -897,7 +1021,35 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
          document.querySelectorAll('[data-report-page]').forEach(b=>b.addEventListener('click',()=>openAccountingReport(b.dataset.reportPage)));
          document.querySelectorAll('[data-accounting-home]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('accounting').classList.add('active');$('pageTitle').textContent='Accounting';document.querySelectorAll('.nav button[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page==='accounting'));}));
          document.querySelectorAll('.accounting-report-page').forEach(section=>{section.querySelector('[data-refresh-report]').addEventListener('click',()=>renderAccountingReport(section.id));section.querySelector('[data-report-start]').addEventListener('change',()=>renderAccountingReport(section.id));section.querySelector('[data-report-end]').addEventListener('change',()=>renderAccountingReport(section.id));section.querySelector('[data-print-report]').addEventListener('click',()=>printAccountingReport(section.id));});
-         function printAccountingReport(id){const meta=accountingReportMeta[id],rows=accountingRowsFor(id);if(!meta)return;const section=$(id),start=section.querySelector('[data-report-start]').value,end=section.querySelector('[data-report-end]').value;const table=`<table><thead><tr>${meta.columns.map(c=>`<th>${escapeHtml(c)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((v,i)=>`<td>${accountingFormatCell(v,i,id)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;const w=window.open('','_blank');if(!w){alert('Izinkan pop-up browser untuk mencetak laporan.');return;}w.document.write(`<!doctype html><html><head><title>${meta.title}</title><meta charset="utf-8"><style>body{font-family:Arial,sans-serif;padding:24px;color:#222}h1,h2,p{text-align:center}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #aaa;padding:8px;text-align:left;font-size:11px}th{background:#eee}@media print{button{display:none}}</style></head><body><h1>ROTI ANGET SUBUH</h1><h2>${meta.title}</h2><p>Periode: ${start||'Semua'} s/d ${end||'Semua'}</p>${table}<script>window.onload=()=>window.print()<\/script></body></html>`);w.document.close();}
+         function printAccountingReport(id){const meta=accountingReportMeta[id],rows=accountingRowsFor(id);if(!meta)return;const section=$(id),start=section.querySelector('[data-report-start]').value,end=section.querySelector('[data-report-end]').value;const table=`<table><thead><tr>${meta.columns.map(c=>`<th>${escapeHtml(c)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((v,i)=>`<td>${accountingFormatCell(v,i,id)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;const w=window.open('','_blank');if(!w){alert('Izinkan pop-up browser untuk mencetak laporan.');return;}w.document.write(`<!doctype html><html><head><title>${meta.title}</title><meta charset="utf-8"><style>body{font-family:Arial,sans-serif;padding:24px;color:#222}h1,h2,p{text-align:center}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #aaa;padding:8px;text-align:left;font-size:11px}th{background:#eee}@media print{button{display:none}}
+
+/* Penyempurnaan navigasi: menu utama bersih seperti Dashboard dan Accounting */
+.nav-parent{font-size:14px!important;font-weight:700!important;padding:13px 12px!important;letter-spacing:0}
+.nav-parent .nav-chevron{display:none!important}
+.nav-group.expanded .nav-parent{background:transparent;color:#eee5d8}
+
+/* Tombol kembali ringkas di pojok kanan halaman detail */
+.module-detail-back{
+  display:flex;align-items:center;justify-content:flex-end;
+  width:100%;margin:0 0 18px;padding:0 0 12px;
+  border-bottom:1px solid var(--line);
+}
+.module-detail-back button{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  min-height:36px;padding:8px 13px;
+  border:1px solid var(--line);border-radius:9px;
+  background:#fff;color:var(--ink);
+  font:600 13px/1.2 inherit;cursor:pointer;
+  box-shadow:0 2px 7px rgba(44,34,20,.045);
+  transition:background .18s,border-color .18s,transform .18s;
+}
+.module-detail-back button:hover{
+  border-color:var(--gold2);background:#fbf7ef;transform:translateY(-1px);
+}
+.module-detail-back .back-arrow{font-size:16px;line-height:1;color:var(--gold2)}
+.module-detail-back .back-title{font-size:12px;font-weight:700;white-space:nowrap}
+
+</style></head><body><h1>ROTI ANGET SUBUH</h1><h2>${meta.title}</h2><p>Periode: ${start||'Semua'} s/d ${end||'Semua'}</p>${table}<script>window.onload=()=>window.print()<\/script></body></html>`);w.document.close();}
 
          function renderDashboard() {
             const paid = transactions.filter(t => ['PAID', 'PAID CASH', 'PAID QRIS'].includes(String(t.status || '').toUpperCase()));
@@ -928,3 +1080,66 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
             if (maxSales === 0) salesEl.innerHTML = '<div class="chart-empty">Belum ada transaksi lunas pada bulan ini.</div>';
             else salesEl.innerHTML = weekTotals.map((amount, i) => {const height = amount ? Math.max(3, amount / maxSales * 100) : 0; return `<div class="sales-week"><div class="sales-week-value">${amount ? rupiah(amount) : '—'}</div><div class="sales-week-track"><div class="sales-week-bar" style="height:${height}%"></div></div><div class="sales-week-label">${weekLabels[i]}</div></div>`;}).join('');
          }
+
+      
+         // HUB GRID UNTUK SEMUA MENU UTAMA: tombol kartu memanggil navigasi lama agar hak akses tetap berlaku.
+         const moduleHubMap = {inputDataToggle:'hubMasterData',purchasingToggle:'hubPurchasing',productionToggle:'hubProduction',marketingToggle:'hubMarketing',cashierToggle:'hubCashier',managementToggle:'hubManagement'};
+         Object.entries(moduleHubMap).forEach(([toggleId,hubId])=>{
+            const toggle=$(toggleId); if(!toggle)return;
+            toggle.addEventListener('click',event=>{
+               event.preventDefault(); event.stopImmediatePropagation();
+               if(toggle.closest('.nav-group')?.classList.contains('admin-only') && !isAdminUser()) return;
+               document.querySelectorAll('.page').forEach(page=>page.classList.remove('active'));
+               const hub=$(hubId); if(hub)hub.classList.add('active');
+               document.querySelectorAll('.nav button[data-page]').forEach(button=>button.classList.remove('active'));
+               document.querySelectorAll('.nav-group').forEach(group=>{group.classList.remove('expanded');const t=group.querySelector('.nav-parent');if(t)t.setAttribute('aria-expanded','false');});
+               $('pageTitle').textContent=({inputDataToggle:'Master Data',purchasingToggle:'Purchasing',productionToggle:'Produksi',marketingToggle:'Marketing',cashierToggle:'Kasir',managementToggle:'Management'})[toggleId]||'Menu';
+               $('sidebar').classList.remove('open');
+            },true);
+         });
+         // Navigasi grid: buka hanya halaman tujuan, tutup seluruh daftar submenu sidebar,
+         // lalu sediakan tombol kembali ke hub menu utama (pola yang sama dengan Accounting).
+         const hubTitles={hubMasterData:'Master Data',hubPurchasing:'Purchasing',hubProduction:'Produksi',hubMarketing:'Marketing',hubCashier:'Kasir',hubManagement:'Management'};
+         const targetToHub={};
+         Object.entries(moduleHubMap).forEach(([toggleId,hubId])=>{
+            const hub=$(hubId); if(!hub)return;
+            hub.querySelectorAll('[data-hub-target]').forEach(card=>{targetToHub[card.dataset.hubTarget]=hubId;});
+         });
+         function closeSidebarSubmenus(){
+            document.querySelectorAll('.nav-group').forEach(group=>{
+               group.classList.remove('expanded');
+               const parent=group.querySelector('.nav-parent');
+               if(parent)parent.setAttribute('aria-expanded','false');
+            });
+         }
+         function showModuleHub(hubId){
+            document.querySelectorAll('.page').forEach(page=>page.classList.remove('active'));
+            const hub=$(hubId); if(hub)hub.classList.add('active');
+            document.querySelectorAll('.nav button[data-page]').forEach(button=>button.classList.remove('active'));
+            closeSidebarSubmenus();
+            $('pageTitle').textContent=hubTitles[hubId]||'Menu Utama';
+            $('sidebar').classList.remove('open');
+         }
+         function addModuleBackButton(target,hubId){
+            const page=$(target); if(!page)return;
+            let bar=page.querySelector('.module-detail-back');
+            if(!bar){
+               bar=document.createElement('div'); bar.className='module-detail-back';
+               const button=document.createElement('button'); button.type='button';
+               button.addEventListener('click',()=>showModuleHub(hubId));
+               bar.append(button); page.prepend(bar);
+            }
+            const button=bar.querySelector('button');
+            button.innerHTML='<span class="back-arrow" aria-hidden="true">←</span><span class="back-title"></span>';
+            button.querySelector('.back-title').textContent=hubTitles[hubId]||'Menu Utama';
+         }
+         document.querySelectorAll('[data-hub-target]').forEach(card=>card.addEventListener('click',()=>{
+            const target=card.dataset.hubTarget, hubId=card.closest('.page')?.id||targetToHub[target];
+            const navButton=document.querySelector('.nav button[data-page="'+target+'"]');
+            if(!navButton)return;
+            // Gunakan navigasi asli agar pemeriksaan hak akses dan proses modul tetap berjalan.
+            navButton.click();
+            closeSidebarSubmenus();
+            if(hubId)addModuleBackButton(target,hubId);
+            $('sidebar').classList.remove('open');
+         }));
