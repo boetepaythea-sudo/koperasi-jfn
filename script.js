@@ -1,8 +1,14 @@
-         import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
          import {getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence, inMemoryPersistence} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
          import {getFirestore, collection, doc, setDoc, addDoc, getDocs, getDoc, updateDoc, runTransaction, query, where, orderBy, limit, serverTimestamp, deleteDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+         /* 1) GANTI konfigurasi di bawah dengan Firebase Console > Project settings > Your apps.
+            2) Aktifkan Authentication > Email/Password, Firestore Database, dan Storage.
+            3) Buat user kasir dari Authentication > Users. Jangan menyimpan password di file ini. */
+         // Ganti dengan URL gambar GitHub RAW milik toko. Kosongkan untuk memakai gambar bawaan.
          const LOGIN_HERO_IMAGE_URL = 'https://erpmadebali.github.io/Roti-Anget-Subuh/logo.jpeg';
+
          const firebaseConfig = {
             apiKey: "AIzaSyC_44mGIwcVsQplby6YcIRvGrKrYqi4o_U",
             authDomain: "koperasi-8da9b.firebaseapp.com",
@@ -914,7 +920,7 @@
             ]},
             reportCOGS: {title:'Laporan COGS Produksi', columns:['Tanggal','Kode Produk','Nama Produk','Qty','HPP','Variable Cost','HPP Total'], rows:()=>productionRecords.map(x=>[x.productionDate||'-',x.productCode||'-',x.productName||'-',Number(x.qty)||0,Number(x.hpp)||0,Number(x.variableCost)||0,Number(x.hppTotal)||0])},
             reportStockFG: {title:'Laporan Stock FG', columns:['Periode','Kode Produk','Nama Produk','Qty Produksi FG','Qty Dikirim','Stock FG'], rows:()=>finishGoodRecords.map(x=>[x.period||'-',x.productCode||'-',x.productName||'-',Number(x.qtyFG)||0,Number(x.qtyKirim)||0,Number(x.stock ?? (Number(x.qtyFG||0)-Number(x.qtyKirim||0)))])},
-            reportStockRM: {title:'Laporan Stock Bahan Baku', columns:['Kode','Nama Bahan Baku','UOM','Weight (Master)','Purchase Price','Average'], rows:()=>rawMaterials.map(x=>{const u=uoms.find(v=>v.id===x.uomId);return [x.code||x.id,x.name||'-',u?.name||x.uomName||'-',Number(x.weight)||0,Number(x.purchasePrice)||0,Number(x.average)||0]})},
+            reportStockRM: {title:'Laporan Stock Bahan Baku', columns:['Kode','Nama Bahan Baku','UOM','Weight (Master)','Purchase Price','Average','Qty Pembelian','Qty Pemakaian','Qty Stock','Value'], rows:()=>accountingStockMaterialRows()},
             reportProfitLoss: {title:'Laporan Laba/Rugi', columns:['Komponen','Keterangan','Nilai'], rows:()=>{
                const paid=transactions.filter(t=>['PAID','PAID CASH','PAID QRIS'].includes(String(t.status||'').toUpperCase()));
                const sales=paid.reduce((n,t)=>n+(Number(t.total)||0),0)+salesRecords.reduce((n,x)=>n+(Number(x.salesValue)||0),0);
@@ -924,47 +930,43 @@
             }}
          };
          function accountingDateInRange(value,start,end){let d=String(value||'').slice(0,10);if(/^\d{4}-\d{2}$/.test(d))d=d+'-01';return (!start||d>=start)&&(!end||d<=end);}
-         function accountingFormatCell(v,idx,reportId){if(typeof v==='number'){const moneyCols={reportSales:[5],reportCosts:[4],reportCOGS:[4,5,6],reportProfitLoss:[2],reportStockRM:[4,5],reportProductionFG:[4]};return (moneyCols[reportId]||[]).includes(idx)?rupiah(v):new Intl.NumberFormat('id-ID').format(v);}return escapeHtml(String(v??'-'));}
-         function accountingRowsFor(id){const meta=accountingReportMeta[id];if(!meta)return [];const section=$(id),start=section?.querySelector('[data-report-start]')?.value||'',end=section?.querySelector('[data-report-end]')?.value||'';let rows=meta.rows();if(id==='reportProfitLoss'){const paid=transactions.filter(t=>['PAID','PAID CASH','PAID QRIS'].includes(String(t.status||'').toUpperCase())&&accountingDateInRange(transactionDateKey(t),start,end));const sales=paid.reduce((n,t)=>n+(Number(t.total)||0),0)+salesRecords.filter(x=>accountingDateInRange(x.salesDate,start,end)).reduce((n,x)=>n+(Number(x.salesValue)||0),0);const cogs=productionRecords.filter(x=>accountingDateInRange(x.productionDate,start,end)).reduce((n,x)=>n+(Number(x.hppTotal)||0),0);const waste=wasteMaterialRecords.filter(x=>accountingDateInRange(x.wasteDate,start,end)).reduce((n,x)=>n+(Number(x.totalValue)||0),0)+wasteProductRecords.filter(x=>accountingDateInRange(x.wasteDate,start,end)).reduce((n,x)=>n+(Number(x.totalHpp)||0),0);const overhead=costOverheadExpenses.filter(x=>accountingDateInRange(x.postingDate,start,end)).reduce((n,x)=>n+(Number(x.value)||0),0);return [['Pendapatan','Transaksi kasir lunas + Input Sales Marketing',sales],['HPP Produksi','Total HPP dari catatan produksi',cogs],['Waste','Waste bahan baku dan produk',waste],['Cost Overhead','Total biaya overhead',overhead],['Estimasi Laba/Rugi','Pendapatan - HPP Produksi - Waste - Cost Overhead',sales-cogs-waste-overhead]];}return rows.filter(r=>accountingDateInRange(r[0],start,end));}
+         function accountingStockMaterialRows(){
+            const section=$('reportStockRM'),start=section?.querySelector('[data-report-start]')?.value||'',end=section?.querySelector('[data-report-end]')?.value||'';
+            const filtered=Boolean(start||end);
+            if(!filtered)return getStockBahanBakuRows().map(x=>{const m=rawMaterials.find(v=>(v.code||v.id)===x.code)||rawMaterials.find(v=>v.name===x.name);return [x.code,x.name,x.uom,Number(m?.weight)||0,Number(m?.purchasePrice)||0,x.average,x.qtyPO,x.qtyProduction,x.qtyStock,x.value];});
+            const rows=rawMaterials.map(m=>{const u=uoms.find(v=>v.id===m.uomId),keys=[m.id,m.code,m.name].filter(Boolean).map(String);let qtyPurchase=0,qtyUsage=0;
+               purchaseOrderRecords.filter(po=>accountingDateInRange(po.purchaseDate||po.date,start,end)).forEach(po=>{const refs=[po.materialId,po.materialCode,po.materialName].filter(Boolean).map(String);if(refs.some(k=>keys.includes(k)))qtyPurchase+=Number(po.qty)||0;});
+               productionRecords.filter(rec=>accountingDateInRange(rec.productionDate,start,end)).forEach(rec=>(rec.items||[]).forEach(item=>{const refs=[item.materialId,item.code,item.name].filter(Boolean).map(String);if(refs.some(k=>keys.includes(k)))qtyUsage+=Number(item.totalWeight??(Number(item.weight||0)*Number(rec.qty||0)))||0;}));
+               const average=Number(m.average)||0,qtyStock=qtyPurchase-qtyUsage;return [m.code||m.id,m.name||'-',u?.name||m.uomName||'-',Number(m.weight)||0,Number(m.purchasePrice)||0,average,qtyPurchase,qtyUsage,qtyStock,average*qtyStock];
+            });return rows;
+         }
+         function accountingFormatCell(v,idx,reportId){if(typeof v==='number'){const moneyCols={reportSales:[5],reportCosts:[4],reportCOGS:[4,5,6],reportProfitLoss:[2],reportStockRM:[4,5,9],reportProductionFG:[4]};return (moneyCols[reportId]||[]).includes(idx)?rupiah(v):new Intl.NumberFormat('id-ID').format(v);}return escapeHtml(String(v??'-'));}
+         function accountingRowsFor(id){const meta=accountingReportMeta[id];if(!meta)return [];const section=$(id),start=section?.querySelector('[data-report-start]')?.value||'',end=section?.querySelector('[data-report-end]')?.value||'';let rows=meta.rows();if(id==='reportProfitLoss'){const paid=transactions.filter(t=>['PAID','PAID CASH','PAID QRIS'].includes(String(t.status||'').toUpperCase())&&accountingDateInRange(transactionDateKey(t),start,end));const sales=paid.reduce((n,t)=>n+(Number(t.total)||0),0)+salesRecords.filter(x=>accountingDateInRange(x.salesDate,start,end)).reduce((n,x)=>n+(Number(x.salesValue)||0),0);const cogs=productionRecords.filter(x=>accountingDateInRange(x.productionDate,start,end)).reduce((n,x)=>n+(Number(x.hppTotal)||0),0);const waste=wasteMaterialRecords.filter(x=>accountingDateInRange(x.wasteDate,start,end)).reduce((n,x)=>n+(Number(x.totalValue)||0),0)+wasteProductRecords.filter(x=>accountingDateInRange(x.wasteDate,start,end)).reduce((n,x)=>n+(Number(x.totalHpp)||0),0);const overhead=costOverheadExpenses.filter(x=>accountingDateInRange(x.postingDate,start,end)).reduce((n,x)=>n+(Number(x.value)||0),0);return [['Pendapatan','Transaksi kasir lunas + Input Sales Marketing',sales],['HPP Produksi','Total HPP dari catatan produksi',cogs],['Waste','Waste bahan baku dan produk',waste],['Cost Overhead','Total biaya overhead',overhead],['Estimasi Laba/Rugi','Pendapatan - HPP Produksi - Waste - Cost Overhead',sales-cogs-waste-overhead]];}if(id==='reportStockRM')return rows;return rows.filter(r=>accountingDateInRange(r[0],start,end));}
          function renderAccountingReport(id){const meta=accountingReportMeta[id],section=$(id);if(!meta||!section)return;const rows=accountingRowsFor(id),body=section.querySelector('[data-report-body]');let sum=0;if(id==='reportSales')sum=rows.reduce((n,r)=>n+(Number(r[5])||0),0);else if(id==='reportCosts')sum=rows.reduce((n,r)=>n+(Number(r[4])||0),0);else if(id==='reportCOGS'||id==='reportProductionFG')sum=rows.reduce((n,r)=>n+(Number(r[meta.columns.length-1])||0),0);else if(id==='reportProfitLoss')sum=Number(rows.at(-1)?.[2])||0;
             const moneyReports=['reportSales','reportCosts','reportCOGS','reportProductionFG','reportProfitLoss'];
             const table=`<div class="table-wrap"><table><thead><tr>${meta.columns.map(c=>`<th>${escapeHtml(c)}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.map(r=>`<tr>${r.map((v,i)=>`<td>${accountingFormatCell(v,i,id)}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${meta.columns.length}" class="empty">Belum ada data untuk laporan ini.</td></tr>`}</tbody></table></div>`;
-            const summary=moneyReports.includes(id)?`<div class="accounting-summary"><div><span>Jumlah Baris</span><strong>${rows.length}</strong></div><div><span>${id==='reportProfitLoss'?'Estimasi Laba/Rugi':'Total Nilai'}</span><strong>${rupiah(sum)}</strong></div><div><span>Dicetak / Dibuka</span><strong>${new Date().toLocaleDateString('id-ID')}</strong></div></div>`:`<div class="accounting-summary"><div><span>Jumlah Baris</span><strong>${rows.length}</strong></div><div><span>Periode Filter</span><strong>${section.querySelector('[data-report-start]').value||'Semua'} – ${section.querySelector('[data-report-end]').value||'Semua'}</strong></div><div><span>Tanggal</span><strong>${new Date().toLocaleDateString('id-ID')}</strong></div></div>`;
+            const stockValue=id==='reportStockRM'?rows.reduce((n,r)=>n+(Number(r[9])||0),0):0;const summary=id==='reportStockRM'?`<div class="accounting-summary"><div><span>Jumlah Baris</span><strong>${rows.length}</strong></div><div><span>Periode Filter</span><strong>${section.querySelector('[data-report-start]').value||'Semua'} – ${section.querySelector('[data-report-end]').value||'Semua'}</strong></div><div><span>Tanggal</span><strong>${new Date().toLocaleDateString('id-ID')}</strong></div><div><span>Total Stock Value</span><strong>${rupiah(stockValue)}</strong></div></div>`:moneyReports.includes(id)?`<div class="accounting-summary"><div><span>Jumlah Baris</span><strong>${rows.length}</strong></div><div><span>${id==='reportProfitLoss'?'Estimasi Laba/Rugi':'Total Nilai'}</span><strong>${rupiah(sum)}</strong></div><div><span>Dicetak / Dibuka</span><strong>${new Date().toLocaleDateString('id-ID')}</strong></div></div>`:`<div class="accounting-summary"><div><span>Jumlah Baris</span><strong>${rows.length}</strong></div><div><span>Periode Filter</span><strong>${section.querySelector('[data-report-start]').value||'Semua'} – ${section.querySelector('[data-report-end]').value||'Semua'}</strong></div><div><span>Tanggal</span><strong>${new Date().toLocaleDateString('id-ID')}</strong></div></div>`;
             body.innerHTML=summary+table;
          }
          function openAccountingReport(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$(id)?.classList.add('active');document.querySelectorAll('.nav button[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page==='accounting'));$('pageTitle').textContent=accountingReportMeta[id]?.title||'Accounting';renderAccountingReport(id);$('sidebar').classList.remove('open');}
          document.querySelectorAll('[data-report-page]').forEach(b=>b.addEventListener('click',()=>openAccountingReport(b.dataset.reportPage)));
          document.querySelectorAll('[data-accounting-home]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('accounting').classList.add('active');$('pageTitle').textContent='Accounting';document.querySelectorAll('.nav button[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page==='accounting'));}));
          document.querySelectorAll('.accounting-report-page').forEach(section=>{section.querySelector('[data-refresh-report]').addEventListener('click',()=>renderAccountingReport(section.id));section.querySelector('[data-report-start]').addEventListener('change',()=>renderAccountingReport(section.id));section.querySelector('[data-report-end]').addEventListener('change',()=>renderAccountingReport(section.id));section.querySelector('[data-print-report]').addEventListener('click',()=>printAccountingReport(section.id));});
-         function printAccountingReport(id){const meta=accountingReportMeta[id],rows=accountingRowsFor(id);if(!meta)return;const section=$(id),start=section.querySelector('[data-report-start]').value,end=section.querySelector('[data-report-end]').value;const table=`<table><thead><tr>${meta.columns.map(c=>`<th>${escapeHtml(c)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((v,i)=>`<td>${accountingFormatCell(v,i,id)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;const w=window.open('','_blank');if(!w){alert('Izinkan pop-up browser untuk mencetak laporan.');return;}w.document.write(`<!doctype html><html><head><title>${meta.title}</title><meta charset="utf-8"><style>body{font-family:Arial,sans-serif;padding:24px;color:#222}h1,h2,p{text-align:center}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #aaa;padding:8px;text-align:left;font-size:11px}th{background:#eee}@media print{button{display:none}}
-
-/* Penyempurnaan navigasi: menu utama bersih seperti Dashboard dan Accounting */
-.nav-parent{font-size:14px!important;font-weight:700!important;padding:13px 12px!important;letter-spacing:0}
-.nav-parent .nav-chevron{display:none!important}
-.nav-group.expanded .nav-parent{background:transparent;color:#eee5d8}
-
-/* Tombol kembali ringkas di pojok kanan halaman detail */
-.module-detail-back{
-  display:flex;align-items:center;justify-content:flex-end;
-  width:100%;margin:0 0 18px;padding:0 0 12px;
-  border-bottom:1px solid var(--line);
-}
-.module-detail-back button{
-  display:inline-flex;align-items:center;justify-content:center;gap:7px;
-  min-height:36px;padding:8px 13px;
-  border:1px solid var(--line);border-radius:9px;
-  background:#fff;color:var(--ink);
-  font:600 13px/1.2 inherit;cursor:pointer;
-  box-shadow:0 2px 7px rgba(44,34,20,.045);
-  transition:background .18s,border-color .18s,transform .18s;
-}
-.module-detail-back button:hover{
-  border-color:var(--gold2);background:#fbf7ef;transform:translateY(-1px);
-}
-.module-detail-back .back-arrow{font-size:16px;line-height:1;color:var(--gold2)}
-.module-detail-back .back-title{font-size:12px;font-weight:700;white-space:nowrap}
-
-</style></head><body><h1>ROTI ANGET SUBUH</h1><h2>${meta.title}</h2><p>Periode: ${start||'Semua'} s/d ${end||'Semua'}</p>${table}<script>window.onload=()=>window.print()<\/script></body></html>`);w.document.close();}
+         function printAccountingReport(id){
+            const meta=accountingReportMeta[id], rows=accountingRowsFor(id);
+            if(!meta) return;
+            const section=$(id);
+            const start=section.querySelector('[data-report-start]').value;
+            const end=section.querySelector('[data-report-end]').value;
+            const table=`<table><thead><tr>${meta.columns.map(c=>`<th>${escapeHtml(c)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((v,i)=>`<td>${accountingFormatCell(v,i,id)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+            const stockSummary=id==='reportStockRM'
+               ? `<p><strong>Jumlah Baris:</strong> ${rows.length} &nbsp; | &nbsp; <strong>Periode Filter:</strong> ${start||'Semua'} – ${end||'Semua'} &nbsp; | &nbsp; <strong>Tanggal:</strong> ${new Date().toLocaleDateString('id-ID')} &nbsp; | &nbsp; <strong>Total Stock Value:</strong> ${rupiah(rows.reduce((n,r)=>n+(Number(r[9])||0),0))}</p>`
+               : '';
+            const w=window.open('','_blank');
+            if(!w){alert('Izinkan pop-up browser untuk mencetak laporan.');return;}
+            w.document.write(`<!doctype html><html><head><title>${escapeHtml(meta.title)}</title><meta charset="utf-8"><style>body{font-family:Arial,sans-serif;padding:24px;color:#222}h1,h2,p{text-align:center}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #aaa;padding:8px;text-align:left;font-size:11px}th{background:#eee}@media print{button{display:none}}</style></head><body><h1>ROTI ANGET SUBUH</h1><h2>${escapeHtml(meta.title)}</h2><p>Periode: ${start||'Semua'} s/d ${end||'Semua'}</p>${stockSummary}${table}<script>window.onload=()=>window.print()<\/script></body></html>`);
+            w.document.close();
+         }
 
          function renderDashboard() {
             const paid = transactions.filter(t => ['PAID', 'PAID CASH', 'PAID QRIS'].includes(String(t.status || '').toUpperCase()));
@@ -1058,3 +1060,4 @@
             if(hubId)addModuleBackButton(target,hubId);
             $('sidebar').classList.remove('open');
          }));
+
