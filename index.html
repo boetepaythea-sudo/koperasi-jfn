@@ -4074,7 +4074,7 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
             const paperWidth = Number(options.paperWidth) || 58;
             const printBody = options.receipt ? body.replaceAll('src=\"logo.png\"', `src=\"${new URL('logo.png', location.href).href}\"`) : body;
             const styles = options.receipt
-               ? `@page{size:${paperWidth}mm auto;margin:2mm}*{box-sizing:border-box}html,body{width:${paperWidth-4}mm;margin:0;padding:0;background:#fff;color:#111;font-family:Arial,sans-serif}body{font-size:10px;line-height:1.35}h2{font-size:14px;text-align:center;margin:0 0 4px}.receipt-center{text-align:center}hr{border:0;border-top:1px dashed #555;margin:7px 0}table{width:100%;border-collapse:collapse;font-size:10px;margin-top:5px}td{padding:3px 0;vertical-align:top}td:last-child{text-align:right;white-space:nowrap}.receipt-total{margin-top:5px}.total-line{display:flex;justify-content:space-between;gap:6px;margin:3px 0}.total-line strong{text-align:right}@media print{html,body{width:${paperWidth-4}mm!important;margin:0!important;padding:0!important}}`
+               ? `@page{size:${paperWidth}mm auto;margin:0}*{box-sizing:border-box}html,body{width:${paperWidth}mm;margin:0;padding:0;background:#fff;color:#111;font-family:Arial,sans-serif}body{width:${paperWidth}mm;padding:2mm;font-size:10px;line-height:1.3;overflow-wrap:anywhere}h2{font-size:14px;text-align:center;margin:0 0 4px}.receipt-center{text-align:center}hr{border:0;border-top:1px dashed #555;margin:7px 0}table{width:100%;border-collapse:collapse;font-size:10px;margin-top:5px}td{padding:3px 0;vertical-align:top}td:last-child{text-align:right;white-space:nowrap}.receipt-total{margin-top:5px}.total-line{display:flex;justify-content:space-between;gap:6px;margin:3px 0}.total-line strong{text-align:right}@media print{@page{size:${paperWidth}mm auto;margin:0}html,body{width:${paperWidth}mm!important;margin:0!important;padding:0!important}body{padding:2mm!important}}`
                : `body{font:12px Arial,sans-serif;color:#222;margin:28px}h1,h2{text-align:center}p.center{text-align:center;color:#555}table{width:100%;border-collapse:collapse;margin-top:18px}th,td{padding:9px;border-bottom:1px solid #ddd;text-align:left}th:last-child,td:last-child{text-align:right}.totals{margin:18px 0;text-align:right;font-size:14px;font-weight:bold}.small{font-size:10px;color:#666}@media print{button{display:none}}`;
             w.document.write(`<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)}</title><style>${styles}</style></head><body>${printBody}<script>window.onload=()=>{const imgs=[...document.images];Promise.all(imgs.map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.onload=img.onerror=resolve;}))).then(()=>{window.focus();window.print();});};<\/script></body></html>`);
             w.document.close();
@@ -4184,13 +4184,25 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
                return false;
             }
          }
-         function printReceiptThermal() {
+         async function printReceiptThermal() {
             const t = activeReceiptForPrint;
             if (!t) { alert('Data struk tidak tersedia. Buka ulang struk transaksi lalu coba cetak.'); return; }
+
+            // Semua tombol cetak struk (kasir, riwayat, dan test print) memakai
+            // satu jalur yang sama. Android mengirim ESC/POS melalui Cleanter;
+            // perangkat lain memakai dialog cetak browser seperti cetak laporan.
+            if (isAndroidDevice()) {
+               await sendReceiptToAndroidBridge(t);
+               return;
+            }
+
             const content = $('receiptContent').innerHTML;
-            printDocument('Struk Pembayaran', content, {receipt:true, paperWidth:getReceiptPaperWidth()});
+            printDocument('Struk Pembayaran', content, {
+               receipt:true,
+               paperWidth:58
+            });
             const msg = $('printerSettingMessage');
-            if (msg) msg.textContent = 'Dialog cetak struk dibuka seperti proses cetak laporan. Pilih printer INFORCE P58C dan ukuran kertas yang sesuai.';
+            if (msg) msg.textContent = 'Dialog cetak struk dibuka. Pilih printer thermal Bluetooth 58 mm / INFORCE P58C, ukuran kertas 58 mm, dan nonaktifkan header/footer browser.';
          }
 
          function makePrinterTestTransaction() {
@@ -4337,7 +4349,7 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
             $('historyCount').textContent = list.length; $('historyRevenue').textContent = rupiah(list.filter(t => ['PAID', 'PAID CASH', 'PAID QRIS'].includes(String(t.status || '').toUpperCase())).reduce((sum, t) => sum + (Number(t.total) || 0), 0));
             $('historyPagination').innerHTML = `<span>Menampilkan ${list.length ? start + 1 : 0}–${Math.min(start + historyPageSize, list.length)} dari ${list.length} transaksi sesuai tanggal filter</span><div class="pagination-actions"><button class="btn btn-light" id="historyPrev" type="button" ${historyCurrentPage <= 1 ? 'disabled' : ''}>‹ Sebelumnya</button><span>Halaman ${historyCurrentPage} / ${totalPages}</span><button class="btn btn-light" id="historyNext" type="button" ${historyCurrentPage >= totalPages ? 'disabled' : ''}>Berikutnya ›</button></div>`;
             $('historyPrev').onclick = () => {if (historyCurrentPage > 1) {historyCurrentPage--; renderHistory();} }; $('historyNext').onclick = () => {if (historyCurrentPage < totalPages) {historyCurrentPage++; renderHistory();} };
-            document.querySelectorAll('[data-receipt]').forEach(b => b.onclick = () => {const t = transactions.find(x => x.id === b.dataset.receipt); if (t) showReceipt({...t, date: t.createdAt?.toDate ? t.createdAt.toDate() : new Date()});});
+            document.querySelectorAll('[data-receipt]').forEach(b => b.onclick = () => {const t = transactions.find(x => x.id === b.dataset.receipt); if (t) showReceipt({...t, date: t.createdAt?.toDate ? t.createdAt.toDate() : (t.date?.toDate ? t.date.toDate() : (t.date ? new Date(t.date) : new Date()))});});
             document.querySelectorAll('[data-correct]').forEach(b => b.onclick = () => openCorrectionById(b.dataset.correct));
          }
 
