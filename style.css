@@ -1163,7 +1163,14 @@
          .receipt-card th {
             padding: 8px 4px
          }
-
+         .receipt-card table td:first-child {
+            text-align: left !important;
+            }
+            .receipt-card table td:last-child {
+                text-align: right !important;
+                white-space: nowrap;
+                font-variant-numeric: tabular-nums;
+            }
          .receipt-total {
             border-top: 1px dashed #9b907e;
             margin-top: 12px;
