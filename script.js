@@ -1,4 +1,4 @@
-         import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
          import {getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence, inMemoryPersistence} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
          import {getFirestore, collection, doc, setDoc, addDoc, getDocs, getDoc, updateDoc, runTransaction, query, where, orderBy, limit, serverTimestamp, deleteDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -465,7 +465,7 @@
          function findProduct(value) {const v = value.trim().toLowerCase(); return products.find(p => p.code.toLowerCase() === v || p.name.toLowerCase() === v);}
          let selectedProduct = null;
          $('posCode').addEventListener('input', () => {selectedProduct = findProduct($('posCode').value); const p = selectedProduct; if (p) {$('productPreview').innerHTML = `<img src="${p.imageUrl || ''}" onerror="this.style.visibility='hidden'"><div><strong>${escapeHtml(p.name)}</strong><div class="muted">${p.code} • Stok: ${p.stock || 0} pcs</div><div class="price">${rupiah(p.price)}</div></div>`;} else {$('productPreview').innerHTML = '<div class="empty" style="width:100%">Produk tidak ditemukan. Pilih kode/nama yang tersedia.</div>';} });
-         $('addCartBtn').onclick = () => {const p = findProduct($('posCode').value), qty = Number($('posQty').value); if (!p || qty < 1) {message('checkoutMessage', 'Pilih produk dan qty yang valid.', 'danger'); return;} const existing = cart.find(x => x.id === p.id); const next = (existing?.qty || 0) + qty; if (next > Number(p.stock || 0)) {showStockWarning(p.name, Number(p.stock) || 0, next); return;} if (existing) existing.qty = next; else cart.push({id: p.id, code: p.code, name: p.name, price: Number(p.price), qty, imageUrl: p.imageUrl || ''}); $('posCode').value = ''; $('posQty').value = 1; $('productPreview').innerHTML = '<div class="empty" style="width:100%">Pilih produk untuk melihat detail.</div>'; selectedProduct = null; message('checkoutMessage', ''); renderCart();};
+         $('addCartBtn').onclick = () => {const p = findProduct($('posCode').value), qty = Number($('posQty').value); if (!p || qty < 1) {message('checkoutMessage', 'Pilih produk dan qty yang valid.', 'danger'); return;} const existing = cart.find(x => x.id === p.id); const next = (existing?.qty || 0) + qty; if (next > Number(p.stock || 0)) {showStockWarning(p.name, Number(p.stock) || 0, next); return;} if (existing) existing.qty = next; else cart.push({id: p.id, code: p.code, name: p.name, price: Number(p.price), qty}); $('posCode').value = ''; $('posQty').value = 1; $('productPreview').innerHTML = '<div class="empty" style="width:100%">Pilih produk untuk melihat detail.</div>'; selectedProduct = null; message('checkoutMessage', ''); renderCart();};
          function cartSubtotal() {return cart.reduce((s, x) => s + x.price * x.qty, 0);}
          function cartDiscount() {return discountValue(cartSubtotal());}
          function cartTotal() {return Math.max(0, cartSubtotal() - cartDiscount());}
@@ -488,7 +488,17 @@
             if (method === 'QRIS' && qrisPaid !== total) {message('checkoutMessage', qrisPaid <= 0 ? 'Masukkan nominal pembayaran QRIS terlebih dahulu.' : 'Nominal QRIS harus sama persis dengan total tagihan (' + rupiah(total) + ').', 'danger'); return;}
             const checkoutButton = $('checkoutBtn'); checkoutButton.disabled = true; checkoutButton.textContent = 'MEMPROSES…';
             try {
-               const items = cart.map(x => ({...x, subtotal: x.price * x.qty})); const txRef = doc(collection(db, 'transactions'));
+               // Simpan hanya snapshot data transaksi yang diperlukan; imageUrl tetap di Master Produk.
+               // Proyeksi eksplisit ini juga membersihkan imageUrl dari item keranjang versi lama.
+               const items = cart.map(x => ({
+                  id: x.id,
+                  code: x.code || '',
+                  name: x.name || '',
+                  price: Number(x.price) || 0,
+                  qty: Number(x.qty) || 0,
+                  subtotal: (Number(x.price) || 0) * (Number(x.qty) || 0)
+               }));
+               const txRef = doc(collection(db, 'transactions'));
                const customerRef = phone ? doc(db, 'customers', phone) : null, promoRef = promo ? doc(db, 'promos', promo.id) : null; let finalCustomerName = typedName, finalCustomerCode = selectedCustomer?.customerCode || null;
                await runTransaction(db, async t => {
                   const promoSnap = promoRef ? await t.get(promoRef) : null, customerSnap = customerRef ? await t.get(customerRef) : null, customerCounterSnap = (customerRef ? await t.get(customerCounterRef()) : null), productSnapshots = [];
