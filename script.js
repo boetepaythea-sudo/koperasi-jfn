@@ -25,7 +25,7 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
          const $ = id => document.getElementById(id);
          const rupiah = n => new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR', maximumFractionDigits: 0}).format(Number(n) || 0);
          const today = () => {const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`};
-         let app, auth, db, currentUser = null, products = [], cart = [], transactions = [], promos = [], customers = [], blastDrafts = [], uoms = [], rawMaterials = [], activeBlastRecipients = [], activeBlastDraft = null, activeBlastIndex = 0, selectedCustomer = null;
+         let app, auth, db, currentUser = null, products = [], cart = [], transactions = [], promos = [], customers = [], blastDrafts = [], uoms = [], rawMaterials = [], stockEntries = [], summaryStockChanges = new Map(), activeBlastRecipients = [], activeBlastDraft = null, activeBlastIndex = 0, selectedCustomer = null;
          let forecastProduct = null, forecastItems = [];
          let productionRecords = [], finishGoodRecords = [], wasteMaterialRecords = [], wasteProductRecords = [], stores = [], salesRecords = [], costOverheadMasters = [], costOverheadExpenses = [], supplierRecords = [], purchaseOrderRecords = [], supplierEditId = '', storeEditId = '', salesEditId = '', storePage = 1, salesPage = 1, wasteForecastCache = new Map(), expandedProductionId = null;
          const configured = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId);
@@ -62,7 +62,7 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
             document.querySelectorAll('.admin-only').forEach(el => el.classList.toggle('hidden', !admin));
             if (!admin) {
                const activePage = document.querySelector('.page.active');
-               if (activePage && ['uom', 'rawMaterials', 'products', 'promos', 'history', 'soStock', 'customers', 'promoBlast', 'mrpProduction', 'finishGood', 'waste', 'accounting', 'masterCostOverhead', 'addSupplier', 'purchaseOrderMaterial', 'stockBahanBaku', 'costOverheadInput', 'reportProductionFG', 'reportShipment', 'reportSales', 'reportCosts', 'reportCOGS', 'reportStockFG', 'reportStockRM', 'reportProfitLoss'].includes(activePage.id)) {
+               if (activePage && ['uom', 'rawMaterials', 'products', 'promos', 'history', 'soStock', 'summaryInputStock', 'customers', 'promoBlast', 'mrpProduction', 'finishGood', 'waste', 'accounting', 'masterCostOverhead', 'addSupplier', 'purchaseOrderMaterial', 'stockBahanBaku', 'costOverheadInput', 'reportProductionFG', 'reportShipment', 'reportSales', 'reportCosts', 'reportCOGS', 'reportStockFG', 'reportStockRM', 'reportProfitLoss'].includes(activePage.id)) {
                   document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
                   $('dashboard').classList.add('active'); $('pageTitle').textContent = 'Dashboard';
                }
@@ -106,7 +106,7 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
                message('loginMessage', 'Logout gagal: ' + friendlyError(err), 'danger');
             } finally {$('logoutBtn').disabled = false;}
          };
-         document.querySelectorAll('.nav button[data-page]').forEach(b => b.addEventListener('click', () => {if (!isAdminUser() && ['uom', 'rawMaterials', 'products', 'promos', 'history', 'soStock', 'customers', 'promoBlast', 'mrpProduction', 'finishGood', 'waste', 'accounting', 'masterCostOverhead', 'addSupplier', 'purchaseOrderMaterial', 'stockBahanBaku', 'costOverheadInput', 'reportProductionFG', 'reportShipment', 'reportSales', 'reportCosts', 'reportCOGS', 'reportStockFG', 'reportStockRM', 'reportProfitLoss'].includes(b.dataset.page)) return; document.querySelectorAll('.nav button[data-page]').forEach(x => x.classList.remove('active')); b.classList.add('active'); const parentGroup = b.closest('.nav-group'); if (parentGroup) {parentGroup.classList.add('expanded'); const toggle = parentGroup.querySelector('.nav-parent'); if (toggle) toggle.setAttribute('aria-expanded', 'true');} document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); $(b.dataset.page).classList.add('active'); const titles = {dashboard: 'Dashboard', uom: 'Master UOM/Unit', rawMaterials: 'Master Bahan Baku', products: 'Master Produk', promos: 'Seting Promo', stock: 'Input Stock', pos: 'Penjualan', printerSettings: 'Setting Printer', history: 'Riwayat Transaksi', soStock: 'SO Stock', customers: 'Data Konsumen', promoBlast: 'Blast Promo', mrpProduction: 'MRP Produksi', finishGood: 'Input Data Finish Good', waste: 'Input Data Waste', addStore: 'Add Store', inputSales: 'Input Sales', accounting: 'Accounting', masterCostOverhead: 'Master Data Cost Overhead', addSupplier: 'Add Supplier', purchaseOrderMaterial: 'Purchase Order Material', stockBahanBaku: 'Stock Bahan Baku'}; $('pageTitle').textContent = titles[b.dataset.page] || b.textContent.trim(); $('sidebar').classList.remove('open');}));
+         document.querySelectorAll('.nav button[data-page]').forEach(b => b.addEventListener('click', () => {if (!isAdminUser() && ['uom', 'rawMaterials', 'products', 'promos', 'history', 'soStock', 'summaryInputStock', 'customers', 'promoBlast', 'mrpProduction', 'finishGood', 'waste', 'accounting', 'masterCostOverhead', 'addSupplier', 'purchaseOrderMaterial', 'stockBahanBaku', 'costOverheadInput', 'reportProductionFG', 'reportShipment', 'reportSales', 'reportCosts', 'reportCOGS', 'reportStockFG', 'reportStockRM', 'reportProfitLoss'].includes(b.dataset.page)) return; document.querySelectorAll('.nav button[data-page]').forEach(x => x.classList.remove('active')); b.classList.add('active'); const parentGroup = b.closest('.nav-group'); if (parentGroup) {parentGroup.classList.add('expanded'); const toggle = parentGroup.querySelector('.nav-parent'); if (toggle) toggle.setAttribute('aria-expanded', 'true');} document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); $(b.dataset.page).classList.add('active'); const titles = {dashboard: 'Dashboard', uom: 'Master UOM/Unit', rawMaterials: 'Master Bahan Baku', products: 'Master Produk', promos: 'Seting Promo', stock: 'Input Stock', pos: 'Penjualan', printerSettings: 'Setting Printer', history: 'Riwayat Transaksi', soStock: 'SO Stock', summaryInputStock: 'Summary data Input Stock', customers: 'Data Konsumen', promoBlast: 'Blast Promo', mrpProduction: 'MRP Produksi', finishGood: 'Input Data Finish Good', waste: 'Input Data Waste', addStore: 'Add Store', inputSales: 'Input Sales', accounting: 'Accounting', masterCostOverhead: 'Master Data Cost Overhead', addSupplier: 'Add Supplier', purchaseOrderMaterial: 'Purchase Order Material', stockBahanBaku: 'Stock Bahan Baku'}; $('pageTitle').textContent = titles[b.dataset.page] || b.textContent.trim(); $('sidebar').classList.remove('open');}));
          $('menuToggle').onclick = () => {$('sidebar').classList.toggle('open');};
          document.addEventListener('click', e => {if (window.matchMedia('(max-width:680px)').matches && $('sidebar').classList.contains('open') && !$('sidebar').contains(e.target) && !$('menuToggle').contains(e.target)) $('sidebar').classList.remove('open');});
          document.addEventListener('keydown', e => {if (e.key === 'Escape') $('sidebar').classList.remove('open');});
@@ -116,8 +116,8 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
          $('marketingToggle').addEventListener('click', () => {const group = $('marketingGroup'); const expanded = group.classList.toggle('expanded'); $('marketingToggle').setAttribute('aria-expanded', String(expanded));});
          $('cashierToggle')?.addEventListener('click', () => {const group = $('cashierGroup'); const expanded = group.classList.toggle('expanded'); $('cashierToggle').setAttribute('aria-expanded', String(expanded));});
 
-         async function loadAll() {try {const [p, t, pr] = await Promise.all([getDocs(collection(db, 'products')), getDocs(query(collection(db, 'transactions'), orderBy('createdAt', 'desc'))), getDocs(collection(db, 'promos'))]); products = p.docs.map(d => ({id: d.id, ...d.data()})); transactions = t.docs.map(d => ({id: d.id, ...d.data()})); promos = pr.docs.map(d => ({id: d.id, ...d.data()})).filter(x => x.active !== false); if (isAdminUser()) {const [c, bd, u, rm, prod, fg, wm, wp, st, sr, coh, coe, sup, po] = await Promise.allSettled([getDocs(collection(db, 'customers')), getDocs(query(collection(db, 'promoBlasts'), orderBy('createdAt', 'desc'))), getDocs(collection(db, 'uoms')), getDocs(collection(db, 'rawMaterials')), getDocs(collection(db, 'productionOrders')), getDocs(collection(db, 'finishGood')), getDocs(collection(db, 'wasteRawMaterials')), getDocs(collection(db, 'wasteProducts')), getDocs(collection(db, 'stores')), getDocs(query(collection(db, 'salesRecords'), orderBy('salesDate', 'desc'))), getDocs(collection(db, 'costOverheadMasters')), getDocs(collection(db, 'costOverheadExpenses')), getDocs(collection(db, 'suppliers')), getDocs(collection(db, 'purchaseOrders'))]); customers = c.status === 'fulfilled' ? c.value.docs.map(d => ({id: d.id, ...d.data()})) : []; if (c.status === 'fulfilled') {try {await migrateCustomerCodes(customers);} catch (migrationError) {console.warn('Migrasi nomor pelanggan tertunda:', migrationError);} } blastDrafts = bd.status === 'fulfilled' ? bd.value.docs.map(d => ({id: d.id, ...d.data()})) : []; uoms = u.status === 'fulfilled' ? u.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(a.code || '').localeCompare(String(b.code || ''))) : []; rawMaterials = rm.status === 'fulfilled' ? rm.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(a.code || '').localeCompare(String(b.code || ''))) : []; productionRecords = prod.status === 'fulfilled' ? prod.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.productionDate || '').localeCompare(String(a.productionDate || ''))) : []; finishGoodRecords = fg.status === 'fulfilled' ? fg.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.period || '').localeCompare(String(a.period || ''))) : []; wasteMaterialRecords = wm.status === 'fulfilled' ? wm.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.wasteDate || '').localeCompare(String(a.wasteDate || ''))) : []; wasteProductRecords = wp.status === 'fulfilled' ? wp.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.wasteDate || '').localeCompare(String(a.wasteDate || ''))) : []; stores = st.status === 'fulfilled' ? st.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(a.code || '').localeCompare(String(b.code || ''))) : []; salesRecords = sr.status === 'fulfilled' ? sr.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.salesDate || '').localeCompare(String(a.salesDate || ''))) : []; costOverheadMasters = coh.status === 'fulfilled' ? coh.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(a.code || '').localeCompare(String(b.code || ''))) : []; costOverheadExpenses = coe.status === 'fulfilled' ? coe.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.postingDate || '').localeCompare(String(a.postingDate || ''))) : []; supplierRecords = sup.status === 'fulfilled' ? sup.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(a.code || '').localeCompare(String(b.code || ''))) : []; purchaseOrderRecords = po.status === 'fulfilled' ? po.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.purchaseDate || '').localeCompare(String(a.purchaseDate || ''))) : []; if ([c, bd, u, rm, prod, fg, wm, wp, st, sr, coh, coe, sup, po].some(x => x.status === 'rejected')) console.warn('Sebagian data Management/Master tidak dapat dimuat. Periksa Firestore Rules.', c.reason || bd.reason || u.reason || rm.reason || prod.reason || fg.reason || wm.reason || wp.reason);} renderAll();} catch (e) {console.error(e); $('connectionState').textContent = 'Gagal memuat data';} }
-         function renderAll() {renderProducts(); renderStock(); renderPromoSettings(); renderUoms(); renderRawMaterials(); renderCostOverheadMasters(); updateUomOptions(); updatePromoOptions(); if (!$('historyStart').value && !$('historyEnd').value) setHistoryToday(); else applyHistoryFilter(); renderDashboard(); updateProductOptions(); renderCart(); renderCustomers(); renderBlastDrafts(); updateMRPProductOptions(); initMRPFilters(); renderMRPProduction(); initFGFilters(); renderFinishGood(); updateWasteMaterialOptions(); updateWasteProductOptions(); renderWasteMaterialTable(); renderWasteProductTable(); renderSuppliers(); renderPurchaseOrders(); renderStockBahanBaku(); renderStores(); initSalesDateFilters(); renderSales(); updateSalesStoreOptions(); if (!$('soStart').value) initSOStockDates(); renderSOStock();}
+         async function loadAll() {try {const [p, t, pr] = await Promise.all([getDocs(collection(db, 'products')), getDocs(query(collection(db, 'transactions'), orderBy('createdAt', 'desc'))), getDocs(collection(db, 'promos'))]); products = p.docs.map(d => ({id: d.id, ...d.data()})); transactions = t.docs.map(d => ({id: d.id, ...d.data()})); promos = pr.docs.map(d => ({id: d.id, ...d.data()})).filter(x => x.active !== false); if (isAdminUser()) {const [c, bd, u, rm, prod, fg, wm, wp, st, sr, coh, coe, sup, po, stockLog] = await Promise.allSettled([getDocs(collection(db, 'customers')), getDocs(query(collection(db, 'promoBlasts'), orderBy('createdAt', 'desc'))), getDocs(collection(db, 'uoms')), getDocs(collection(db, 'rawMaterials')), getDocs(collection(db, 'productionOrders')), getDocs(collection(db, 'finishGood')), getDocs(collection(db, 'wasteRawMaterials')), getDocs(collection(db, 'wasteProducts')), getDocs(collection(db, 'stores')), getDocs(query(collection(db, 'salesRecords'), orderBy('salesDate', 'desc'))), getDocs(collection(db, 'costOverheadMasters')), getDocs(collection(db, 'costOverheadExpenses')), getDocs(collection(db, 'suppliers')), getDocs(collection(db, 'purchaseOrders')), getDocs(collection(db, 'stockEntries'))]); customers = c.status === 'fulfilled' ? c.value.docs.map(d => ({id: d.id, ...d.data()})) : []; if (c.status === 'fulfilled') {try {await migrateCustomerCodes(customers);} catch (migrationError) {console.warn('Migrasi nomor pelanggan tertunda:', migrationError);} } blastDrafts = bd.status === 'fulfilled' ? bd.value.docs.map(d => ({id: d.id, ...d.data()})) : []; uoms = u.status === 'fulfilled' ? u.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(a.code || '').localeCompare(String(b.code || ''))) : []; rawMaterials = rm.status === 'fulfilled' ? rm.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(a.code || '').localeCompare(String(b.code || ''))) : []; productionRecords = prod.status === 'fulfilled' ? prod.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.productionDate || '').localeCompare(String(a.productionDate || ''))) : []; finishGoodRecords = fg.status === 'fulfilled' ? fg.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.period || '').localeCompare(String(a.period || ''))) : []; wasteMaterialRecords = wm.status === 'fulfilled' ? wm.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.wasteDate || '').localeCompare(String(a.wasteDate || ''))) : []; wasteProductRecords = wp.status === 'fulfilled' ? wp.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.wasteDate || '').localeCompare(String(a.wasteDate || ''))) : []; stores = st.status === 'fulfilled' ? st.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(a.code || '').localeCompare(String(b.code || ''))) : []; salesRecords = sr.status === 'fulfilled' ? sr.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.salesDate || '').localeCompare(String(a.salesDate || ''))) : []; costOverheadMasters = coh.status === 'fulfilled' ? coh.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(a.code || '').localeCompare(String(b.code || ''))) : []; costOverheadExpenses = coe.status === 'fulfilled' ? coe.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.postingDate || '').localeCompare(String(a.postingDate || ''))) : []; supplierRecords = sup.status === 'fulfilled' ? sup.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(a.code || '').localeCompare(String(b.code || ''))) : []; purchaseOrderRecords = po.status === 'fulfilled' ? po.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.purchaseDate || '').localeCompare(String(a.purchaseDate || ''))) : []; stockEntries = stockLog.status === 'fulfilled' ? stockLog.value.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => String(b.date || '').localeCompare(String(a.date || ''))) : []; if ([c, bd, u, rm, prod, fg, wm, wp, st, sr, coh, coe, sup, po, stockLog].some(x => x.status === 'rejected')) console.warn('Sebagian data Management/Master tidak dapat dimuat. Periksa Firestore Rules.', c.reason || bd.reason || u.reason || rm.reason || prod.reason || fg.reason || wm.reason || wp.reason);} renderAll();} catch (e) {console.error(e); $('connectionState').textContent = 'Gagal memuat data';} }
+         function renderAll() {document.querySelectorAll('#salesItemsBody .sales-item-product').forEach(sel => {const value = sel.value; updateSalesProductOptions(sel, value);}); renderProducts(); renderStock(); renderSummaryInputStock(); renderPromoSettings(); renderUoms(); renderRawMaterials(); renderCostOverheadMasters(); updateUomOptions(); updatePromoOptions(); if (!$('historyStart').value && !$('historyEnd').value) setHistoryToday(); else applyHistoryFilter(); renderDashboard(); updateProductOptions(); renderCart(); renderCustomers(); renderBlastDrafts(); updateMRPProductOptions(); initMRPFilters(); renderMRPProduction(); initFGFilters(); renderFinishGood(); updateWasteMaterialOptions(); updateWasteProductOptions(); renderWasteMaterialTable(); renderWasteProductTable(); renderSuppliers(); renderPurchaseOrders(); renderStockBahanBaku(); renderStores(); initSalesDateFilters(); renderSales(); updateSalesStoreOptions(); if (!$('soStart').value) initSOStockDates(); renderSOStock();}
          // MARKETING: master store dan pencatatan sales tersimpan di Firestore.
          async function allocateStoreCode() {
             const ref = doc(db, 'masterCounters', 'store'); let code = '';
@@ -135,6 +135,51 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
             sel.innerHTML = '<option value="">Pilih Store...</option>' + stores.map(x => `<option value="${escapeHtml(x.id)}">${escapeHtml(x.code || '')} - ${escapeHtml(x.name || '')}</option>`).join('');
             if (stores.some(x => x.id === previous)) sel.value = previous;
          }
+         function updateSalesProductOptions(select, selected = '') {
+            if (!select) return;
+            select.innerHTML = '<option value="">Pilih Produk...</option>' + products.map(p => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.code || '')} - ${escapeHtml(p.name || '')} (${rupiah(p.price)})</option>`).join('');
+            if (products.some(p => p.id === selected)) select.value = selected;
+         }
+         function addSalesItemRow(item = {}) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td><select class="sales-item-product" required><option value="">Pilih Produk...</option></select></td>
+               <td><input class="sales-item-qty" type="number" min="0.0001" step="any" required placeholder="Qty"></td>
+               <td class="sales-item-value" style="text-align:right;font-weight:700;white-space:nowrap">Rp 0</td>
+               <td><button type="button" class="btn btn-danger sales-item-remove">Hapus</button></td>`;
+            $('salesItemsBody').appendChild(tr);
+            const select = tr.querySelector('.sales-item-product');
+            updateSalesProductOptions(select, item.productId || '');
+            tr.querySelector('.sales-item-qty').value = item.qty ?? '';
+            tr.querySelector('.sales-item-product').addEventListener('change', updateSalesEntryTotals);
+            tr.querySelector('.sales-item-qty').addEventListener('input', updateSalesEntryTotals);
+            tr.querySelector('.sales-item-remove').onclick = () => {tr.remove(); if (!$('salesItemsBody').children.length) addSalesItemRow(); updateSalesEntryTotals();};
+            updateSalesEntryTotals();
+         }
+         function getSalesFormItems() {
+            return [...$('salesItemsBody').querySelectorAll('tr')].map(tr => {
+               const p = products.find(x => x.id === tr.querySelector('.sales-item-product').value);
+               const qty = Number(tr.querySelector('.sales-item-qty').value) || 0;
+               const price = Number(p?.price) || 0;
+               return {productId: p?.id || '', productCode: p?.code || '', productName: p?.name || '', qty, price, value: Math.round(qty * price * 100) / 100};
+            }).filter(x => x.productId && x.qty > 0);
+         }
+         function updateSalesEntryTotals() {
+            if (!$('salesItemsBody')) return;
+            let total = 0;
+            $('salesItemsBody').querySelectorAll('tr').forEach(tr => {
+               const p = products.find(x => x.id === tr.querySelector('.sales-item-product').value);
+               const qty = Number(tr.querySelector('.sales-item-qty').value) || 0;
+               const value = qty * (Number(p?.price) || 0); total += value;
+               tr.querySelector('.sales-item-value').textContent = rupiah(value);
+            });
+            const discount = Math.max(0, Number($('salesDiscount')?.value) || 0);
+            if ($('salesDiscount')) $('salesDiscount').max = String(Math.round(total * 100) / 100);
+            if ($('salesDiscount') && discount > total) $('salesDiscount').setCustomValidity('Discount tidak boleh melebihi Value Penjualan.');
+            else if ($('salesDiscount')) $('salesDiscount').setCustomValidity('');
+            $('salesGrandTotal').textContent = rupiah(total);
+            if ($('salesDiscountValue')) $('salesDiscountValue').textContent = rupiah(Math.min(discount, total));
+            if ($('salesNetTotal')) $('salesNetTotal').textContent = rupiah(Math.max(0, total - discount));
+         }
          function renderPagedTable(rows, pageSizeId, targetId, paginationId, columns, type, emptyColspan = 5) {
             const size = Math.max(1, Number($(pageSizeId)?.value || 5)), totalPages = Math.max(1, Math.ceil(rows.length / size));
             let current = type === 'store' ? storePage : salesPage; current = Math.min(current, totalPages);
@@ -146,7 +191,11 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
             $(paginationId).querySelector('[data-next]').onclick = () => {if (type === 'store') storePage++; else salesPage++; type === 'store' ? renderStores() : renderSales();};
          }
          function resetStoreForm() {storeEditId = ''; $('storeForm').reset(); $('storeCode').value = nextMasterCode(stores, 'STR'); $('storeForm').querySelector('[type="submit"]').textContent = 'Save Data';}
-         function resetSalesForm() {salesEditId = ''; $('salesForm').reset(); $('salesDate').value = today(); $('salesForm').querySelector('[type="submit"]').textContent = 'Save Data'; updateSalesStoreOptions();}
+         function resetSalesForm() {
+            salesEditId = ''; $('salesForm').reset(); $('salesDate').value = today();
+            $('salesForm').querySelector('[type="submit"]').textContent = 'Simpan Data';
+            $('salesItemsBody').innerHTML = ''; addSalesItemRow(); updateSalesStoreOptions();
+         }
          function renderStores() {
             if (!$('storesTable')) return;
             renderPagedTable(stores, 'storePageSize', 'storesTable', 'storePagination', x => [`<b>${escapeHtml(x.code || x.id)}</b>`, escapeHtml(x.name || ''), escapeHtml(x.address || ''), escapeHtml(x.contact || ''), `<div class="actions" style="gap:5px"><button type="button" class="btn btn-light" data-edit-store="${escapeHtml(x.id)}">Edit</button><button type="button" class="btn btn-danger" data-delete-store="${escapeHtml(x.id)}">Delete</button></div>`], 'store', 5);
@@ -157,46 +206,58 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
          function selectedSalesRows() {
             const month = $('salesFilterMonth')?.value || String(new Date().getMonth() + 1).padStart(2, '0');
             const year = $('salesFilterYear')?.value || String(new Date().getFullYear());
-            const prefix = `${year}-${month}`;
-            return salesRecords.filter(x => String(x.salesDate || '').startsWith(prefix));
+            return salesRecords.filter(x => String(x.salesDate || '').startsWith(`${year}-${month}`));
+         }
+         function salesDetailRows(records = selectedSalesRows()) {
+            return records.flatMap(record => {
+               const items = Array.isArray(record.items) ? record.items : [];
+               if (!items.length) return [{...record, productName: '(Data lama - tanpa rincian produk)', qty: '-', rowValue: Number(record.salesValue) || 0, rowKey: record.id}];
+               return items.map((item, i) => ({...record, productName: item.productName || '-', qty: Number(item.qty) || 0, rowValue: Number(item.value) || (Number(item.qty) || 0) * (Number(item.price) || 0), rowKey: `${record.id}_${i}`}));
+            });
          }
          function initSalesDateFilters() {
-            // Filter selalu mengikuti tanggal live system saat halaman dimuat.
-            const now = new Date();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const currentYear = now.getFullYear();
-            const monthSelect = $('salesFilterMonth');
-            const yearSelect = $('salesFilterYear');
-            if (!monthSelect || !yearSelect) return;
-            monthSelect.value = month;
-
-            // Daftar tahun tersedia dari 2026 sampai 2035.
-            const years = [];
-            for (let y = 2026; y <= 2035; y++) years.push(y);
-            if (!years.includes(currentYear)) years.push(currentYear);
-            years.sort((a, b) => b - a);
-            yearSelect.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join('');
-            yearSelect.value = String(currentYear);
+            const now = new Date(), month = String(now.getMonth() + 1).padStart(2, '0'), currentYear = now.getFullYear();
+            const monthSelect = $('salesFilterMonth'), yearSelect = $('salesFilterYear'); if (!monthSelect || !yearSelect) return;
+            monthSelect.value = month; const years = []; for (let y = 2026; y <= 2035; y++) years.push(y);
+            if (!years.includes(currentYear)) years.push(currentYear); years.sort((a,b)=>b-a);
+            yearSelect.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join(''); yearSelect.value = String(currentYear);
          }
          function printSalesPdf() {
-            const rows = selectedSalesRows(), monthName = $('salesFilterMonth').selectedOptions[0]?.textContent || '', year = $('salesFilterYear').value || '';
-            const total = rows.reduce((sum, x) => sum + (Number(x.salesValue) || 0), 0);
+            const records = selectedSalesRows(), rows = salesDetailRows(records), monthName = $('salesFilterMonth').selectedOptions[0]?.textContent || '', year = $('salesFilterYear').value || '';
+            const total = records.reduce((sum, x) => sum + (Number(x.salesValue) || 0), 0);
             const money = n => 'Rp ' + (Number(n) || 0).toLocaleString('id-ID');
             const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
-            const body = rows.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.salesDate || '-')}</td><td>${esc(x.storeCode || '-')}</td><td>${esc(x.storeName || '-')}</td><td class="num">${money(x.salesValue)}</td></tr>`).join('');
-            const win = window.open('', '_blank', 'width=1000,height=750');
-            if (!win) {alert('Popup diblokir browser. Izinkan popup untuk mencetak PDF.'); return;}
-            win.document.write(`<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>Laporan Input Sales ${esc(monthName)} ${esc(year)}</title><style>body{font:12px Arial,sans-serif;color:#222;padding:28px}h1{font-size:20px;margin:0 0 5px}p{color:#555;margin:4px 0 18px}.meta{display:flex;justify-content:space-between;margin:14px 0}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:9px;text-align:left}th{background:#f1ece3}.num{text-align:right}.total{font-weight:bold;text-align:right;margin-top:14px}.foot{margin-top:35px;text-align:right;color:#777;font-size:10px}@media print{body{padding:0}@page{size:A4 portrait;margin:15mm}}</style></head><body><h1>ROTI ANGET SUBUH</h1><p>Sales Marketing Report</p><div class="meta"><strong>Periode: ${esc(monthName)} ${esc(year)}</strong><span>Total Data: ${rows.length}</span></div><table><thead><tr><th>No</th><th>Tanggal Sales</th><th>Kode Store</th><th>Nama Store</th><th>Sales Value</th></tr></thead><tbody>${body || '<tr><td colspan="5" style="text-align:center">Tidak ada data pada periode ini.</td></tr>'}</tbody></table><div class="total">Total Sales: ${money(total)}</div><div class="foot">Dicetak pada ${new Date().toLocaleString('id-ID')}</div><script>window.onload=()=>{window.focus();window.print();};<\/script></body></html>`);
+            const body = rows.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.salesDate || '-')}</td><td>${esc(x.storeName || '-')}</td><td>${esc(x.productName || '-')}</td><td>${esc(x.qty)}</td><td class="num">${money(x.rowValue)}</td></tr>`).join('');
+            const win = window.open('', '_blank', 'width=1000,height=750'); if (!win) {alert('Popup diblokir browser. Izinkan popup untuk mencetak PDF.'); return;}
+            win.document.write(`<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>Laporan Input Sales ${esc(monthName)} ${esc(year)}</title><style>body{font:12px Arial,sans-serif;color:#222;padding:28px}h1{font-size:20px;margin:0 0 5px}p{color:#555;margin:4px 0 18px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:9px;text-align:left}th{background:#f1ece3}.num{text-align:right}.total{font-weight:bold;text-align:right;margin-top:14px}@media print{body{padding:0}@page{size:A4 portrait;margin:15mm}}</style></head><body><h1>ROTI ANGET SUBUH</h1><p>Sales Marketing Report — ${esc(monthName)} ${esc(year)}</p><table><thead><tr><th>No</th><th>Tanggal</th><th>Nama Toko</th><th>Item Produk</th><th>Qty</th><th>Sales Value</th></tr></thead><tbody>${body || '<tr><td colspan="6" style="text-align:center">Tidak ada data.</td></tr>'}</tbody></table><div class="total">Total Sales: ${money(total)}</div><script>window.onload=()=>{window.focus();window.print();};<\/script></body></html>`);
             win.document.close();
          }
          function renderSales() {
             if (!$('salesTable')) return;
-            const filteredSales = selectedSalesRows();
-            const total = filteredSales.reduce((sum, x) => sum + (Number(x.salesValue) || 0), 0);
-            $('salesFilterSummary').textContent = `${filteredSales.length} data • Total Sales: ${rupiah(total)}`;
-            renderPagedTable(filteredSales, 'salesPageSize', 'salesTable', 'salesPagination', x => [escapeHtml(x.salesDate || ''), `<b>${escapeHtml(x.storeCode || '')}</b>`, escapeHtml(x.storeName || ''), `<b>${rupiah(x.salesValue)}</b>`, `<div class="actions" style="gap:5px"><button type="button" class="btn btn-light" data-edit-sales="${escapeHtml(x.id)}">Edit</button><button type="button" class="btn btn-danger" data-delete-sales="${escapeHtml(x.id)}">Delete</button></div>`], 'sales', 5);
-            $('salesTable').querySelectorAll('[data-edit-sales]').forEach(b => b.onclick = () => {const x = salesRecords.find(v => v.id === b.dataset.editSales); if (!x) return; salesEditId = x.id; updateSalesStoreOptions(x.storeId || ''); $('salesStore').value = x.storeId || ''; $('salesValue').value = Number(x.salesValue) || ''; $('salesDate').value = x.salesDate || today(); $('salesForm').querySelector('[type="submit"]').textContent = 'Update Sales'; $('salesMessage').textContent = 'Mode edit: ubah data sales, lalu klik Update Sales.'; $('salesForm').scrollIntoView({behavior: 'smooth', block: 'start'});});
-            $('salesTable').querySelectorAll('[data-delete-sales]').forEach(b => b.onclick = async () => {const x = salesRecords.find(v => v.id === b.dataset.deleteSales); if (!x) return; if (!confirm(`Hapus data sales ${x.storeCode || ''} tanggal ${x.salesDate || ''} senilai ${rupiah(x.salesValue)}?`)) return; try {await deleteDoc(doc(db, 'salesRecords', x.id)); if (salesEditId === x.id) resetSalesForm(); await loadAll(); message('salesMessage', 'Data sales berhasil dihapus.', 'success');} catch (err) {message('salesMessage', 'Gagal menghapus sales: ' + friendlyError(err), 'danger');} });
+            const records = selectedSalesRows(), details = salesDetailRows(records);
+            const total = records.reduce((sum, x) => sum + (Number(x.salesValue) || 0), 0);
+            $('salesFilterSummary').textContent = `${details.length} baris produk • Total Sales: ${rupiah(total)}`;
+            renderPagedTable(details, 'salesPageSize', 'salesTable', 'salesPagination', x => [
+               escapeHtml(x.salesDate || ''), escapeHtml(x.storeName || ''), escapeHtml(x.productName || ''), escapeHtml(x.qty),
+               `<b>${rupiah(x.rowValue)}</b>`,
+               `<div class="actions" style="gap:5px"><button type="button" class="btn btn-light" data-edit-sales="${escapeHtml(x.id)}">Edit</button><button type="button" class="btn btn-danger" data-delete-sales="${escapeHtml(x.id)}">Delete</button></div>`
+            ], 'sales', 6);
+            $('salesTable').querySelectorAll('[data-edit-sales]').forEach(b => b.onclick = () => {
+               const x = salesRecords.find(v => v.id === b.dataset.editSales); if (!x) return;
+               salesEditId = x.id; updateSalesStoreOptions(x.storeId || ''); $('salesStore').value = x.storeId || '';
+               $('salesDate').value = x.salesDate || today(); $('salesDiscount').value = String(Number(x.discount) || 0); $('salesPaymentMethod').value = x.method || 'CASH'; $('salesItemsBody').innerHTML = '';
+               (Array.isArray(x.items) && x.items.length ? x.items : []).forEach(item => addSalesItemRow(item));
+               if (!x.items?.length) addSalesItemRow();
+               $('salesForm').querySelector('[type="submit"]').textContent = 'Update Sales';
+               $('salesMessage').textContent = 'Mode edit: ubah tanggal, Store, atau rincian produk lalu klik Update Sales.';
+               updateSalesEntryTotals(); $('salesForm').scrollIntoView({behavior:'smooth',block:'start'});
+            });
+            $('salesTable').querySelectorAll('[data-delete-sales]').forEach(b => b.onclick = async () => {
+               const x = salesRecords.find(v => v.id === b.dataset.deleteSales); if (!x) return;
+               if (!confirm(`Hapus Input Sales ${x.storeName || ''} tanggal ${x.salesDate || ''} senilai ${rupiah(x.salesValue)}?`)) return;
+               try {await deleteDoc(doc(db, 'salesRecords', x.id)); if (salesEditId === x.id) resetSalesForm(); await loadAll(); message('salesMessage', 'Data sales berhasil dihapus.', 'success');}
+               catch (err) {message('salesMessage', 'Gagal menghapus sales: ' + friendlyError(err), 'danger');}
+            });
          }
          $('storeForm').onsubmit = async e => {
             e.preventDefault(); const name = $('storeName').value.trim(), address = $('storeAddress').value.trim(), contact = $('storeContact').value.trim();
@@ -207,13 +268,28 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
          };
          $('resetStore').onclick = () => setTimeout(resetStoreForm, 0);
          $('salesForm').onsubmit = async e => {
-            e.preventDefault(); const store = stores.find(x => x.id === $('salesStore').value), salesValue = Number($('salesValue').value), salesDate = $('salesDate').value;
-            if (!store || !(salesValue > 0) || !salesDate) {message('salesMessage', 'Pilih Store, isi Sales Value lebih dari 0, dan tentukan tanggal sales.', 'danger'); return;}
+            e.preventDefault();
+            const store = stores.find(x => x.id === $('salesStore').value), salesDate = $('salesDate').value, items = getSalesFormItems();
+            const salesValue = Math.round(items.reduce((sum, item) => sum + item.value, 0) * 100) / 100;
+            const discount = Math.round(Math.max(0, Number($('salesDiscount').value) || 0) * 100) / 100;
+            const method = $('salesPaymentMethod').value || 'CASH'; const totalReceived = Math.max(0, salesValue - discount);
+            if (!salesDate || !store || !items.length || items.some(x => !(x.qty > 0)) || discount > salesValue) {
+               message('salesMessage', 'Pilih tanggal dan Store, lalu isi minimal satu produk dengan Qty lebih dari 0.', 'danger'); return;
+            }
             const editing = Boolean(salesEditId);
-            try {const payload = {storeId: store.id, storeCode: store.code, storeName: store.name, salesValue, salesDate, updatedAt: serverTimestamp(), updatedBy: currentUser.uid}; if (editing) await updateDoc(doc(db, 'salesRecords', salesEditId), payload); else await addDoc(collection(db, 'salesRecords'), {...payload, createdAt: serverTimestamp(), createdBy: currentUser.uid}); resetSalesForm(); await loadAll(); message('salesMessage', editing ? 'Data sales berhasil diperbarui.' : 'Data sales berhasil disimpan.', 'success');}
-            catch (err) {message('salesMessage', 'Gagal menyimpan sales: ' + friendlyError(err), 'danger');}
+            const payload = {storeId:store.id, storeCode:store.code || '', storeName:store.name || '', salesDate,
+               items, salesValue, discount, total:totalReceived, method, paymentMethod:method, updatedAt:serverTimestamp(), updatedBy:currentUser.uid};
+            try {
+               if (editing) await updateDoc(doc(db, 'salesRecords', salesEditId), payload);
+               else await addDoc(collection(db, 'salesRecords'), {...payload, createdAt:serverTimestamp(), createdBy:currentUser.uid});
+               resetSalesForm(); await loadAll();
+               message('salesMessage', editing ? 'Data Input Sales berhasil diperbarui.' : 'Data Input Sales berhasil disimpan.', 'success');
+            } catch (err) {message('salesMessage', 'Gagal menyimpan sales: ' + friendlyError(err), 'danger');}
          };
-         $('salesForm').addEventListener('reset', () => setTimeout(() => {if (!salesEditId) {$('salesDate').value = today(); updateSalesStoreOptions();} }, 0));
+         $('addSalesItem').onclick = () => addSalesItemRow();
+         $('salesDiscount').oninput = updateSalesEntryTotals;
+         $('resetSalesForm').onclick = resetSalesForm;
+         $('salesDate').value = today(); $('salesItemsBody').innerHTML = ''; addSalesItemRow();
          $('storePageSize').onchange = () => {storePage = 1; renderStores();}; $('salesPageSize').onchange = () => {salesPage = 1; renderSales();}; $('salesFilterMonth').onchange = () => {salesPage = 1; renderSales();}; $('salesFilterYear').onchange = () => {salesPage = 1; renderSales();}; $('printSalesPdf').onclick = printSalesPdf; $('salesDate').value = today();
 
          // MASTER UOM & BAHAN BAKU: data disimpan pada koleksi Firestore terpisah.
@@ -462,6 +538,110 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
                if ($('poDate')) $('poDate').value = today(); await loadAll();
             } catch (err) {message('stockMessage', 'Gagal input stock: ' + friendlyError(err), 'danger');}
          };
+         // Summary Input Stock: koreksi catatan dan saldo stok secara bersamaan.
+         function renderSummaryInputStock() {
+            const body = $('summaryStockTable');
+            if (!body) return;
+            const selectedDate = $('summaryStockDate')?.value || '';
+            const rows = stockEntries.filter(x => !selectedDate || String(x.date || '') === selectedDate);
+            if (!rows.length) {
+               body.innerHTML = '<tr><td colspan="4" class="empty">Tidak ada data input stock pada tanggal tersebut.</td></tr>';
+               return;
+            }
+            body.innerHTML = rows.map(x => {
+               const pending = summaryStockChanges.get(x.id);
+               const deleted = pending?.type === 'delete';
+               const editing = pending?.type === 'edit';
+               const product = products.find(p => p.id === x.productId);
+               const productName = x.productName || product?.name || '-';
+               const qtyHtml = editing
+                  ? `<input type="number" min="0" step="1" value="${Number(pending.qty)}" data-summary-qty="${x.id}" aria-label="Qty koreksi">`
+                  : `<strong>${Number(x.qty) || 0} pcs</strong>`;
+               const actionHtml = deleted
+                  ? `<span class="muted">Akan dihapus</span> <button type="button" class="btn btn-light" data-summary-undo="${x.id}">Batal</button>`
+                  : editing
+                     ? `<button type="button" class="btn btn-light" data-summary-apply="${x.id}">Terapkan Qty</button> <button type="button" class="btn btn-light" data-summary-undo="${x.id}">Batal</button> <button type="button" class="btn btn-danger" data-summary-delete="${x.id}">Delete</button>`
+                     : `<button type="button" class="btn btn-light" data-summary-edit="${x.id}">Edit</button> <button type="button" class="btn btn-danger" data-summary-delete="${x.id}">Delete</button>`;
+               return `<tr style="${deleted ? 'opacity:.55;text-decoration:line-through' : ''}"><td>${escapeHtml(x.date ? String(x.date).split('-').reverse().join('/') : '-')}</td><td>${escapeHtml(productName)}</td><td>${qtyHtml}</td><td><div class="actions" style="gap:6px;flex-wrap:wrap">${actionHtml}</div></td></tr>`;
+            }).join('');
+            body.querySelectorAll('[data-summary-edit]').forEach(b => b.onclick = () => {
+               const row = stockEntries.find(x => x.id === b.dataset.summaryEdit);
+               if (!row) return;
+               summaryStockChanges.set(row.id, {type:'edit', qty:Number(row.qty)||0});
+               renderSummaryInputStock();
+            });
+            body.querySelectorAll('[data-summary-apply]').forEach(b => b.onclick = () => {
+               const input = body.querySelector(`[data-summary-qty="${b.dataset.summaryApply}"]`);
+               const qty = Number(input?.value);
+               if (!Number.isInteger(qty) || qty < 0) {message('summaryStockMessage','Qty harus berupa angka bulat minimal 0.','danger'); return;}
+               summaryStockChanges.set(b.dataset.summaryApply, {type:'edit', qty});
+               renderSummaryInputStock();
+               message('summaryStockMessage','Qty koreksi ditandai. Klik Save Perubahan untuk menyimpan.','');
+            });
+            body.querySelectorAll('[data-summary-delete]').forEach(b => b.onclick = () => {
+               const row = stockEntries.find(x => x.id === b.dataset.summaryDelete);
+               if (!row || !confirm(`Tandai input stock ${row.productName || 'produk'} sebanyak ${row.qty} pcs untuk dihapus?`)) return;
+               summaryStockChanges.set(row.id, {type:'delete'});
+               renderSummaryInputStock();
+               message('summaryStockMessage','Penghapusan ditandai. Klik Save Perubahan untuk menyimpan koreksi stok.','');
+            });
+            body.querySelectorAll('[data-summary-undo]').forEach(b => b.onclick = () => {
+               summaryStockChanges.delete(b.dataset.summaryUndo);
+               renderSummaryInputStock();
+               message('summaryStockMessage','Perubahan pada baris dibatalkan.','');
+            });
+         }
+         $('summaryStockDate').value = today();
+         $('summaryStockFilter').onclick = () => {
+            summaryStockChanges.clear();
+            renderSummaryInputStock();
+            message('summaryStockMessage','Data input stock berhasil difilter.','success');
+         };
+         $('saveSummaryStockChanges').onclick = async () => {
+            if (!summaryStockChanges.size) {message('summaryStockMessage','Tidak ada perubahan untuk disimpan.',''); return;}
+            if (!isAdminUser()) {message('summaryStockMessage','Hanya administrator yang dapat mengoreksi input stock.','danger'); return;}
+            const changes = Array.from(summaryStockChanges.entries());
+            if (!confirm(`Simpan ${changes.length} perubahan input stock? Stok produk akan ikut disesuaikan.`)) return;
+            const saveBtn = $('saveSummaryStockChanges');
+            saveBtn.disabled = true;
+            try {
+               for (const [entryId, change] of changes) {
+                  await runTransaction(db, async tx => {
+                     const entryRef = doc(db, 'stockEntries', entryId);
+                     const entrySnap = await tx.get(entryRef);
+                     if (!entrySnap.exists()) throw new Error('Data input stock sudah tidak ditemukan. Muat ulang data.');
+                     const entry = entrySnap.data();
+                     const productRef = doc(db, 'products', entry.productId);
+                     const productSnap = await tx.get(productRef);
+                     if (!productSnap.exists()) throw new Error(`Produk ${entry.productName || ''} tidak ditemukan.`);
+                     const currentStock = Number(productSnap.data().stock) || 0;
+                     const oldQty = Number(entry.qty) || 0;
+                     if (change.type === 'delete') {
+                        const nextStock = currentStock - oldQty;
+                        if (nextStock < 0) throw new Error(`Stok ${entry.productName || 'produk'} tidak cukup untuk menghapus input ${oldQty} pcs.`);
+                        tx.update(productRef, {stock:nextStock, updatedAt:serverTimestamp()});
+                        tx.delete(entryRef);
+                     } else {
+                        const newQty = Number(change.qty);
+                        if (!Number.isInteger(newQty) || newQty < 0) throw new Error('Qty koreksi harus angka bulat minimal 0.');
+                        const nextStock = currentStock + (newQty - oldQty);
+                        if (nextStock < 0) throw new Error(`Stok ${entry.productName || 'produk'} tidak cukup untuk koreksi qty.`);
+                        tx.update(productRef, {stock:nextStock, updatedAt:serverTimestamp()});
+                        tx.update(entryRef, {qty:newQty, updatedAt:serverTimestamp(), correctedAt:serverTimestamp(), correctedBy:currentUser.uid});
+                     }
+                  });
+                  // Remove only the successfully committed row, so a later failure can be retried safely.
+                  summaryStockChanges.delete(entryId);
+               }
+               await loadAll();
+               message('summaryStockMessage','Perubahan input stock berhasil disimpan. Stok produk telah disesuaikan.','success');
+            } catch (err) {
+               console.error('Koreksi input stock:',err);
+               message('summaryStockMessage','Gagal menyimpan perubahan: '+friendlyError(err),'danger');
+               await loadAll();
+            } finally {saveBtn.disabled = false;}
+         };
+
          function findProduct(value) {const v = value.trim().toLowerCase(); return products.find(p => p.code.toLowerCase() === v || p.name.toLowerCase() === v);}
          let selectedProduct = null;
          $('posCode').addEventListener('input', () => {selectedProduct = findProduct($('posCode').value); const p = selectedProduct; if (p) {$('productPreview').innerHTML = `<img src="${p.imageUrl || ''}" onerror="this.style.visibility='hidden'"><div><strong>${escapeHtml(p.name)}</strong><div class="muted">${p.code} • Stok: ${p.stock || 0} pcs</div><div class="price">${rupiah(p.price)}</div></div>`;} else {$('productPreview').innerHTML = '<div class="empty" style="width:100%">Produk tidak ditemukan. Pilih kode/nama yang tersedia.</div>';} });
@@ -932,6 +1112,15 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
 
          function formatDate(ts) {try {return ts?.toDate ? ts.toDate().toLocaleString('id-ID') : new Date().toLocaleString('id-ID')} catch {return '-'} }
          function formatCorrectionDate(ts) {try {const d = ts?.toDate ? ts.toDate() : (ts instanceof Date ? ts : new Date(ts)); if (!d || Number.isNaN(d.getTime())) return '-'; const date = new Intl.DateTimeFormat('id-ID', {day: 'numeric', month: 'numeric', year: 'numeric'}).format(d); const time = [d.getHours(), d.getMinutes(), d.getSeconds()].map(v => String(v).padStart(2, '0')).join('.'); return `${date}, ${time}`;} catch {return '-';} }
+         // Nilai pendapatan Marketing selalu dihitung NET setelah discount, sama seperti total bayar Kasir.
+         function accountingMarketingNetReceived(record) {
+            const storedTotal = Number(record?.total);
+            if (record?.total !== undefined && record?.total !== null && record?.total !== '' && Number.isFinite(storedTotal)) return Math.max(0, storedTotal);
+            const items = Array.isArray(record?.items) ? record.items : [];
+            const gross = items.reduce((sum, item) => sum + (Number(item.value) || ((Number(item.qty) || 0) * (Number(item.price) || 0))), 0) || (Number(record?.salesValue) || 0);
+            return Math.max(0, gross - (Number(record?.discount) || 0));
+         }
+
          // ACCOUNTING: laporan dibentuk dari data yang memang sudah dicatat di aplikasi.
          const accountingReportMeta = {
             reportProductionFG: {title: 'Laporan Produksi FG', columns: ['Tanggal Produksi', 'Kode Produk', 'Nama Produk', 'Qty Produksi', 'HPP Total'], rows: () => productionRecords.map(x => [x.productionDate || '-', x.productCode || '-', x.productName || '-', Number(x.qty) || 0, Number(x.hppTotal) || 0])},
@@ -949,7 +1138,7 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
             reportProfitLoss: {
                title: 'Laporan Laba/Rugi', columns: ['Komponen', 'Keterangan', 'Nilai'], rows: () => {
                   const paid = transactions.filter(t => ['PAID', 'PAID CASH', 'PAID QRIS'].includes(String(t.status || '').toUpperCase()));
-                  const sales = paid.reduce((n, t) => n + (Number(t.total) || 0), 0) + salesRecords.reduce((n, x) => n + (Number(x.salesValue) || 0), 0);
+                  const sales = paid.reduce((n, t) => n + (Number(t.total) || 0), 0) + salesRecords.reduce((n, x) => n + accountingMarketingNetReceived(x), 0);
                   const cogs = productionRecords.reduce((n, x) => n + (Number(x.hppTotal) || 0), 0);
                   const waste = wasteMaterialRecords.reduce((n, x) => n + (Number(x.totalValue) || 0), 0) + wasteProductRecords.reduce((n, x) => n + (Number(x.totalHpp) || 0), 0); const overhead = costOverheadExpenses.reduce((n, x) => n + (Number(x.value) || 0), 0);
                   return [['Pendapatan', 'Transaksi kasir lunas + Input Sales Marketing', sales], ['HPP Produksi', 'Total HPP dari catatan produksi', cogs], ['Waste', 'Waste bahan baku dan produk', waste], ['Cost Overhead', 'Total biaya overhead', overhead], ['Estimasi Laba/Rugi', 'Pendapatan - HPP Produksi - Waste - Cost Overhead', sales - cogs - waste - overhead]];
@@ -1028,7 +1217,7 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
                const section = $(id), start = section?.querySelector('[data-report-start]')?.value || '', end = section?.querySelector('[data-report-end]')?.value || '';
                const inPeriod = value => accountingPrintPeriodOverride ? accountingValueInPeriod(value, period) : accountingDateInRange(value, start, end);
                const paid = transactions.filter(t => ['PAID', 'PAID CASH', 'PAID QRIS'].includes(String(t.status || '').toUpperCase()) && inPeriod(transactionDateKey(t)));
-               const sales = paid.reduce((n, t) => n + (Number(t.total) || 0), 0) + salesRecords.filter(x => inPeriod(x.salesDate)).reduce((n, x) => n + (Number(x.salesValue) || 0), 0);
+               const sales = paid.reduce((n, t) => n + (Number(t.total) || 0), 0) + salesRecords.filter(x => inPeriod(x.salesDate)).reduce((n, x) => n + accountingMarketingNetReceived(x), 0);
                const cogs = productionRecords.filter(x => inPeriod(x.productionDate)).reduce((n, x) => n + (Number(x.hppTotal) || 0), 0);
                const waste = wasteMaterialRecords.filter(x => inPeriod(x.wasteDate)).reduce((n, x) => n + (Number(x.totalValue) || 0), 0) + wasteProductRecords.filter(x => inPeriod(x.wasteDate)).reduce((n, x) => n + (Number(x.totalHpp) || 0), 0);
                const overhead = costOverheadExpenses.filter(x => inPeriod(x.postingDate)).reduce((n, x) => n + (Number(x.value) || 0), 0);
@@ -1096,13 +1285,87 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
             const end = section.querySelector('[data-report-end]')?.value || '';
             const reportPeriod = ['reportProductionFG', 'reportShipment', 'reportSales', 'reportCosts'].includes(id) ? accountingSelectedPeriod(id).period : (id === 'reportProfitLoss' ? 'Semua Periode' : `${start || 'Semua'} s/d ${end || 'Semua'}`);
             const table = `<table><thead><tr>${meta.columns.map(c => `<th>${escapeHtml(c)}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map((v, i) => `<td>${accountingFormatCell(v, i, id)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
-            const stockSummary = id === 'reportStockRM' ? `<p><strong>Jumlah Baris:</strong> ${rows.length} &nbsp; | &nbsp; <strong>Tanggal:</strong> ${new Date().toLocaleDateString('id-ID')} &nbsp; | &nbsp; <strong>Total Stock Value:</strong> ${rupiah(rows.reduce((n, r) => n + (Number(r[9]) || 0), 0))}</p>` : '';
+            const stockSummary = id === 'reportStockRM' ? `<p><strong>Jumlah Baris:</strong> ${rows.length} &nbsp; | &nbsp; <strong>Tanggal:</strong> ${new Date().toLocaleDateString('id-ID')}</p>` : '';
+            let reportTotal = '';
+            if (id === 'reportProductionFG') reportTotal = `<div class="accounting-print-total"><span>Total HPP</span><strong>${rupiah(rows.reduce((n, r) => n + (Number(r[4]) || 0), 0))}</strong></div>`;
+            else if (id === 'reportCosts') reportTotal = `<div class="accounting-print-total"><span>Total Cost Overhead</span><strong>${rupiah(rows.reduce((n, r) => n + (Number(r[3]) || 0), 0))}</strong></div>`;
+            else if (id === 'reportStockRM') reportTotal = `<div class="accounting-print-total"><span>Total Value Stock</span><strong>${rupiah(rows.reduce((n, r) => n + (Number(r[9]) || 0), 0))}</strong></div>`;
             const w = window.open('', '_blank'); if (!w) {alert('Izinkan pop-up browser untuk mencetak laporan.'); return;}
-            w.document.write(`<!doctype html><html><head><title>${escapeHtml(meta.title)}</title><meta charset="utf-8"><style>body{font-family:Arial,sans-serif;padding:24px;color:#222}h1,h2,p{text-align:center}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #aaa;padding:8px;text-align:left;font-size:11px}th{background:#eee}@media print{button{display:none}}</style></head><body><h1>ROTI ANGET SUBUH</h1><h2>${escapeHtml(meta.title)}</h2><p>Periode: ${reportPeriod}</p>${stockSummary}${table}<script>window.onload=()=>{window.focus();window.print();};<\/script></body></html>`);
+            w.document.write(`<!doctype html><html><head><title>${escapeHtml(meta.title)}</title><meta charset="utf-8"><style>body{font-family:Arial,sans-serif;padding:24px;color:#222}h1,h2,p{text-align:center}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #aaa;padding:8px;text-align:left;font-size:11px}th{background:#eee}.accounting-print-total{display:flex;justify-content:space-between;align-items:center;gap:20px;max-width:520px;margin:10px 0 26px auto;padding:10px 12px;border-top:2px solid #333;font-weight:bold}.accounting-print-total strong{white-space:nowrap;text-align:right}@media print{button{display:none}}</style></head><body><h1>ROTI ANGET SUBUH</h1><h2>${escapeHtml(meta.title)}</h2><p>Periode: ${reportPeriod}</p>${stockSummary}${table}${reportTotal}<script>window.onload=()=>{window.focus();window.print();};<\/script></body></html>`);
             w.document.close();
          }
 
-         function printAllAccountingReports() {
+         
+          function accountingAllSalesProductReport(month, year) {
+             const period = `${year}-${month}`;
+             const paidTransactions = transactions.filter(t =>
+                ['PAID', 'PAID CASH', 'PAID QRIS'].includes(String(t.status || '').toUpperCase()) &&
+                accountingValueInPeriod(transactionDateKey(t), period)
+             );
+             const productTotals = new Map();
+             let qrisTotal = 0, cashTotal = 0, totalDiscount = 0, marketingGross = 0, marketingNet = 0;
+             const addProductRow = ({user, code, name, qty, price, salesValue, discount, key}) => {
+                const rowKey = `${key}::${user}`;
+                const current = productTotals.get(rowKey) || {user, code, name, qty:0, price, salesValue:0, discount:0};
+                current.qty += qty; current.price = price; current.salesValue += salesValue; current.discount += discount;
+                productTotals.set(rowKey, current);
+             };
+             paidTransactions.forEach(t => {
+                const method = String(t.method || (String(t.status || '').toUpperCase().includes('QRIS') ? 'QRIS' : 'CASH')).toUpperCase();
+                const transactionTotal = Number(t.total) || 0;
+                if (method === 'QRIS') qrisTotal += transactionTotal; else if (method === 'CASH') cashTotal += transactionTotal;
+                const items = Array.isArray(t.items) ? t.items : [];
+                const discount = Math.max(0, Number(t.discount) || 0);
+                const subtotal = items.reduce((sum, item) => sum + (Number(item.subtotal) || ((Number(item.price) || 0) * (Number(item.qty) || 0))), 0);
+                totalDiscount += discount;
+                let allocatedDiscount = 0;
+                items.forEach((item, index) => {
+                   const qty = Number(item.qty) || 0; if (!qty) return;
+                   const master = products.find(p => p.id === item.id || (item.code && String(p.code || '') === String(item.code)));
+                   const code = String(master?.code || item.code || '-'), name = String(master?.name || item.name || '-');
+                   const price = Number(master?.price ?? item.price) || 0;
+                   const itemSubtotal = Number(item.subtotal) || ((Number(item.price) || 0) * qty);
+                   const itemDiscount = index === items.length - 1 ? Math.max(0, discount - allocatedDiscount) : (subtotal > 0 ? Math.round(discount * itemSubtotal / subtotal) : 0);
+                   allocatedDiscount += itemDiscount;
+                   addProductRow({user:String(t.cashierName || t.createdByName || t.createdByEmail || 'Kasir'), code, name, qty, price, salesValue:qty * price, discount:itemDiscount, key:master?.id || item.id || code});
+                });
+             });
+             // Marketing Input Sales: discount dialokasikan proporsional ke setiap produk.
+             salesRecords.filter(x => accountingValueInPeriod(x.salesDate, period)).forEach(record => {
+                const items = Array.isArray(record.items) ? record.items : [];
+                const gross = items.reduce((sum, item) => sum + (Number(item.value) || ((Number(item.qty) || 0) * (Number(item.price) || 0))), 0) || (Number(record.salesValue) || 0);
+                const discount = Math.max(0, Number(record.discount) || 0);
+                const net = Math.max(0, gross - discount);
+                marketingGross += gross; marketingNet += net; totalDiscount += discount;
+                const method = String(record.method || record.paymentMethod || 'CASH').toUpperCase();
+                if (method === 'QRIS') qrisTotal += net; else cashTotal += net;
+                let allocatedDiscount = 0;
+                items.forEach((item, index) => {
+                   const qty = Number(item.qty) || 0; if (!(qty > 0)) return;
+                   const master = products.find(p => p.id === item.productId || (item.productCode && String(p.code || '') === String(item.productCode)));
+                   const code = String(master?.code || item.productCode || '-'), name = String(master?.name || item.productName || '-');
+                   const price = Number(item.price ?? master?.price) || 0, value = Number(item.value) || qty * price;
+                   const itemDiscount = index === items.length - 1 ? Math.max(0, discount - allocatedDiscount) : (gross > 0 ? Math.round(discount * value / gross) : 0);
+                   allocatedDiscount += itemDiscount;
+                   addProductRow({user:String(record.storeName || record.storeCode || 'Marketing'), code, name, qty, price, salesValue:value, discount:itemDiscount, key:master?.id || item.productId || code});
+                });
+             });
+             const rows = [...productTotals.values()].sort((a,b) => a.user.localeCompare(b.user, 'id') || a.code.localeCompare(b.code, 'id'));
+             const fmt = value => rupiah(Number(value) || 0);
+             const productTable = `<table><thead><tr>${['User','Kode Item','Nama Item','Qty','Harga Jual','Value Penjualan','Total Discount','Value Diterima'].map(c => `<th>${escapeHtml(c)}</th>`).join('')}</tr></thead><tbody>${rows.length ? rows.map(r => `<tr><td>${escapeHtml(r.user)}</td><td>${escapeHtml(r.code)}</td><td>${escapeHtml(r.name)}</td><td>${new Intl.NumberFormat('id-ID').format(r.qty)}</td><td>${fmt(r.price)}</td><td>${fmt(r.salesValue)}</td><td>${fmt(r.discount)}</td><td>${fmt(r.salesValue-r.discount)}</td></tr>`).join('') : `<tr><td colspan="8">Tidak ada transaksi penjualan untuk periode ini.</td></tr>`}</tbody></table>`;
+             const grossSales = rows.reduce((sum,row) => sum + row.salesValue, 0);
+             const netSales = grossSales - totalDiscount;
+             const totals = `<div class="sales-accounting-totals">
+                <p><span>Total Penjualan QRIS (setelah discount)</span><strong>${fmt(qrisTotal)}</strong></p>
+                <p><span>Total Penjualan CASH (setelah discount)</span><strong>${fmt(cashTotal)}</strong></p>
+                <p><span>Total Penjualan Marketing (gross)</span><strong>${fmt(marketingGross)}</strong></p>
+                <p><span>Total Discount POS + Marketing</span><strong>( ${fmt(totalDiscount)} )</strong></p>
+                <p class="grand"><span>Total Value Diterima (POS + Marketing)</span><strong>${fmt(qrisTotal + cashTotal)}</strong></p>
+             </div>`;
+             return `<h2>Laporan Sales Penjualan — Akumulasi per Produk</h2><p>Periode: ${period}</p><p>Akumulasi per produk dan sumber transaksi. User menunjukkan nama kasir untuk POS atau nama toko untuk Marketing.</p>${productTable}${totals}`;
+          }
+
+function printAllAccountingReports() {
             const month = $('printAllMonth')?.value || accountingDefaultMonth, year = $('printAllYear')?.value || accountingDefaultYear, period = `${year}-${month}`;
             ['reportProductionFG', 'reportShipment', 'reportSales', 'reportCosts'].forEach(id => {const sec = $(id); if (sec?.querySelector('[data-report-month]')) sec.querySelector('[data-report-month]').value = month; if (sec?.querySelector('[data-report-year]')) sec.querySelector('[data-report-year]').value = year;});
             if ($('cogsMonth')) $('cogsMonth').value = month; if ($('cogsYear')) $('cogsYear').value = year;
@@ -1115,15 +1378,30 @@ import {initializeApp, deleteApp} from "https://www.gstatic.com/firebasejs/10.12
                if (id === 'reportCOGS') {
                   const d = accountingCOGSData();
                   const simple = (title, cols, rows) => `<h3>${escapeHtml(title)}</h3><table><thead><tr>${cols.map(c => `<th>${escapeHtml(c)}</th>`).join('')}</tr></thead><tbody>${rows.length ? rows.map(r => `<tr>${r.map((v, i) => `<td>${typeof v === 'number' ? ([4, 6].includes(i) ? rupiah(v) : new Intl.NumberFormat('id-ID').format(v)) : escapeHtml(String(v ?? '-'))}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${cols.length}">Tidak ada data</td></tr>`}</tbody></table>`;
-                  blocks.push(`<h2>${escapeHtml(meta.title)}</h2><p>Periode: ${period}</p>` + simple('Summary Produksi FG', ['Tanggal Produksi', 'Kode Produk', 'Nama Produk', 'Qty Produksi'], d.fgRows) + simple('Summary Pemakaian Bahan Baku Produksi', ['Kode Bahan Baku', 'Nama Bahan Baku', 'UOM', 'Weight', 'Average', 'Qty Pemakaian', 'Value'], d.materialRows) + `<p class="total">Total Value: ${rupiah(d.totalValue)} | Variable Cost 1%: ${rupiah(d.variableCost)} | Total Value Pemakaian Bahan Baku: ${rupiah(d.totalUsageValue)}</p>`);
+                  blocks.push(`<h2>${escapeHtml(meta.title)}</h2><p>Periode: ${period}</p>` + simple('Summary Produksi FG', ['Tanggal Produksi', 'Kode Produk', 'Nama Produk', 'Qty Produksi'], d.fgRows) + simple('Summary Pemakaian Bahan Baku Produksi', ['Kode Bahan Baku', 'Nama Bahan Baku', 'UOM', 'Weight', 'Average', 'Qty Pemakaian', 'Value'], d.materialRows) + `<div class="accounting-print-totals"><div><span>Total Value</span><strong>${rupiah(d.totalValue)}</strong></div><div><span>Variable Cost 1%</span><strong>${rupiah(d.variableCost)}</strong></div><div class="grand"><span>Total Value Pemakaian Bahan Baku</span><strong>${rupiah(d.totalUsageValue)}</strong></div></div>`);
+                  continue;
+               }
+               if (id === 'reportSales') {
+                  blocks.push(accountingAllSalesProductReport(month, year));
                   continue;
                }
                const rows = accountingRowsFor(id);
-               blocks.push(`<h2>${escapeHtml(meta.title)}</h2><p>Periode: ${period}</p>` + tbl(meta.title, meta.columns, rows, id));
+               let reportTotal = '';
+               if (id === 'reportProductionFG') {
+                  const totalHpp = rows.reduce((n, r) => n + (Number(r[4]) || 0), 0);
+                  reportTotal = `<div class="accounting-print-total"><span>Total HPP</span><strong>${rupiah(totalHpp)}</strong></div>`;
+               } else if (id === 'reportCosts') {
+                  const totalCost = rows.reduce((n, r) => n + (Number(r[3]) || 0), 0);
+                  reportTotal = `<div class="accounting-print-total"><span>Total Cost Overhead</span><strong>${rupiah(totalCost)}</strong></div>`;
+               } else if (id === 'reportStockRM') {
+                  const totalStockValue = rows.reduce((n, r) => n + (Number(r[9]) || 0), 0);
+                  reportTotal = `<div class="accounting-print-total"><span>Total Value Stock</span><strong>${rupiah(totalStockValue)}</strong></div>`;
+               }
+               blocks.push(`<h2>${escapeHtml(meta.title)}</h2><p>Periode: ${period}</p>` + tbl(meta.title, meta.columns, rows, id) + reportTotal);
             }
             accountingPrintPeriodOverride = null;
             const w = window.open('', '_blank'); if (!w) {alert('Izinkan pop-up browser untuk mencetak laporan.'); return;}
-            w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Semua Laporan Accounting ${period}</title><style>body{font-family:Arial,sans-serif;padding:22px;color:#222}h1{text-align:center}h2{margin:30px 0 6px;border-top:2px solid #333;padding-top:18px}p{text-align:center;margin:5px 0 12px}h3{margin:16px 0 8px}table{width:100%;border-collapse:collapse;margin:8px 0 18px}th,td{border:1px solid #aaa;padding:6px;text-align:left;font-size:10px}th{background:#eee}.total{text-align:right;font-weight:bold}@media print{h2{break-before:page}h2:first-of-type{break-before:auto}}</style></head><body><h1>ROTI ANGET SUBUH<br>SEMUA LAPORAN ACCOUNTING</h1><p>Periode: ${period}</p>${blocks.join('')}<script>window.onload=()=>{window.focus();window.print();};<\/script></body></html>`); w.document.close();
+            w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Semua Laporan Accounting ${period}</title><style>body{font-family:Arial,sans-serif;padding:22px;color:#222}h1{text-align:center}h2{margin:30px 0 6px;border-top:2px solid #333;padding-top:18px}p{text-align:center;margin:5px 0 12px}h3{margin:16px 0 8px}table{width:100%;border-collapse:collapse;margin:8px 0 18px}th,td{border:1px solid #aaa;padding:6px;text-align:left;font-size:10px}th{background:#eee}.total{text-align:right;font-weight:bold}.accounting-print-total{display:flex;justify-content:space-between;align-items:center;gap:20px;max-width:520px;margin:10px 0 26px auto;padding:10px 12px;border-top:2px solid #333;font-weight:bold}.accounting-print-total strong{white-space:nowrap;text-align:right}.accounting-print-totals{width:min(560px,100%);margin:18px 0 28px auto}.accounting-print-totals>div{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;padding:8px 10px;border-bottom:1px solid #ddd}.accounting-print-totals>div strong{text-align:right;white-space:nowrap}.accounting-print-totals .grand{font-weight:bold;border-top:2px solid #333;border-bottom:2px solid #333}.sales-accounting-totals{width:min(520px,100%);margin:22px 0 0 auto}.sales-accounting-totals p{display:flex;justify-content:space-between;gap:18px;text-align:left;border-bottom:1px solid #ddd;padding:8px 4px;margin:0}.sales-accounting-totals p strong{text-align:right;white-space:nowrap}.sales-accounting-totals .grand{font-weight:bold;border-top:2px solid #333;font-size:12px}@media print{h2{break-before:page}h2:first-of-type{break-before:auto}}</style></head><body><h1>ROTI ANGET SUBUH<br>SEMUA LAPORAN ACCOUNTING</h1><p>Periode: ${period}</p>${blocks.join('')}<script>window.onload=()=>{window.focus();window.print();};<\/script></body></html>`); w.document.close();
          }
          $('printAllAccountingReports')?.addEventListener('click', printAllAccountingReports);
 
